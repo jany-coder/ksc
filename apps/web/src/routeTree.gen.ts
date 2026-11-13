@@ -14,6 +14,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicJoinRouteImport } from './routes/_public/join'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ApiMembersExportRouteImport } from './routes/api/members-export'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
@@ -46,6 +47,11 @@ const LoginRoute = LoginRouteImport.update({
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicJoinRoute = PublicJoinRouteImport.update({
+  id: '/join',
+  path: '/join',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/join': typeof PublicJoinRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/join': typeof PublicJoinRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminIndexRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/_public/join': typeof PublicJoinRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/_public/': typeof PublicIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/change-password'
     | '/login'
+    | '/join'
     | '/api/members-export'
     | '/admin/'
     | '/admin/activities/new'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
   to:
     | '/change-password'
     | '/login'
+    | '/join'
     | '/api/members-export'
     | '/'
     | '/admin'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/change-password'
     | '/login'
+    | '/_public/join'
     | '/api/members-export'
     | '/_public/'
     | '/admin/'
@@ -232,6 +244,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/join': {
+      id: '/_public/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof PublicJoinRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/admin/': {
@@ -301,10 +320,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface PublicRouteRouteChildren {
+  PublicJoinRoute: typeof PublicJoinRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicJoinRoute: PublicJoinRoute,
   PublicIndexRoute: PublicIndexRoute,
 }
 

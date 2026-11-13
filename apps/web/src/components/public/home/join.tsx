@@ -1,7 +1,9 @@
-// "Become a member". The application form is NOT built yet: it collects
-// personal data from the public, so it needs a consent checkbox (CLAUDE.md
-// section 3, absent from the canvas) and spam protection first. Until then
-// this shows the real way to reach the club. A dead form would mislead.
+import { Link } from '@tanstack/react-router'
+
+import { buttonVariants } from '../../ui/button.tsx'
+
+// "Become a member": a short invitation that links to the application form
+// at /join, where the consent checkbox and spam protection live.
 export function Join() {
   return (
     <section
@@ -19,11 +21,17 @@ export function Join() {
           </p>
         </div>
         <div className="min-w-0 flex-[1_1_360px] rounded-[10px] border border-line bg-card p-[30px]">
-          <p className="mb-2.5 text-lg font-semibold text-ink">
-            [অনলাইন আবেদন ফরম শীঘ্রই আসছে]
-          </p>
+          <Link
+            to="/join"
+            className={buttonVariants({
+              size: 'lg',
+              className: 'mb-4 h-12 px-6 text-[17px]',
+            })}
+          >
+            আবেদন করুন
+          </Link>
           <p className="text-[17px] leading-[1.7] text-copy">
-            আপাতত ইমেইলে ক্লাবের সাথে যোগাযোগ করুন:
+            অথবা ইমেইলে যোগাযোগ করুন:
             <br />
             <a
               href="mailto:kalmasocialclub24@gmail.com"
