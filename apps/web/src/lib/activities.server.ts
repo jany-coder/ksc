@@ -4,7 +4,7 @@ import { and, asc, desc, eq, sql } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
 import { activities } from '../db/schema/index.ts'
-import { activityFormSchema } from './activity-form.ts'
+import { ACTIVITY_CATEGORY_SLUG, activityFormSchema } from './activity-form.ts'
 import { formatEventWhen } from './bn-datetime.ts'
 import { makeSlug } from './slug.ts'
 
@@ -32,7 +32,11 @@ export async function createActivity(
   // The random suffix makes a collision very unlikely; if one happens anyway the
   // unique index rejects it and we simply draw another suffix.
   for (let attempt = 0; attempt < 3; attempt++) {
-    const slug = makeSlug(v.title)
+    const slug = makeSlug({
+      title: v.title,
+      categorySlug: v.category ? ACTIVITY_CATEGORY_SLUG[v.category] : undefined,
+      date: v.eventDate || undefined,
+    })
     try {
       const [row] = await db
         .insert(activities)

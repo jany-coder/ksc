@@ -10,6 +10,18 @@ export const ACTIVITY_CATEGORIES = [
   'সভা',
 ] as const
 
+// The English key of each category, used to build a readable English URL slug.
+export const ACTIVITY_CATEGORY_SLUG: Record<
+  (typeof ACTIVITY_CATEGORIES)[number],
+  string
+> = {
+  রক্তদান: 'blood-donation',
+  'ত্রাণ ও সহায়তা': 'relief',
+  শিক্ষা: 'education',
+  খেলাধুলা: 'sports',
+  সভা: 'meeting',
+}
+
 export const ACTIVITY_STATUSES = ['draft', 'published'] as const
 export const ACTIVITY_STATUS_LABEL = {
   draft: 'খসড়া',
