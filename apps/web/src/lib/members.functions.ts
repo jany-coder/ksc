@@ -6,6 +6,7 @@ import { MEMBER_STATUSES } from './member-options.ts'
 import { membersSearchSchema } from './members-query.ts'
 import {
   archiveMember,
+  changeMemberPhone,
   createMember,
   getMember,
   listMembers,
@@ -57,4 +58,12 @@ export const updateMemberFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const actor = await requirePermission('members.write')
     return updateMember(actor, data.id, data.values)
+  })
+
+// The phone is the login name, so this is super_admin only.
+export const changeMemberPhoneFn = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid(), phone: z.string().max(40) }))
+  .handler(async ({ data }) => {
+    const actor = await requirePermission('members.changePhone')
+    return changeMemberPhone(actor.id, data.id, data.phone)
   })

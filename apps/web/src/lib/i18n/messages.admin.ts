@@ -276,6 +276,28 @@ export const adminMessages = {
     bn: 'পরিবর্তন সংরক্ষণ করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।',
     en: 'Could not save the changes. Check your internet and try again.',
   },
+  'memberEdit.phoneChangeTitle': {
+    bn: 'মোবাইল নম্বর পরিবর্তন (শুধু সুপার অ্যাডমিন)',
+    en: 'Change mobile number (super admin only)',
+  },
+  'memberEdit.phoneChangeHelp': {
+    bn: 'নম্বর ভুল হলে বা সদস্য নতুন নম্বর নিলে এখানে ঠিক করুন। অ্যাডমিন হলে নতুন নম্বর দিয়েই লগইন করতে হবে; পাসওয়ার্ড একই থাকবে।',
+    en: 'Use this if the number was typed wrong or the member got a new one. An admin must sign in with the new number from now on; the password stays the same.',
+  },
+  'memberEdit.phoneNew': { bn: 'নতুন নম্বর', en: 'New number' },
+  'memberEdit.phoneChangeBtn': { bn: 'নম্বর বদলান', en: 'Change number' },
+  'memberEdit.phoneChanged': {
+    bn: 'নম্বর বদলানো হয়েছে।',
+    en: 'The number was changed.',
+  },
+  'memberEdit.phoneInvalid': {
+    bn: 'সঠিক বাংলাদেশি মোবাইল নম্বর দিন (যেমন ০১৭১২৩৪৫৬৭৮)।',
+    en: 'Enter a valid Bangladeshi mobile number (for example 01712345678).',
+  },
+  'memberEdit.phoneTaken': {
+    bn: 'এই নম্বর অন্য একজন সদস্যের আছে।',
+    en: 'Another member already has this number.',
+  },
   'drawer.edit': { bn: 'তথ্য সম্পাদনা', en: 'Edit details' },
 
   // --- activities ---

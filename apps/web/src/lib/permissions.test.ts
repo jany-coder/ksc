@@ -12,6 +12,7 @@ const table: Record<Action, Record<Role, boolean>> = {
   'members.delete': { super_admin: true, admin: false, member: false },
   'members.export': { super_admin: true, admin: false, member: false },
   'admins.manage': { super_admin: true, admin: false, member: false },
+  'members.changePhone': { super_admin: true, admin: false, member: false },
 }
 
 describe('can', () => {

@@ -494,3 +494,59 @@ export async function updateMember(
   }
   return { ok: true }
 }
+
+export type ChangePhoneResult =
+  | { ok: true }
+  | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' | 'PHONE_TAKEN' }
+
+/**
+ * Fix a member's phone number (typed wrong, or they got a new SIM). The phone is
+ * also the login name, so both rows change in one transaction. Call
+ * requirePermission('members.changePhone') first: super_admin only.
+ * The audit entry records who and which member, never the numbers.
+ */
+export async function changeMemberPhone(
+  actorId: string,
+  memberId: string,
+  rawPhone: string,
+): Promise<ChangePhoneResult> {
+  const phone = normalizePhone(rawPhone)
+  if (!phone) return { ok: false, code: 'INVALID_INPUT' }
+
+  const [target] = await db
+    .select({ userId: members.userId })
+    .from(members)
+    .where(and(eq(members.id, memberId), isNull(members.archivedAt)))
+    .limit(1)
+  if (!target) return { ok: false, code: 'NOT_FOUND' }
+
+  const log = db.insert(auditLog).values({
+    actorId,
+    action: 'member.phone_change',
+    targetType: 'member',
+    targetId: memberId,
+  })
+  const updateMemberPhone = db
+    .update(members)
+    .set({ phone })
+    .where(eq(members.id, memberId))
+
+  try {
+    if (target.userId) {
+      await db.batch([
+        updateMemberPhone,
+        db
+          .update(user)
+          .set({ username: phone })
+          .where(eq(user.id, target.userId)),
+        log,
+      ])
+    } else {
+      await db.batch([updateMemberPhone, log])
+    }
+  } catch (error) {
+    if (isUniqueViolation(error)) return { ok: false, code: 'PHONE_TAKEN' }
+    throw error
+  }
+  return { ok: true }
+}

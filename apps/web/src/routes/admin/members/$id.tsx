@@ -5,16 +5,22 @@ import {
   notFound,
   redirect,
   useNavigate,
+  useRouter,
 } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 
+import { ChangePhoneForm } from '../../../components/admin/change-phone-form.tsx'
 import { MemberEditForm } from '../../../components/admin/member-edit-form.tsx'
 import { langOfMatches } from '../../../lib/i18n/core.ts'
 import type { HeadArgs } from '../../../lib/i18n/core.ts'
 import { useT } from '../../../lib/i18n/index.tsx'
 import { tFor } from '../../../lib/i18n/messages.ts'
 import { memberToEditValues } from '../../../lib/member-form.ts'
-import { getMemberFn, updateMemberFn } from '../../../lib/members.functions.ts'
+import {
+  changeMemberPhoneFn,
+  getMemberFn,
+  updateMemberFn,
+} from '../../../lib/members.functions.ts'
 import { can, canManageMember } from '../../../lib/permissions.ts'
 
 export const Route = createFileRoute('/admin/members/$id')({
@@ -54,6 +60,7 @@ function EditMemberPage() {
   const { id } = Route.useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   // Same rule the server applies (never yourself; only a super admin edits an
   // admin). The server function refuses it too: this just explains instead of
@@ -79,27 +86,51 @@ function EditMemberPage() {
       </p>
 
       {allowed ? (
-        <MemberEditForm
-          initial={memberToEditValues(member)}
-          phone={member.phone}
-          onSubmit={async (values) => {
-            const result = await updateMemberFn({ data: { id, values } })
-            if (!result.ok)
-              return {
-                ok: false,
-                message:
-                  result.code === 'NOT_FOUND'
-                    ? t('memberEdit.gone')
-                    : result.code === 'FORBIDDEN'
-                      ? t('memberEdit.forbidden')
-                      : t('a.invalidForm'),
-              }
-            await queryClient.invalidateQueries({ queryKey: ['members'] })
-            // Back to the list with this member's drawer open, to see the result.
-            await navigate({ to: '/admin/members', search: { member: id } })
-            return { ok: true }
-          }}
-        />
+        <>
+          <MemberEditForm
+            initial={memberToEditValues(member)}
+            phone={member.phone}
+            onSubmit={async (values) => {
+              const result = await updateMemberFn({ data: { id, values } })
+              if (!result.ok)
+                return {
+                  ok: false,
+                  message:
+                    result.code === 'NOT_FOUND'
+                      ? t('memberEdit.gone')
+                      : result.code === 'FORBIDDEN'
+                        ? t('memberEdit.forbidden')
+                        : t('a.invalidForm'),
+                }
+              await queryClient.invalidateQueries({ queryKey: ['members'] })
+              // Back to the list with this member's drawer open, to see the result.
+              await navigate({ to: '/admin/members', search: { member: id } })
+              return { ok: true }
+            }}
+          />
+          {can(actor.role, 'members.changePhone') && (
+            <ChangePhoneForm
+              onSubmit={async (phone) => {
+                const result = await changeMemberPhoneFn({
+                  data: { id, phone },
+                })
+                if (!result.ok)
+                  return {
+                    ok: false,
+                    message:
+                      result.code === 'PHONE_TAKEN'
+                        ? t('memberEdit.phoneTaken')
+                        : result.code === 'NOT_FOUND'
+                          ? t('memberEdit.gone')
+                          : t('memberEdit.phoneInvalid'),
+                  }
+                await queryClient.invalidateQueries({ queryKey: ['members'] })
+                await router.invalidate()
+                return { ok: true }
+              }}
+            />
+          )}
+        </>
       ) : (
         <p
           role="alert"
