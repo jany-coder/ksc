@@ -20,6 +20,7 @@ import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiMembersExportRouteImport } from './routes/api/members-export'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
 import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activities/new'
+import { Route as AdminGalleryIndexRouteImport } from './routes/admin/gallery/index'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
 import { Route as AdminNoticesIndexRouteImport } from './routes/admin/notices/index'
@@ -81,6 +82,11 @@ const AdminActivitiesNewRoute = AdminActivitiesNewRouteImport.update({
   path: '/activities/new',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminGalleryIndexRoute = AdminGalleryIndexRouteImport.update({
+  id: '/gallery/',
+  path: '/gallery/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminMembersIndexRoute = AdminMembersIndexRouteImport.update({
   id: '/members/',
   path: '/members/',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
+  '/admin/gallery/': typeof AdminGalleryIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
   '/admin/notices/': typeof AdminNoticesIndexRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities': typeof AdminActivitiesIndexRoute
+  '/admin/gallery': typeof AdminGalleryIndexRoute
   '/admin/members': typeof AdminMembersIndexRoute
   '/admin/notices': typeof AdminNoticesIndexRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
+  '/admin/gallery/': typeof AdminGalleryIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
   '/admin/notices/': typeof AdminNoticesIndexRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities/'
+    | '/admin/gallery/'
     | '/admin/members/'
     | '/admin/notices/'
     | '/api/media/$id/$size'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities'
+    | '/admin/gallery'
     | '/admin/members'
     | '/admin/notices'
     | '/api/media/$id/$size'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities/'
+    | '/admin/gallery/'
     | '/admin/members/'
     | '/admin/notices/'
     | '/api/media/$id/$size'
@@ -314,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminActivitiesNewRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/gallery/': {
+      id: '/admin/gallery/'
+      path: '/gallery'
+      fullPath: '/admin/gallery/'
+      preLoaderRoute: typeof AdminGalleryIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/members/': {
       id: '/admin/members/'
       path: '/members'
@@ -379,6 +398,7 @@ interface AdminRouteRouteChildren {
   AdminMembersNewRoute: typeof AdminMembersNewRoute
   AdminNoticesNewRoute: typeof AdminNoticesNewRoute
   AdminActivitiesIndexRoute: typeof AdminActivitiesIndexRoute
+  AdminGalleryIndexRoute: typeof AdminGalleryIndexRoute
   AdminMembersIndexRoute: typeof AdminMembersIndexRoute
   AdminNoticesIndexRoute: typeof AdminNoticesIndexRoute
 }
@@ -389,6 +409,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminMembersNewRoute: AdminMembersNewRoute,
   AdminNoticesNewRoute: AdminNoticesNewRoute,
   AdminActivitiesIndexRoute: AdminActivitiesIndexRoute,
+  AdminGalleryIndexRoute: AdminGalleryIndexRoute,
   AdminMembersIndexRoute: AdminMembersIndexRoute,
   AdminNoticesIndexRoute: AdminNoticesIndexRoute,
 }
