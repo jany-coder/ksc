@@ -3,12 +3,13 @@ import '@tanstack/react-start/server-only'
 import { and, desc, ilike, isNull, like, or, sql } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
-import { members } from '../db/schema/index.ts'
+import { auditLog, members } from '../db/schema/index.ts'
+import { memberFormSchema } from './member-form.ts'
 import { MEMBER_STATUSES } from './member-options.ts'
 import type { MemberStatus } from './member-options.ts'
 import { PAGE_SIZE, escapeLike } from './members-query.ts'
 import type { MembersSearch } from './members-query.ts'
-import { toAsciiDigits } from './phone.ts'
+import { normalizePhone, toAsciiDigits } from './phone.ts'
 
 // Read access to member data. Every caller must have checked
 // requirePermission('members.read') FIRST: this file does not check who is
@@ -98,4 +99,71 @@ export async function listMembers(
     page,
     pageSize: PAGE_SIZE,
   }
+}
+
+export type CreateMemberResult =
+  | { ok: true; id: string }
+  | { ok: false; code: 'INVALID_INPUT' | 'PHONE_TAKEN' }
+
+// Postgres reports a duplicate as error code 23505. Drizzle wraps the driver's
+// error, so the code may sit on the error itself or on its `cause`.
+function isUniqueViolation(error: unknown): boolean {
+  const e = error as { code?: string; cause?: { code?: string } } | null
+  return e?.code === '23505' || e?.cause?.code === '23505'
+}
+
+const blankToNull = (text: string) => (text === '' ? null : text)
+
+/**
+ * Add a member (profile only: no login, role always 'member'). `actorId` is the
+ * admin doing it; call requirePermission('members.write') first.
+ *
+ * The member and the audit-log entry are written in ONE batch, which Neon runs
+ * as a single transaction: both are saved or neither is. So a member can never
+ * exist without the record of who added them and recorded their consent.
+ */
+export async function createMember(
+  actorId: string,
+  input: unknown,
+): Promise<CreateMemberResult> {
+  const parsed = memberFormSchema.safeParse(input)
+  if (!parsed.success) return { ok: false, code: 'INVALID_INPUT' }
+  const v = parsed.data
+  const phone = normalizePhone(v.phone)
+  if (!phone) return { ok: false, code: 'INVALID_INPUT' }
+
+  // Chosen here, not by the database, so the audit entry can name the member.
+  const id = crypto.randomUUID()
+
+  try {
+    await db.batch([
+      db.insert(members).values({
+        id,
+        name: v.name,
+        phone,
+        email: blankToNull(v.email.toLowerCase()),
+        bloodGroup: v.bloodGroup === '' ? null : v.bloodGroup,
+        address: blankToNull(v.address),
+        area: blankToNull(v.area),
+        occupation: blankToNull(v.occupation),
+        role: 'member', // never taken from the form
+        status: v.status,
+        willingToDonate: v.willingToDonate,
+        // The database clock, not a time sent by the browser.
+        consentGivenAt: sql`now()`,
+      }),
+      // No personal data in the log: who, what, and which row.
+      db.insert(auditLog).values({
+        actorId,
+        action: 'member.create',
+        targetType: 'member',
+        targetId: id,
+      }),
+    ])
+  } catch (error) {
+    if (isUniqueViolation(error)) return { ok: false, code: 'PHONE_TAKEN' }
+    throw error
+  }
+
+  return { ok: true, id }
 }
