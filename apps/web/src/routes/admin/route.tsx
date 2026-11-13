@@ -1,5 +1,6 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 
+import { AdminShell } from '../../components/admin/admin-shell.tsx'
 import { getCurrentMemberFn } from '../../lib/auth.functions.ts'
 import { can } from '../../lib/permissions.ts'
 
@@ -22,5 +23,14 @@ export const Route = createFileRoute('/admin')({
     if (!can(member.role, 'content.write')) throw redirect({ to: '/' })
     return { member }
   },
-  component: Outlet,
+  component: AdminLayout,
 })
+
+function AdminLayout() {
+  const { member } = Route.useRouteContext()
+  return (
+    <AdminShell member={member}>
+      <Outlet />
+    </AdminShell>
+  )
+}

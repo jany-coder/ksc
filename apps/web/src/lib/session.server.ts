@@ -16,6 +16,9 @@ import type { Action, Role } from './permissions.ts'
 
 export type CurrentMember = {
   id: string
+  // The signed-in person's OWN name, shown in the admin sidebar. Never another
+  // member's data.
+  name: string
   role: Role
   mustChangePassword: boolean
 }
@@ -49,6 +52,7 @@ export async function memberFromHeaders(
   const [member] = await db
     .select({
       id: members.id,
+      name: members.name,
       role: members.role,
       mustChangePassword: members.mustChangePassword,
     })
