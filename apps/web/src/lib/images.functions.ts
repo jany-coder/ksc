@@ -1,7 +1,13 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 
-import { deleteImage, galleryAdminData, listImages } from './images.server.ts'
+import {
+  MAX_CAPTION_LENGTH,
+  deleteImage,
+  galleryAdminData,
+  listImages,
+  setImageCaption,
+} from './images.server.ts'
 import { requirePermission } from './session.server.ts'
 
 export const galleryAdminDataFn = createServerFn({ method: 'GET' }).handler(
@@ -16,6 +22,15 @@ export const deleteImageFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     await requirePermission('content.write')
     return deleteImage(data.id)
+  })
+
+export const setImageCaptionFn = createServerFn({ method: 'POST' })
+  .validator(
+    z.object({ id: z.uuid(), caption: z.string().max(MAX_CAPTION_LENGTH) }),
+  )
+  .handler(async ({ data }) => {
+    await requirePermission('content.write')
+    return setImageCaption(data.id, data.caption)
   })
 
 // Public: deliberately no permission check, because the gallery is public.

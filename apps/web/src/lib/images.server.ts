@@ -92,7 +92,12 @@ export async function saveImage(
   return { ok: true, id }
 }
 
-export type GalleryImage = { id: string; width: number; height: number }
+export type GalleryImage = {
+  id: string
+  width: number
+  height: number
+  caption: string | null
+}
 export type GalleryAdminData = {
   images: GalleryImage[]
   usedBytes: number
@@ -101,7 +106,12 @@ export type GalleryAdminData = {
 
 export async function listImages(limit = 200): Promise<GalleryImage[]> {
   return db
-    .select({ id: images.id, width: images.width, height: images.height })
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+    })
     .from(images)
     .orderBy(desc(images.uploadedAt))
     .limit(limit)
@@ -131,4 +141,22 @@ export async function deleteImage(id: string): Promise<DeleteImageResult> {
 /** The object to send for a public photo URL, or null. Does not touch the database. */
 export function getImageObject(id: string, size: 'full' | 'thumb') {
   return imagesBucket.get(keyFor(id, size))
+}
+
+export const MAX_CAPTION_LENGTH = 200
+
+export type CaptionResult = { ok: true } | { ok: false; code: 'NOT_FOUND' }
+
+/** Set or clear (empty text) a photo's caption. Typed by an admin, shown on the public gallery. */
+export async function setImageCaption(
+  id: string,
+  caption: string,
+): Promise<CaptionResult> {
+  const text = caption.trim().slice(0, MAX_CAPTION_LENGTH)
+  const updated = await db
+    .update(images)
+    .set({ caption: text === '' ? null : text })
+    .where(eq(images.id, id))
+    .returning({ id: images.id })
+  return updated.length > 0 ? { ok: true } : { ok: false, code: 'NOT_FOUND' }
 }

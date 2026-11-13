@@ -56,7 +56,7 @@ function GalleryPage() {
                   width={image.width}
                   height={image.height}
                   loading="lazy"
-                  alt=""
+                  alt={image.caption ?? ''}
                   className="aspect-[4/3] w-full object-cover"
                 />
               </button>
@@ -69,7 +69,7 @@ function GalleryPage() {
 
       {open !== null && (
         <Lightbox
-          ids={images.map((image) => image.id)}
+          photos={images}
           index={open}
           onChange={setOpen}
           onClose={() => setOpen(null)}
@@ -82,12 +82,12 @@ function GalleryPage() {
 // A big photo in the browser's own <dialog>: Esc closes it and focus stays
 // inside while it is open, without hand-written code for either.
 function Lightbox({
-  ids,
+  photos,
   index,
   onChange,
   onClose,
 }: {
-  ids: string[]
+  photos: { id: string; caption: string | null }[]
   index: number
   onChange: (index: number) => void
   onClose: () => void
@@ -99,9 +99,9 @@ function Lightbox({
     if (el && !el.open) el.showModal()
   }, [])
 
-  const last = ids.length - 1
+  const last = photos.length - 1
   const go = (to: number) => onChange(Math.min(last, Math.max(0, to)))
-  const id = ids[index]
+  const photo = photos[index]
 
   return (
     <dialog
@@ -118,12 +118,19 @@ function Lightbox({
       className="m-auto h-dvh max-h-none w-dvw max-w-none bg-transparent p-0 backdrop:bg-black/85"
     >
       <div className="relative flex h-full w-full items-center justify-center p-4 md:p-10">
-        {id && (
-          <img
-            src={imageUrl(id, 'full')}
-            alt=""
-            className="max-h-full max-w-full rounded object-contain"
-          />
+        {photo && (
+          <figure className="flex max-h-full max-w-full flex-col items-center gap-3">
+            <img
+              src={imageUrl(photo.id, 'full')}
+              alt={photo.caption ?? ''}
+              className="min-h-0 max-w-full rounded object-contain"
+            />
+            {photo.caption && (
+              <figcaption className="max-w-[60ch] text-center text-base text-white">
+                {photo.caption}
+              </figcaption>
+            )}
+          </figure>
         )}
         <button
           type="button"

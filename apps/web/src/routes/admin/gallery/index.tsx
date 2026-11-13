@@ -9,8 +9,10 @@ import { Trash2, Upload } from 'lucide-react'
 import { useRef, useState } from 'react'
 
 import { Button } from '../../../components/ui/button.tsx'
+import { Input } from '../../../components/ui/input.tsx'
 import {
   deleteImageFn,
+  setImageCaptionFn,
   galleryAdminDataFn,
 } from '../../../lib/images.functions.ts'
 import {
@@ -281,6 +283,11 @@ function GalleryPage() {
                 alt={t('gal.photoAlt')}
                 className="aspect-square w-full object-cover"
               />
+              <CaptionField
+                id={image.id}
+                initial={image.caption ?? ''}
+                onError={() => setDeleteError(t('gal.captionError'))}
+              />
               <Button
                 type="button"
                 variant="destructive"
@@ -304,5 +311,46 @@ function GalleryPage() {
         </p>
       )}
     </main>
+  )
+}
+
+// Saves when the box loses focus, and only if the text changed.
+function CaptionField({
+  id,
+  initial,
+  onError,
+}: {
+  id: string
+  initial: string
+  onError: () => void
+}) {
+  const t = useT()
+  const queryClient = useQueryClient()
+  const [text, setText] = useState(initial)
+  const [saved, setSaved] = useState(initial)
+
+  async function save() {
+    if (text.trim() === saved.trim()) return
+    try {
+      await setImageCaptionFn({ data: { id, caption: text } })
+      setSaved(text)
+      await queryClient.invalidateQueries({ queryKey: ['images'] })
+    } catch {
+      onError()
+    }
+  }
+
+  return (
+    <div className="p-2">
+      <Input
+        value={text}
+        maxLength={200}
+        aria-label={t('gal.captionLabel')}
+        placeholder={t('gal.captionPlaceholder')}
+        onChange={(event) => setText(event.target.value)}
+        onBlur={() => void save()}
+        className="h-8 text-[13px]"
+      />
+    </div>
   )
 }

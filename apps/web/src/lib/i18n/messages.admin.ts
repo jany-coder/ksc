@@ -523,6 +523,15 @@ export const adminMessages = {
   'gal.working': { bn: 'প্রক্রিয়া চলছে…', en: 'Working…' },
   'gal.done': { bn: 'হয়েছে', en: 'Done' },
   'gal.photoAlt': { bn: 'ক্লাবের ছবি', en: 'Club photo' },
+  'gal.captionLabel': { bn: 'ছবির ক্যাপশন', en: 'Photo caption' },
+  'gal.captionPlaceholder': {
+    bn: 'ক্যাপশন (ঐচ্ছিক)',
+    en: 'Caption (optional)',
+  },
+  'gal.captionError': {
+    bn: 'ক্যাপশন সংরক্ষণ করা গেল না।',
+    en: 'Could not save the caption.',
+  },
   'gal.deleteAria': { bn: 'ছবিটি মুছুন', en: 'Delete this photo' },
   'gal.deleteConfirm': {
     bn: 'ছবিটি স্থায়ীভাবে মুছে ফেলবেন?',
