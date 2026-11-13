@@ -15,6 +15,7 @@
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
     "lint": "eslint .",
+    "seed:super-admin": "node --env-file=.env scripts/seed-super-admin.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
