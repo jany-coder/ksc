@@ -26,6 +26,7 @@ import { Route as AdminGalleryIndexRouteImport } from './routes/admin/gallery/in
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
 import { Route as AdminNoticesIndexRouteImport } from './routes/admin/notices/index'
+import { Route as AdminNoticesIdRouteImport } from './routes/admin/notices/$id'
 import { Route as AdminNoticesNewRouteImport } from './routes/admin/notices/new'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiMediaIdSizeRouteImport } from './routes/api/media/$id.$size'
@@ -114,6 +115,11 @@ const AdminNoticesIndexRoute = AdminNoticesIndexRouteImport.update({
   path: '/notices/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminNoticesIdRoute = AdminNoticesIdRouteImport.update({
+  id: '/notices/$id',
+  path: '/notices/$id',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminNoticesNewRoute = AdminNoticesNewRouteImport.update({
   id: '/notices/new',
   path: '/notices/new',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities': typeof AdminActivitiesIndexRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
@@ -209,6 +218,7 @@ export interface FileRouteTypes {
     | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/new'
+    | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities/'
@@ -229,6 +239,7 @@ export interface FileRouteTypes {
     | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/new'
+    | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/new'
+    | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities/'
@@ -392,6 +404,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNoticesIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/notices/$id': {
+      id: '/admin/notices/$id'
+      path: '/notices/$id'
+      fullPath: '/admin/notices/$id'
+      preLoaderRoute: typeof AdminNoticesIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/notices/new': {
       id: '/admin/notices/new'
       path: '/notices/new'
@@ -437,6 +456,7 @@ interface AdminRouteRouteChildren {
   AdminActivitiesIdRoute: typeof AdminActivitiesIdRoute
   AdminActivitiesNewRoute: typeof AdminActivitiesNewRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
+  AdminNoticesIdRoute: typeof AdminNoticesIdRoute
   AdminNoticesNewRoute: typeof AdminNoticesNewRoute
   AdminActivitiesIndexRoute: typeof AdminActivitiesIndexRoute
   AdminGalleryIndexRoute: typeof AdminGalleryIndexRoute
@@ -449,6 +469,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminActivitiesIdRoute: AdminActivitiesIdRoute,
   AdminActivitiesNewRoute: AdminActivitiesNewRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,
+  AdminNoticesIdRoute: AdminNoticesIdRoute,
   AdminNoticesNewRoute: AdminNoticesNewRoute,
   AdminActivitiesIndexRoute: AdminActivitiesIndexRoute,
   AdminGalleryIndexRoute: AdminGalleryIndexRoute,

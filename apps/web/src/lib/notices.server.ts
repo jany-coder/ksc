@@ -6,6 +6,7 @@ import { db } from '../db/index.ts'
 import { notices } from '../db/schema/index.ts'
 import { formatBnDate } from './bn-datetime.ts'
 import { noticeFormSchema } from './notice-form.ts'
+import type { NoticeFormInput } from './notice-form.ts'
 
 // --- Admin side: callers must have checked requirePermission('content.write') ---
 
@@ -34,6 +35,59 @@ export async function createNotice(
     })
     .returning({ id: notices.id })
   return { ok: true, id: row!.id }
+}
+
+/** One notice's values, shaped for the edit form. Null if it does not exist. */
+export async function getNotice(id: string): Promise<NoticeFormInput | null> {
+  const [row] = await db
+    .select({
+      title: notices.title,
+      body: notices.body,
+      urgent: notices.urgent,
+      status: notices.status,
+    })
+    .from(notices)
+    .where(eq(notices.id, id))
+    .limit(1)
+  return row ?? null
+}
+
+export type UpdateNoticeResult =
+  { ok: true } | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' }
+
+export async function updateNotice(
+  id: string,
+  input: unknown,
+): Promise<UpdateNoticeResult> {
+  const parsed = noticeFormSchema.safeParse(input)
+  if (!parsed.success) return { ok: false, code: 'INVALID_INPUT' }
+  const v = parsed.data
+  const rows = await db
+    .update(notices)
+    .set({
+      title: v.title,
+      body: v.body,
+      urgent: v.urgent,
+      status: v.status,
+      // First publication stamps the time; later edits and a switch back to
+      // draft keep it as it was.
+      ...(v.status === 'published'
+        ? { publishedAt: sql`coalesce(${notices.publishedAt}, now())` }
+        : {}),
+    })
+    .where(eq(notices.id, id))
+    .returning({ id: notices.id })
+  return rows.length > 0 ? { ok: true } : { ok: false, code: 'NOT_FOUND' }
+}
+
+export type DeleteNoticeResult = { ok: true } | { ok: false; code: 'NOT_FOUND' }
+
+export async function deleteNotice(id: string): Promise<DeleteNoticeResult> {
+  const rows = await db
+    .delete(notices)
+    .where(eq(notices.id, id))
+    .returning({ id: notices.id })
+  return rows.length > 0 ? { ok: true } : { ok: false, code: 'NOT_FOUND' }
 }
 
 export type NoticeRow = {
