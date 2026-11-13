@@ -19,6 +19,8 @@ import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activit
 import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activities/new'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
+import { Route as AdminNoticesIndexRouteImport } from './routes/admin/notices/index'
+import { Route as AdminNoticesNewRouteImport } from './routes/admin/notices/new'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
@@ -70,6 +72,16 @@ const AdminMembersNewRoute = AdminMembersNewRouteImport.update({
   path: '/members/new',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminNoticesIndexRoute = AdminNoticesIndexRouteImport.update({
+  id: '/notices/',
+  path: '/notices/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminNoticesNewRoute = AdminNoticesNewRouteImport.update({
+  id: '/notices/new',
+  path: '/notices/new',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -84,9 +96,11 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
+  '/admin/notices/': typeof AdminNoticesIndexRoute
 }
 export interface FileRoutesByTo {
   '/change-password': typeof ChangePasswordRoute
@@ -95,9 +109,11 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities': typeof AdminActivitiesIndexRoute
   '/admin/members': typeof AdminMembersIndexRoute
+  '/admin/notices': typeof AdminNoticesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -109,9 +125,11 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
+  '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
+  '/admin/notices/': typeof AdminNoticesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -123,9 +141,11 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/activities/new'
     | '/admin/members/new'
+    | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities/'
     | '/admin/members/'
+    | '/admin/notices/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/change-password'
@@ -134,9 +154,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/activities/new'
     | '/admin/members/new'
+    | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities'
     | '/admin/members'
+    | '/admin/notices'
   id:
     | '__root__'
     | '/_public'
@@ -147,9 +169,11 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/activities/new'
     | '/admin/members/new'
+    | '/admin/notices/new'
     | '/api/auth/$'
     | '/admin/activities/'
     | '/admin/members/'
+    | '/admin/notices/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -232,6 +256,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMembersNewRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/notices/': {
+      id: '/admin/notices/'
+      path: '/notices'
+      fullPath: '/admin/notices/'
+      preLoaderRoute: typeof AdminNoticesIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/notices/new': {
+      id: '/admin/notices/new'
+      path: '/notices/new'
+      fullPath: '/admin/notices/new'
+      preLoaderRoute: typeof AdminNoticesNewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -258,16 +296,20 @@ interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminActivitiesNewRoute: typeof AdminActivitiesNewRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
+  AdminNoticesNewRoute: typeof AdminNoticesNewRoute
   AdminActivitiesIndexRoute: typeof AdminActivitiesIndexRoute
   AdminMembersIndexRoute: typeof AdminMembersIndexRoute
+  AdminNoticesIndexRoute: typeof AdminNoticesIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminActivitiesNewRoute: AdminActivitiesNewRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,
+  AdminNoticesNewRoute: AdminNoticesNewRoute,
   AdminActivitiesIndexRoute: AdminActivitiesIndexRoute,
   AdminMembersIndexRoute: AdminMembersIndexRoute,
+  AdminNoticesIndexRoute: AdminNoticesIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

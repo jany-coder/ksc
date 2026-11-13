@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { listUpcomingActivitiesFn } from '../../lib/activities.functions.ts'
+import { listPublicNoticesFn } from '../../lib/notices.functions.ts'
 import { About } from '../../components/public/home/about.tsx'
 import { GalleryTeaser } from '../../components/public/home/gallery-teaser.tsx'
 import { Hero } from '../../components/public/home/hero.tsx'
@@ -21,20 +22,27 @@ export const Route = createFileRoute('/_public/')({
       },
     ],
   }),
-  // Public data for every visitor: published activities happening today or later.
-  loader: () => listUpcomingActivitiesFn(),
+  // Public data for every visitor: published activities happening today or
+  // later, and published notices.
+  loader: async () => {
+    const [upcoming, notices] = await Promise.all([
+      listUpcomingActivitiesFn(),
+      listPublicNoticesFn(),
+    ])
+    return { upcoming, notices }
+  },
   component: Home,
 })
 
 function Home() {
-  const upcoming = Route.useLoaderData()
+  const { upcoming, notices } = Route.useLoaderData()
   return (
     <main>
       <Hero />
       <QuickActions />
       <WhatWeDo />
       <UpcomingActivities items={upcoming} />
-      <NoticeBoard />
+      <NoticeBoard items={notices} />
       <GalleryTeaser />
       <About />
       <Join />

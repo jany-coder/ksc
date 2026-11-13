@@ -26,7 +26,7 @@ type Props = {
 type NavItem = {
   label: string
   icon: LucideIcon
-  to?: '/admin' | '/admin/members' | '/admin/activities'
+  to?: '/admin' | '/admin/members' | '/admin/activities' | '/admin/notices'
 }
 const NAV: NavItem[] = [
   { label: 'ড্যাশবোর্ড', icon: LayoutDashboard, to: '/admin' },
@@ -34,7 +34,7 @@ const NAV: NavItem[] = [
   { label: 'রক্তদাতা', icon: Droplet },
   { label: 'কার্যক্রম', icon: CalendarDays, to: '/admin/activities' },
   { label: 'গ্যালারি', icon: Image },
-  { label: 'নোটিশ', icon: Bell },
+  { label: 'নোটিশ', icon: Bell, to: '/admin/notices' },
   { label: 'সেটিংস', icon: Settings },
 ]
 
