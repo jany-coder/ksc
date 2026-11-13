@@ -5,55 +5,41 @@ import { useForm } from 'react-hook-form'
 
 import { Button } from '../../components/ui/button.tsx'
 import { CheckboxField } from '../../components/ui/checkbox-field.tsx'
+import { FieldError } from '../../components/ui/field-error.tsx'
 import { Input } from '../../components/ui/input.tsx'
 import { Label } from '../../components/ui/label.tsx'
 import { NativeSelect } from '../../components/ui/native-select.tsx'
 import { applicationFormSchema } from '../../lib/application-form.ts'
 import type { ApplicationFormInput } from '../../lib/application-form.ts'
 import { submitApplicationFn } from '../../lib/applications.functions.ts'
+import { useLocaleParams, useT } from '../../lib/i18n/index.tsx'
+import { tFor } from '../../lib/i18n/messages.ts'
 import { BLOOD_GROUPS, bloodLabel } from '../../lib/member-options.ts'
 
-export const Route = createFileRoute('/_public/join')({
-  head: () => ({
-    meta: [
-      { title: 'সদস্য হওয়ার আবেদন — কলমা সোশ্যাল ক্লাব' },
-      {
-        name: 'description',
-        content:
-          'কলমা সোশ্যাল ক্লাবের সদস্য হতে আবেদন করুন। আপনার তথ্য শুধু ক্লাবের অ্যাডমিন দেখতে পান।',
-      },
-    ],
-  }),
+export const Route = createFileRoute('/{-$locale}/join')({
+  head: ({ params }) => {
+    const t = tFor(params.locale === 'en' ? 'en' : 'bn')
+    return {
+      meta: [
+        { title: t('apply.pageTitle') },
+        { name: 'description', content: t('apply.description') },
+      ],
+    }
+  },
   component: JoinPage,
 })
 
-// The consent wording. It is a legal statement, so it lives in ONE place and
-// should be reviewed by the club (and a lawyer, if the club wants one) before
-// the form goes live. Nobody involved in building this is a lawyer.
-const CONSENT_LABEL =
-  'আমি নিজের নাম, ফোন নম্বর, ঠিকানা ও রক্তের গ্রুপ ক্লাবের রেকর্ডে রাখার সম্মতি দিচ্ছি।'
-const CONSENT_NOTE =
-  'এই তথ্য শুধু ক্লাবের অ্যাডমিন দেখতে পান। ওয়েবসাইটে বা অন্য সদস্যদের কাছে কোথাও প্রকাশ হয় না।'
+// The consent wording lives in the messages (apply.consent / apply.consentNote),
+// in ONE place, and should be reviewed by the club (and a lawyer, if the club
+// wants one) before the form goes live. Nobody building this is a lawyer.
 
 // Larger than the admin panel: the audience includes older readers.
 const fieldClass = 'h-11 text-[17px]'
 const labelClass = 'text-[17px]'
 
-function FieldError({
-  id,
-  message,
-}: {
-  id: string
-  message?: string | undefined
-}) {
-  return message ? (
-    <p id={id} className="text-base text-red-700">
-      {message}
-    </p>
-  ) : null
-}
-
 function JoinPage() {
+  const t = useT()
+  const localeParams = useLocaleParams()
   const [done, setDone] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const {
@@ -85,11 +71,11 @@ function JoinPage() {
       }
       setFormError(
         result.code === 'TRY_LATER'
-          ? 'এখন অনেক আবেদন জমা পড়ছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।'
-          : 'তথ্য ঠিক নেই। ফর্মটি আবার দেখে নিন।',
+          ? t('apply.errorTryLater')
+          : t('apply.errorInvalid'),
       )
     } catch {
-      setFormError('আবেদন জমা দেওয়া গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setFormError(t('apply.errorNetwork'))
     }
   }
 
@@ -102,16 +88,17 @@ function JoinPage() {
     return (
       <main className="mx-auto w-full max-w-[720px] px-5 py-14 md:px-8 md:py-20">
         <h1 className="mb-4 text-[28px] font-bold text-brand-deep md:text-[40px]">
-          আবেদন পেয়েছি
+          {t('apply.doneTitle')}
         </h1>
         <p className="mb-6 text-[17px] leading-[1.7] text-copy md:text-[19px]">
-          ধন্যবাদ। আমাদের কমিটি যাচাই করে আপনার সাথে যোগাযোগ করবে।
+          {t('apply.doneText')}
         </p>
         <Link
-          to="/"
+          to="/{-$locale}"
+          params={localeParams}
           className="text-[17px] font-semibold text-primary underline-offset-2 hover:underline"
         >
-          হোমপেজে ফিরে যান
+          {t('apply.backHome')}
         </Link>
       </main>
     )
@@ -120,11 +107,10 @@ function JoinPage() {
   return (
     <main className="mx-auto w-full max-w-[720px] px-5 py-12 md:px-8 md:py-16">
       <h1 className="mb-3 text-[28px] font-bold text-brand-deep md:text-[40px]">
-        সদস্য হওয়ার আবেদন
+        {t('apply.title')}
       </h1>
       <p className="mb-8 text-[17px] leading-[1.7] text-copy md:text-[19px]">
-        ফর্মটি পূরণ করুন। আমাদের কমিটি যাচাই করে আপনার সাথে যোগাযোগ করবে। * চিহ্নিত
-        ঘর পূরণ করা আবশ্যক।
+        {t('apply.lead')}
       </p>
 
       <form
@@ -134,7 +120,7 @@ function JoinPage() {
       >
         <div className="space-y-1.5">
           <Label htmlFor="name" className={labelClass}>
-            নাম *
+            {t('apply.name')}
           </Label>
           <Input
             id="name"
@@ -144,12 +130,16 @@ function JoinPage() {
             aria-describedby={describedBy('name')}
             {...register('name')}
           />
-          <FieldError id="name-error" message={errors.name?.message} />
+          <FieldError
+            className="text-base text-red-700"
+            id="name-error"
+            message={errors.name?.message}
+          />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="phone" className={labelClass}>
-            মোবাইল নম্বর *
+            {t('apply.phone')}
           </Label>
           <Input
             id="phone"
@@ -162,19 +152,23 @@ function JoinPage() {
             aria-describedby={describedBy('phone')}
             {...register('phone')}
           />
-          <FieldError id="phone-error" message={errors.phone?.message} />
+          <FieldError
+            className="text-base text-red-700"
+            id="phone-error"
+            message={errors.phone?.message}
+          />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="bloodGroup" className={labelClass}>
-            রক্তের গ্রুপ
+            {t('apply.blood')}
           </Label>
           <NativeSelect
             id="bloodGroup"
             className={fieldClass}
             {...register('bloodGroup')}
           >
-            <option value="">জানি না / বলতে চাই না</option>
+            <option value="">{t('apply.bloodUnknown')}</option>
             {BLOOD_GROUPS.map((g) => (
               <option key={g} value={g}>
                 {bloodLabel(g)}
@@ -184,14 +178,14 @@ function JoinPage() {
         </div>
 
         <CheckboxField
-          label="প্রয়োজনে রক্ত দিতে আগ্রহী"
+          label={t('apply.willing')}
           className="text-[17px]"
           {...register('willingToDonate')}
         />
 
         <div className="space-y-1.5">
           <Label htmlFor="address" className={labelClass}>
-            ঠিকানা
+            {t('apply.address')}
           </Label>
           <Input
             id="address"
@@ -201,13 +195,17 @@ function JoinPage() {
             aria-describedby={describedBy('address')}
             {...register('address')}
           />
-          <FieldError id="address-error" message={errors.address?.message} />
+          <FieldError
+            className="text-base text-red-700"
+            id="address-error"
+            message={errors.address?.message}
+          />
         </div>
 
         <div className="flex flex-wrap gap-5">
           <div className="min-w-0 flex-[1_1_220px] space-y-1.5">
             <Label htmlFor="area" className={labelClass}>
-              এলাকা
+              {t('apply.area')}
             </Label>
             <Input
               id="area"
@@ -216,11 +214,15 @@ function JoinPage() {
               aria-describedby={describedBy('area')}
               {...register('area')}
             />
-            <FieldError id="area-error" message={errors.area?.message} />
+            <FieldError
+              className="text-base text-red-700"
+              id="area-error"
+              message={errors.area?.message}
+            />
           </div>
           <div className="min-w-0 flex-[1_1_220px] space-y-1.5">
             <Label htmlFor="occupation" className={labelClass}>
-              পেশা
+              {t('apply.occupation')}
             </Label>
             <Input
               id="occupation"
@@ -230,6 +232,7 @@ function JoinPage() {
               {...register('occupation')}
             />
             <FieldError
+              className="text-base text-red-700"
               id="occupation-error"
               message={errors.occupation?.message}
             />
@@ -243,7 +246,7 @@ function JoinPage() {
           className="pointer-events-none absolute -start-[9999px] h-0 w-0 overflow-hidden"
         >
           <label>
-            ওয়েবসাইট (ফাঁকা রাখুন)
+            {t('apply.honeypot')}
             <input
               type="text"
               tabIndex={-1}
@@ -255,14 +258,18 @@ function JoinPage() {
 
         <div className="space-y-1.5 rounded-lg border border-line bg-panel p-4">
           <CheckboxField
-            label={CONSENT_LABEL}
-            description={CONSENT_NOTE}
+            label={t('apply.consent')}
+            description={t('apply.consentNote')}
             className="text-[17px]"
             aria-invalid={invalid('consent')}
             aria-describedby={describedBy('consent')}
             {...register('consent')}
           />
-          <FieldError id="consent-error" message={errors.consent?.message} />
+          <FieldError
+            className="text-base text-red-700"
+            id="consent-error"
+            message={errors.consent?.message}
+          />
         </div>
 
         {formError && (
@@ -280,7 +287,7 @@ function JoinPage() {
           className="h-12 self-start text-[17px]"
           disabled={isSubmitting}
         >
-          {isSubmitting ? 'অপেক্ষা করুন…' : 'আবেদন জমা দিন'}
+          {isSubmitting ? t('apply.wait') : t('apply.submit')}
         </Button>
       </form>
     </main>

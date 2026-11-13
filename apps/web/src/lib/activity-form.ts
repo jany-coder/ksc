@@ -45,20 +45,20 @@ export const activityFormSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(1, 'শিরোনাম লিখুন')
-    .max(150, 'শিরোনাম অনেক বেশি লম্বা'),
-  description: z.string().trim().max(5000, 'বিবরণ অনেক বেশি লম্বা'),
+    .min(1, 'val.titleRequired')
+    .max(150, 'val.titleTooLong'),
+  description: z.string().trim().max(5000, 'val.descriptionTooLong'),
   category: z.union([z.enum(ACTIVITY_CATEGORIES), z.literal('')]),
   eventDate: z
     .string()
-    .refine((v) => v === '' || isRealDate(v), 'সঠিক তারিখ দিন'),
+    .refine((v) => v === '' || isRealDate(v), 'val.dateInvalid'),
   eventTime: z
     .string()
     .refine(
       (v) => v === '' || /^([01]\d|2[0-3]):[0-5]\d$/.test(v),
-      'সঠিক সময় দিন',
+      'val.timeInvalid',
     ),
-  location: z.string().trim().max(200, 'স্থানের নাম অনেক বেশি লম্বা'),
+  location: z.string().trim().max(200, 'val.locationTooLong'),
   status: z.enum(ACTIVITY_STATUSES),
   featured: z.boolean(),
   // A gallery photo shown on the activity's card; '' means none.

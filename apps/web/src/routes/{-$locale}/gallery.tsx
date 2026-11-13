@@ -4,17 +4,19 @@ import { useEffect, useRef, useState } from 'react'
 
 import { listPublicImagesFn } from '../../lib/images.functions.ts'
 import { imageUrl } from '../../lib/image-limits.ts'
+import { useNumber, useT } from '../../lib/i18n/index.tsx'
+import { tFor } from '../../lib/i18n/messages.ts'
 
-export const Route = createFileRoute('/_public/gallery')({
-  head: () => ({
-    meta: [
-      { title: 'গ্যালারি — কলমা সোশ্যাল ক্লাব' },
-      {
-        name: 'description',
-        content: 'কলমা সোশ্যাল ক্লাবের কার্যক্রমের ছবি।',
-      },
-    ],
-  }),
+export const Route = createFileRoute('/{-$locale}/gallery')({
+  head: ({ params }) => {
+    const t = tFor(params.locale === 'en' ? 'en' : 'bn')
+    return {
+      meta: [
+        { title: t('gallery.pageTitle') },
+        { name: 'description', content: t('gallery.description') },
+      ],
+    }
+  },
   loader: () => listPublicImagesFn({ data: { limit: 100 } }),
   component: GalleryPage,
 })
@@ -24,16 +26,18 @@ const iconButton =
 
 function GalleryPage() {
   const images = Route.useLoaderData()
+  const t = useT()
+  const number = useNumber()
   // Index of the photo shown large, or null when the lightbox is closed.
   const [open, setOpen] = useState<number | null>(null)
 
   return (
     <main className="mx-auto w-full max-w-[1180px] px-5 py-12 md:px-8 md:py-16">
       <h1 className="mb-3 text-[28px] font-bold text-brand-deep md:text-[40px]">
-        গ্যালারি
+        {t('gallery.title')}
       </h1>
       <p className="mb-8 text-[17px] leading-[1.7] text-copy md:text-[19px]">
-        আমাদের কার্যক্রমের মুহূর্তগুলো। বড় করে দেখতে ছবিতে ক্লিক করুন।
+        {t('gallery.lead')}
       </p>
 
       {images.length > 0 ? (
@@ -44,7 +48,7 @@ function GalleryPage() {
               <button
                 type="button"
                 onClick={() => setOpen(index)}
-                aria-label={`ছবি ${index + 1} বড় করে দেখুন`}
+                aria-label={t('gallery.openPhoto', { n: number(index + 1) })}
                 className="block w-full cursor-zoom-in overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <img
@@ -60,7 +64,7 @@ function GalleryPage() {
           ))}
         </ul>
       ) : (
-        <p className="text-[17px] text-copy">এখনো কোনো ছবি যোগ হয়নি।</p>
+        <p className="text-[17px] text-copy">{t('gallery.empty')}</p>
       )}
 
       {open !== null && (
@@ -88,6 +92,7 @@ function Lightbox({
   onChange: (index: number) => void
   onClose: () => void
 }) {
+  const t = useT()
   const dialog = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     const el = dialog.current
@@ -101,7 +106,7 @@ function Lightbox({
   return (
     <dialog
       ref={dialog}
-      aria-label="বড় ছবি"
+      aria-label={t('gallery.bigPhoto')}
       onClose={onClose}
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft') go(index - 1)
@@ -122,7 +127,7 @@ function Lightbox({
         )}
         <button
           type="button"
-          aria-label="বন্ধ করুন"
+          aria-label={t('gallery.close')}
           onClick={() => dialog.current?.close()}
           className={`${iconButton} absolute end-4 top-4`}
         >
@@ -131,7 +136,7 @@ function Lightbox({
         {index > 0 && (
           <button
             type="button"
-            aria-label="আগের ছবি"
+            aria-label={t('gallery.prev')}
             onClick={() => go(index - 1)}
             className={`${iconButton} absolute start-4 top-1/2 -translate-y-1/2`}
           >
@@ -141,7 +146,7 @@ function Lightbox({
         {index < last && (
           <button
             type="button"
-            aria-label="পরের ছবি"
+            aria-label={t('gallery.next')}
             onClick={() => go(index + 1)}
             className={`${iconButton} absolute end-4 top-1/2 -translate-y-1/2`}
           >

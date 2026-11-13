@@ -1,10 +1,13 @@
 import { Link } from '@tanstack/react-router'
 
+import { useT } from '../../lib/i18n/index.tsx'
+
 // Address, email and Facebook are the club's real details from CLAUDE.md. The
 // phone number is not known yet, so it stays a visible placeholder.
 const linkClass = 'text-mint underline-offset-2 hover:underline'
 
 export function SiteFooter() {
+  const t = useT()
   return (
     <footer className="bg-footer pt-14 pb-10 text-[#c3cfc8]">
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
@@ -19,30 +22,30 @@ export function SiteFooter() {
                 className="h-[35px] w-11 object-contain"
               />
               <span className="font-heading text-xl font-bold text-background">
-                কলমা সোশ্যাল ক্লাব
+                {t('site.name')}
               </span>
             </div>
             <p className="max-w-[44ch] text-[17px] leading-relaxed">
-              একসাথে, এক সুন্দর আগামীর জন্য।
+              {t('site.tagline')}
             </p>
           </div>
 
           <div className="min-w-0 flex-[1_1_220px]">
             <h3 className="mb-3.5 text-[17px] font-semibold text-background">
-              ঠিকানা
+              {t('footer.address')}
             </h3>
             <p className="text-[17px] leading-[1.8]">
-              গ্রাম: কলমা ১ (আমতলা)
+              {t('footer.village')}
               <br />
-              ডাকঘর: ডেইরি ফার্ম
+              {t('footer.post')}
               <br />
-              থানা: সাভার, ঢাকা
+              {t('footer.thana')}
             </p>
           </div>
 
           <div className="min-w-0 flex-[1_1_220px]">
             <h3 className="mb-3.5 text-[17px] font-semibold text-background">
-              যোগাযোগ
+              {t('footer.contact')}
             </h3>
             <p className="text-[17px] leading-[1.8]">
               <a
@@ -52,26 +55,26 @@ export function SiteFooter() {
                 kalmasocialclub24@gmail.com
               </a>
               <br />
-              মোবাইল: [নম্বর দিন]
+              {t('footer.mobile')}
               <br />
               <a
                 href="https://www.facebook.com/profile.php?id=100068969464914"
                 className={linkClass}
                 rel="noopener noreferrer"
               >
-                ফেসবুক পেজ
+                {t('footer.facebook')}
               </a>
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap justify-between gap-4 border-t border-[#2a3831] pt-6 text-[15px]">
-          <span>© ২০২৬ কলমা সোশ্যাল ক্লাব</span>
+          <span>{t('footer.copyright')}</span>
           <Link
             to="/login"
             className="text-mint underline-offset-2 hover:underline"
           >
-            অ্যাডমিন লগইন
+            {t('footer.adminLogin')}
           </Link>
         </div>
       </div>

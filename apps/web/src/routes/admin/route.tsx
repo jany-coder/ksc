@@ -20,7 +20,8 @@ export const Route = createFileRoute('/admin')({
     // Temporary password: nothing else is reachable until it is replaced.
     if (member.mustChangePassword) throw redirect({ to: '/change-password' })
     // Signed in but not staff (a plain member): nothing for them here.
-    if (!can(member.role, 'content.write')) throw redirect({ to: '/' })
+    if (!can(member.role, 'content.write'))
+      throw redirect({ to: '/{-$locale}' })
     return { member }
   },
   component: AdminLayout,

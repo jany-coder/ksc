@@ -1,24 +1,30 @@
 import { Link } from '@tanstack/react-router'
 
+import { useLocaleParams, useNumber, useT } from '../../../lib/i18n/index.tsx'
+import type { MessageKey } from '../../../lib/i18n/messages.ts'
+
 // A taste of the gallery, on the dark section. Photos come in as props; until
 // real ones are uploaded, six placeholder tiles keep the grid. The link to the
-// full gallery (/gallery) shows only once there are photos to see.
+// full gallery shows only once there are photos to see.
 export type GalleryPhoto = {
   id: string
-  caption: string
   thumbUrl: string
 }
 
-const PLACEHOLDERS = [
-  'রক্তদান ক্যাম্প',
-  'ত্রাণ বিতরণ',
-  'খেলাধুলা',
-  'সাধারণ সভা',
-  'শিক্ষা সহায়তা',
-  'পরিচ্ছন্নতা অভিযান',
+const PLACEHOLDERS: MessageKey[] = [
+  'teaser.p1',
+  'teaser.p2',
+  'teaser.p3',
+  'teaser.p4',
+  'teaser.p5',
+  'teaser.p6',
 ]
 
 export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
+  const t = useT()
+  const number = useNumber()
+  const localeParams = useLocaleParams()
+
   return (
     <section
       id="gallery"
@@ -27,10 +33,10 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
         <div className="mb-9 md:mb-11">
           <h2 className="mb-2.5 text-[28px] font-bold text-background md:text-[40px]">
-            কাজের ছবি
+            {t('teaser.title')}
           </h2>
           <p className="text-[17px] text-mint-muted md:text-[19px]">
-            আমাদের কার্যক্রমের মুহূর্তগুলো
+            {t('teaser.lead')}
           </p>
         </div>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(260px,100%),1fr))] gap-4">
@@ -39,7 +45,7 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
                 <img
                   key={photo.id}
                   src={photo.thumbUrl}
-                  alt={photo.caption}
+                  alt={t('teaser.photoAlt')}
                   loading="lazy"
                   className="h-[230px] w-full rounded-lg object-cover"
                 />
@@ -49,16 +55,20 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
                   key={label}
                   className="flex h-[230px] items-center justify-center rounded-lg border border-mint-line bg-[#164a35] p-3 text-center text-sm text-mint-muted"
                 >
-                  ছবি {['১', '২', '৩', '৪', '৫', '৬'][i]} — [{label}]
+                  {t('teaser.placeholder', {
+                    n: number(i + 1),
+                    label: t(label),
+                  })}
                 </div>
               ))}
         </div>
         {photos.length > 0 && (
           <Link
-            to="/gallery"
+            to="/{-$locale}/gallery"
+            params={localeParams}
             className="mt-8 inline-block text-[17px] font-semibold text-background underline underline-offset-4 hover:text-mint-muted"
           >
-            সব ছবি দেখুন
+            {t('teaser.seeAll')}
           </Link>
         )}
       </div>

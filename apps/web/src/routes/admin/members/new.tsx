@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form'
 
 import { Button, buttonVariants } from '../../../components/ui/button.tsx'
 import { CheckboxField } from '../../../components/ui/checkbox-field.tsx'
+import { FieldError } from '../../../components/ui/field-error.tsx'
 import { Input } from '../../../components/ui/input.tsx'
 import { Label } from '../../../components/ui/label.tsx'
 import { NativeSelect } from '../../../components/ui/native-select.tsx'
@@ -43,20 +44,6 @@ export const Route = createFileRoute('/admin/members/new')({
 const CONSENT_LABEL =
   'সদস্য নিজে তাঁর নাম, ফোন নম্বর, ঠিকানা ও রক্তের গ্রুপ ক্লাবের রেকর্ডে রাখার সম্মতি দিয়েছেন।'
 const CONSENT_NOTE = 'এই তথ্য শুধু অ্যাডমিন দেখতে পান, ওয়েবসাইটে কোথাও প্রকাশ হয় না।'
-
-function FieldError({
-  id,
-  message,
-}: {
-  id: string
-  message?: string | undefined
-}) {
-  return message ? (
-    <p id={id} className="text-sm text-red-700">
-      {message}
-    </p>
-  ) : null
-}
 
 function NewMemberPage() {
   const navigate = useNavigate()

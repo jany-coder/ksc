@@ -12,6 +12,7 @@ import {
 import type { NoticeFormInput } from '../../lib/notice-form.ts'
 import { Button, buttonVariants } from '../ui/button.tsx'
 import { CheckboxField } from '../ui/checkbox-field.tsx'
+import { FieldError } from '../ui/field-error.tsx'
 import { Input } from '../ui/input.tsx'
 import { Label } from '../ui/label.tsx'
 import { NativeSelect } from '../ui/native-select.tsx'
@@ -19,20 +20,6 @@ import { Textarea } from '../ui/textarea.tsx'
 
 // The notice form, shared by "new" and "edit".
 export type NoticeFormResult = { ok: true } | { ok: false; message: string }
-
-function FieldError({
-  id,
-  message,
-}: {
-  id: string
-  message?: string | undefined
-}) {
-  return message ? (
-    <p id={id} className="text-sm text-red-700">
-      {message}
-    </p>
-  ) : null
-}
 
 const card = 'rounded-[10px] border border-border bg-card p-5'
 

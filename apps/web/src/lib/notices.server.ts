@@ -4,7 +4,6 @@ import { desc, eq, sql } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
 import { notices } from '../db/schema/index.ts'
-import { formatBnDate } from './bn-datetime.ts'
 import { noticeFormSchema } from './notice-form.ts'
 import type { NoticeFormInput } from './notice-form.ts'
 
@@ -126,7 +125,8 @@ export type PublicNotice = {
   id: string
   title: string
   body: string
-  dateLabel: string
+  // "YYYY-MM-DD" (Dhaka day): the page formats it in the reader's language.
+  publishedDate: string | null
   urgent: boolean
 }
 
@@ -153,6 +153,6 @@ export async function listPublicNotices(limit = 5): Promise<PublicNotice[]> {
     title: r.title,
     body: r.body,
     urgent: r.urgent,
-    dateLabel: r.publishedDate ? formatBnDate(r.publishedDate) : '[তারিখ]',
+    publishedDate: r.publishedDate,
   }))
 }

@@ -1,15 +1,20 @@
 import { Link } from '@tanstack/react-router'
 import { Droplet, Image } from 'lucide-react'
 
+import { useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
+
 // Phone-only shortcuts straight under the hero, as in the mobile design.
 // Someone who needs blood is sent to the notice board, where the club's phone
 // number will be shown: the club connects them with a donor (CLAUDE.md
 // section 3), the site never lists donors.
 export function QuickActions() {
+  const t = useT()
+  const localeParams = useLocaleParams()
   return (
     <section className="grid grid-cols-2 gap-3 px-5 pt-[18px] pb-1.5 md:hidden">
       <Link
-        to="/"
+        to="/{-$locale}"
+        params={localeParams}
         hash="notice"
         className="flex min-h-11 flex-col gap-1.5 rounded-[9px] border border-line bg-card p-3.5"
       >
@@ -19,14 +24,15 @@ export function QuickActions() {
           aria-hidden="true"
         />
         <span className="font-heading text-base font-semibold text-ink">
-          রক্ত লাগবে?
+          {t('quick.bloodTitle')}
         </span>
         <span className="text-sm leading-normal text-subtle">
-          ক্লাবের সাথে যোগাযোগ
+          {t('quick.bloodText')}
         </span>
       </Link>
       <Link
-        to="/"
+        to="/{-$locale}"
+        params={localeParams}
         hash="gallery"
         className="flex min-h-11 flex-col gap-1.5 rounded-[9px] border border-line bg-card p-3.5"
       >
@@ -36,10 +42,10 @@ export function QuickActions() {
           aria-hidden="true"
         />
         <span className="font-heading text-base font-semibold text-ink">
-          কাজের ছবি
+          {t('quick.photosTitle')}
         </span>
         <span className="text-sm leading-normal text-subtle">
-          পুরো গ্যালারি দেখুন
+          {t('quick.photosText')}
         </span>
       </Link>
     </section>

@@ -4,18 +4,25 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
+import { LangToggle } from '../components/lang-toggle.tsx'
 import { PasswordInput } from '../components/password-input.tsx'
 import { Button } from '../components/ui/button.tsx'
+import { FieldError } from '../components/ui/field-error.tsx'
 import { Label } from '../components/ui/label.tsx'
 import { authClient } from '../lib/auth-client.ts'
 import { getCurrentMemberFn } from '../lib/auth.functions.ts'
-import { changePasswordSchema } from '../lib/password-rules.ts'
+import { useT } from '../lib/i18n/index.tsx'
+import { tFor } from '../lib/i18n/messages.ts'
+import {
+  MIN_PASSWORD_LENGTH,
+  changePasswordSchema,
+} from '../lib/password-rules.ts'
 import { changePasswordFn } from '../lib/password.functions.ts'
 
 export const Route = createFileRoute('/change-password')({
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
-      { title: 'পাসওয়ার্ড পরিবর্তন — কলমা সোশ্যাল ক্লাব' },
+      { title: tFor(match.context.lang)('auth.pageTitleChange') },
       { name: 'robots', content: 'noindex' },
     ],
   }),
@@ -29,21 +36,21 @@ export const Route = createFileRoute('/change-password')({
 
 // The shared server rules plus a "type it twice" check that only the form needs.
 const formSchema = changePasswordSchema
-  .and(z.object({ confirm: z.string().min(1, 'নতুন পাসওয়ার্ড আবার লিখুন') }))
+  .and(z.object({ confirm: z.string().min(1, 'val.confirmRequired') }))
   .refine((v) => v.newPassword === v.confirm, {
-    message: 'দুটি পাসওয়ার্ড মিলছে না',
+    message: 'val.passwordMismatch',
     path: ['confirm'],
   })
 type Values = z.infer<typeof formSchema>
 
-const serverMessages: Record<string, string> = {
-  WRONG_PASSWORD:
-    'বর্তমান পাসওয়ার্ড ঠিক নয়। পরপর ৫ বার ভুল হলে ১৫ মিনিটের জন্য বন্ধ থাকবে।',
-  ACCOUNT_LOCKED: 'অনেকবার ভুল হয়েছে। ১৫ মিনিট পরে আবার চেষ্টা করুন।',
-  UNAUTHENTICATED: 'সেশন শেষ হয়ে গেছে। আবার সাইন ইন করুন।',
-}
+const serverMessageKeys = {
+  WRONG_PASSWORD: 'auth.errorWrongCurrent',
+  ACCOUNT_LOCKED: 'auth.errorLocked',
+  UNAUTHENTICATED: 'auth.errorSession',
+} as const
 
 function ChangePasswordPage() {
+  const t = useT()
   const { member } = Route.useRouteContext()
   const navigate = useNavigate()
   const [formError, setFormError] = useState<string | null>(null)
@@ -67,14 +74,17 @@ function ChangePasswordPage() {
       })
       if (!result.ok) {
         setFormError(
-          serverMessages[result.code] ??
-            'পাসওয়ার্ড বদলানো গেল না। একটু পরে আবার চেষ্টা করুন।',
+          t(
+            result.code in serverMessageKeys
+              ? serverMessageKeys[result.code as keyof typeof serverMessageKeys]
+              : 'auth.errorChangeFailed',
+          ),
         )
         return
       }
       await navigate({ to: '/admin' })
     } catch {
-      setFormError('সংযোগে সমস্যা হয়েছে। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setFormError(t('auth.errorNetwork'))
     }
   }
 
@@ -86,20 +96,20 @@ function ChangePasswordPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
-        <p className="mb-6 text-center font-heading text-sm font-semibold">
-          কলমা সোশ্যাল ক্লাব
-        </p>
+        <div className="mb-6 flex items-center justify-between">
+          <p className="font-heading text-sm font-semibold">{t('site.name')}</p>
+          <LangToggle />
+        </div>
         <div className="rounded-xl border border-border bg-card p-6">
-          <h1 className="text-2xl font-semibold">নতুন পাসওয়ার্ড দিন</h1>
+          <h1 className="text-2xl font-semibold">{t('auth.changeTitle')}</h1>
 
           {member.mustChangePassword ? (
             <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-              আপনার পাসওয়ার্ড অস্থায়ী। নতুন পাসওয়ার্ড না দেওয়া পর্যন্ত অন্য কোনো পাতায়
-              যাওয়া যাবে না।
+              {t('auth.tempNotice')}
             </p>
           ) : (
             <p className="mt-1 text-sm text-muted-foreground">
-              আপনার পাসওয়ার্ড বদলান। অন্য সব ডিভাইস থেকে সাইন আউট হয়ে যাবে।
+              {t('auth.changeLead')}
             </p>
           )}
 
@@ -111,8 +121,8 @@ function ChangePasswordPage() {
             <div className="space-y-1.5">
               <Label htmlFor="currentPassword">
                 {member.mustChangePassword
-                  ? 'অস্থায়ী পাসওয়ার্ড'
-                  : 'বর্তমান পাসওয়ার্ড'}
+                  ? t('auth.tempPassword')
+                  : t('auth.currentPassword')}
               </Label>
               <PasswordInput
                 id="currentPassword"
@@ -123,15 +133,14 @@ function ChangePasswordPage() {
                 }
                 {...register('currentPassword')}
               />
-              {errors.currentPassword && (
-                <p id="currentPassword-error" className="text-sm text-red-700">
-                  {errors.currentPassword.message}
-                </p>
-              )}
+              <FieldError
+                id="currentPassword-error"
+                message={errors.currentPassword?.message}
+              />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="newPassword">নতুন পাসওয়ার্ড</Label>
+              <Label htmlFor="newPassword">{t('auth.newPassword')}</Label>
               <PasswordInput
                 id="newPassword"
                 autoComplete="new-password"
@@ -143,17 +152,16 @@ function ChangePasswordPage() {
                 id="newPassword-hint"
                 className="text-sm text-muted-foreground"
               >
-                কমপক্ষে ৮টি অক্ষর।
+                {t('auth.minHint', { min: MIN_PASSWORD_LENGTH })}
               </p>
-              {errors.newPassword && (
-                <p id="newPassword-error" className="text-sm text-red-700">
-                  {errors.newPassword.message}
-                </p>
-              )}
+              <FieldError
+                id="newPassword-error"
+                message={errors.newPassword?.message}
+              />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="confirm">নতুন পাসওয়ার্ড আবার লিখুন</Label>
+              <Label htmlFor="confirm">{t('auth.confirm')}</Label>
               <PasswordInput
                 id="confirm"
                 autoComplete="new-password"
@@ -161,11 +169,10 @@ function ChangePasswordPage() {
                 aria-describedby={errors.confirm ? 'confirm-error' : undefined}
                 {...register('confirm')}
               />
-              {errors.confirm && (
-                <p id="confirm-error" className="text-sm text-red-700">
-                  {errors.confirm.message}
-                </p>
-              )}
+              <FieldError
+                id="confirm-error"
+                message={errors.confirm?.message}
+              />
             </div>
 
             {formError && (
@@ -178,14 +185,14 @@ function ChangePasswordPage() {
             )}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'অপেক্ষা করুন…' : 'পাসওয়ার্ড বদলান'}
+              {isSubmitting ? t('auth.wait') : t('auth.changeSubmit')}
             </Button>
           </form>
         </div>
 
         <div className="mt-4 text-center">
           <Button variant="ghost" size="sm" onClick={signOut}>
-            সাইন আউট
+            {t('auth.signOut')}
           </Button>
         </div>
       </div>

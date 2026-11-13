@@ -9,13 +9,13 @@ export const MAX_PASSWORD_LENGTH = 128
 
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string().min(1, 'বর্তমান পাসওয়ার্ড লিখুন'),
+    currentPassword: z.string().min(1, 'val.currentPasswordRequired'),
     newPassword: z
       .string()
-      .min(MIN_PASSWORD_LENGTH, `কমপক্ষে ${MIN_PASSWORD_LENGTH}টি অক্ষর দিন`)
-      .max(MAX_PASSWORD_LENGTH, 'পাসওয়ার্ড অনেক বেশি লম্বা'),
+      .min(MIN_PASSWORD_LENGTH, 'val.passwordMin')
+      .max(MAX_PASSWORD_LENGTH, 'val.passwordTooLong'),
   })
   .refine((v) => v.newPassword !== v.currentPassword, {
-    message: 'নতুন পাসওয়ার্ড বর্তমানটির মতো হতে পারবে না',
+    message: 'val.passwordSame',
     path: ['newPassword'],
   })

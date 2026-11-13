@@ -7,15 +7,19 @@ import { z } from 'zod'
 import { PasswordInput } from '../components/password-input.tsx'
 import { Button } from '../components/ui/button.tsx'
 import { Input } from '../components/ui/input.tsx'
+import { LangToggle } from '../components/lang-toggle.tsx'
 import { Label } from '../components/ui/label.tsx'
 import { authClient } from '../lib/auth-client.ts'
 import { getCurrentMemberFn } from '../lib/auth.functions.ts'
+import { FieldError } from '../components/ui/field-error.tsx'
+import { useT } from '../lib/i18n/index.tsx'
+import { tFor } from '../lib/i18n/messages.ts'
 import { normalizePhone } from '../lib/phone.ts'
 
 export const Route = createFileRoute('/login')({
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
-      { title: 'সাইন ইন — কলমা সোশ্যাল ক্লাব' },
+      { title: tFor(match.context.lang)('auth.pageTitleSignIn') },
       // Member and admin pages are never indexed (CLAUDE.md section 3).
       { name: 'robots', content: 'noindex' },
     ],
@@ -33,24 +37,27 @@ const schema = z.object({
   phone: z
     .string()
     .trim()
-    .refine((v) => normalizePhone(v) !== null, 'সঠিক মোবাইল নম্বর লিখুন'),
-  password: z.string().min(1, 'পাসওয়ার্ড লিখুন'),
+    .refine((v) => normalizePhone(v) !== null, 'val.phoneInvalid'),
+  password: z.string().min(1, 'val.passwordRequired'),
 })
 type Values = z.infer<typeof schema>
 
-// Server error codes -> Bengali text. Anything unknown gets the generic line.
-function messageFor(code: string | undefined): string {
+// Server error codes -> message keys. Anything unknown gets the generic line.
+function messageKeyFor(
+  code: string | undefined,
+): 'auth.errorWrong' | 'auth.errorLocked' | 'auth.errorGeneric' {
   switch (code) {
     case 'INVALID_USERNAME_OR_PASSWORD':
-      return 'নম্বর বা পাসওয়ার্ড ঠিক নয়। পরপর ৫ বার ভুল হলে ১৫ মিনিটের জন্য সাইন ইন বন্ধ থাকবে।'
+      return 'auth.errorWrong'
     case 'ACCOUNT_LOCKED':
-      return 'অনেকবার ভুল হয়েছে। ১৫ মিনিট পরে আবার চেষ্টা করুন।'
+      return 'auth.errorLocked'
     default:
-      return 'সাইন ইন করা গেল না। একটু পরে আবার চেষ্টা করুন।'
+      return 'auth.errorGeneric'
   }
 }
 
 function LoginPage() {
+  const t = useT()
   const navigate = useNavigate()
   const [formError, setFormError] = useState<string | null>(null)
   const {
@@ -70,25 +77,26 @@ function LoginPage() {
         password: values.password,
       })
       if (error) {
-        setFormError(messageFor(error.code))
+        setFormError(t(messageKeyFor(error.code)))
         return
       }
       await navigate({ to: '/admin' })
     } catch {
-      setFormError('সংযোগে সমস্যা হয়েছে। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setFormError(t('auth.errorNetwork'))
     }
   }
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
-        <p className="mb-6 text-center font-heading text-sm font-semibold">
-          কলমা সোশ্যাল ক্লাব
-        </p>
+        <div className="mb-6 flex items-center justify-between">
+          <p className="font-heading text-sm font-semibold">{t('site.name')}</p>
+          <LangToggle />
+        </div>
         <div className="rounded-xl border border-border bg-card p-6">
-          <h1 className="text-2xl font-semibold">সাইন ইন</h1>
+          <h1 className="text-2xl font-semibold">{t('auth.signIn')}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            ক্লাবের অ্যাডমিন প্যানেলে ঢুকতে মোবাইল নম্বর ও পাসওয়ার্ড দিন।
+            {t('auth.signInLead')}
           </p>
 
           <form
@@ -97,7 +105,7 @@ function LoginPage() {
             className="mt-6 space-y-4"
           >
             <div className="space-y-1.5">
-              <Label htmlFor="phone">মোবাইল নম্বর</Label>
+              <Label htmlFor="phone">{t('auth.phone')}</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -107,15 +115,11 @@ function LoginPage() {
                 aria-describedby={errors.phone ? 'phone-error' : undefined}
                 {...register('phone')}
               />
-              {errors.phone && (
-                <p id="phone-error" className="text-sm text-red-700">
-                  {errors.phone.message}
-                </p>
-              )}
+              <FieldError id="phone-error" message={errors.phone?.message} />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password">পাসওয়ার্ড</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <PasswordInput
                 id="password"
                 autoComplete="current-password"
@@ -125,11 +129,10 @@ function LoginPage() {
                 }
                 {...register('password')}
               />
-              {errors.password && (
-                <p id="password-error" className="text-sm text-red-700">
-                  {errors.password.message}
-                </p>
-              )}
+              <FieldError
+                id="password-error"
+                message={errors.password?.message}
+              />
             </div>
 
             {formError && (
@@ -142,7 +145,7 @@ function LoginPage() {
             )}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? 'অপেক্ষা করুন…' : 'সাইন ইন'}
+              {isSubmitting ? t('auth.wait') : t('auth.signIn')}
             </Button>
           </form>
         </div>

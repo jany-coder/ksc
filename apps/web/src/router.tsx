@@ -4,17 +4,20 @@ import {
   createRouter as createTanStackRouter,
 } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
+import { useLocaleParams, useT } from './lib/i18n/index.tsx'
 import { routeTree } from './routeTree.gen'
 
 // Shown for any URL that matches no route. Without this the router falls back
 // to a bare <p>Not Found</p> and logs a warning on every miss.
 function NotFound() {
+  const t = useT()
+  const localeParams = useLocaleParams()
   return (
     <main className="p-8">
-      <h1 className="text-3xl font-bold">পাতাটি পাওয়া যায়নি</h1>
+      <h1 className="text-3xl font-bold">{t('notFound.title')}</h1>
       <p className="mt-4 text-lg">
-        <Link to="/" className="underline">
-          হোম পেজে ফিরে যান
+        <Link to="/{-$locale}" params={localeParams} className="underline">
+          {t('notFound.home')}
         </Link>
       </p>
     </main>

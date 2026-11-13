@@ -11,13 +11,13 @@ export const noticeFormSchema = z.object({
   title: z
     .string()
     .trim()
-    .min(1, 'শিরোনাম লিখুন')
-    .max(150, 'শিরোনাম অনেক বেশি লম্বা'),
+    .min(1, 'val.titleRequired')
+    .max(150, 'val.titleTooLong'),
   body: z
     .string()
     .trim()
-    .min(1, 'নোটিশের বিবরণ লিখুন')
-    .max(2000, 'বিবরণ অনেক বেশি লম্বা'),
+    .min(1, 'val.bodyRequired')
+    .max(2000, 'val.descriptionTooLong'),
   urgent: z.boolean(),
   status: z.enum(NOTICE_STATUSES),
 })

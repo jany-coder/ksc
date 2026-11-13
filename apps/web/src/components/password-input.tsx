@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 
+import { useT } from '../lib/i18n/index.tsx'
 import { cn } from '../lib/utils.ts'
 import { Input } from './ui/input.tsx'
 
@@ -10,6 +11,7 @@ export function PasswordInput({
   className,
   ...props
 }: Omit<React.ComponentProps<'input'>, 'type'>) {
+  const t = useT()
   const [visible, setVisible] = useState(false)
 
   return (
@@ -22,7 +24,7 @@ export function PasswordInput({
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        aria-label={visible ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখান'}
+        aria-label={visible ? t('auth.hidePassword') : t('auth.showPassword')}
         aria-pressed={visible}
         className="absolute inset-y-0 end-0 flex w-10 items-center justify-center rounded-e-lg text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
       >

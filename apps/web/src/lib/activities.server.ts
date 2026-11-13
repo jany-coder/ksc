@@ -10,7 +10,6 @@ import {
   activityFormSchema,
 } from './activity-form.ts'
 import type { ActivityFormInput } from './activity-form.ts'
-import { formatEventWhen } from './bn-datetime.ts'
 import { imageUrl } from './image-limits.ts'
 import { makeSlug } from './slug.ts'
 
@@ -191,7 +190,10 @@ export type PublicActivity = {
   id: string
   title: string
   description: string
-  dateLabel: string
+  // Plain "YYYY-MM-DD" / "HH:MM:SS" text: the page formats them in the
+  // reader's language (English or Bengali).
+  eventDate: string | null
+  eventTime: string | null
   location: string
   // The cover photo's thumbnail, only when the activity has one.
   imageUrl?: string
@@ -238,7 +240,8 @@ export async function listUpcomingPublic(limit = 3): Promise<PublicActivity[]> {
     id: r.id,
     title: r.title,
     description: shorten(r.description ?? '', 220),
-    dateLabel: formatEventWhen(r.eventDate, r.eventTime),
+    eventDate: r.eventDate,
+    eventTime: r.eventTime,
     location: r.location ?? '',
     ...(r.coverImageId ? { imageUrl: imageUrl(r.coverImageId, 'thumb') } : {}),
   }))
