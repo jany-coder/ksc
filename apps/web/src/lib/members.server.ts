@@ -18,10 +18,11 @@ import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 import { db } from '../db/index.ts'
 import { auditLog, members, user } from '../db/schema/index.ts'
 import { memberFormSchema } from './member-form.ts'
-import { MEMBER_STATUSES } from './member-options.ts'
+import { MEMBER_STATUSES, STATUS_LABEL } from './member-options.ts'
 import type { MemberStatus } from './member-options.ts'
 import { PAGE_SIZE, escapeLike } from './members-query.ts'
 import type { MembersSearch } from './members-query.ts'
+import { toCsv } from './csv.ts'
 import { canManageMember } from './permissions.ts'
 import type { Role } from './permissions.ts'
 import { normalizePhone, toAsciiDigits } from './phone.ts'
@@ -353,4 +354,71 @@ export async function purgeArchivedMembers(): Promise<number> {
     ])
   }
   return expired.length
+}
+
+/**
+ * Every active (non-archived) member as CSV text. Call
+ * requirePermission('members.export') first: this is the one place that hands
+ * out ALL members' personal data at once, so it is super_admin only and every
+ * export is logged.
+ */
+export async function exportMembersCsv(
+  actorId: string,
+): Promise<{ csv: string; count: number }> {
+  const rows = await db
+    .select({
+      name: members.name,
+      phone: members.phone,
+      email: members.email,
+      bloodGroup: members.bloodGroup,
+      address: members.address,
+      area: members.area,
+      occupation: members.occupation,
+      status: members.status,
+      willingToDonate: members.willingToDonate,
+      lastDonationDate: members.lastDonationDate,
+      joinedDate: sql<string>`to_char(${members.joinedAt} at time zone 'Asia/Dhaka', 'YYYY-MM-DD')`,
+    })
+    .from(members)
+    .where(isNull(members.archivedAt))
+    .orderBy(members.joinedAt, members.id)
+
+  // Logged with a count only: no names, numbers or addresses (CLAUDE.md s.3).
+  await db.insert(auditLog).values({
+    actorId,
+    action: 'members.export',
+    targetType: 'member',
+    targetId: 'all',
+    meta: { count: rows.length },
+  })
+
+  const csv = toCsv(
+    [
+      'নাম',
+      'মোবাইল',
+      'ইমেইল',
+      'রক্তের গ্রুপ',
+      'ঠিকানা',
+      'এলাকা',
+      'পেশা',
+      'অবস্থা',
+      'রক্তদানে আগ্রহী',
+      'সর্বশেষ রক্তদান',
+      'যোগদানের তারিখ',
+    ],
+    rows.map((r) => [
+      r.name,
+      r.phone,
+      r.email,
+      r.bloodGroup,
+      r.address,
+      r.area,
+      r.occupation,
+      STATUS_LABEL[r.status],
+      r.willingToDonate ? 'হ্যাঁ' : 'না',
+      r.lastDonationDate,
+      r.joinedDate,
+    ]),
+  )
+  return { csv, count: rows.length }
 }

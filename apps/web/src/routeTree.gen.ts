@@ -15,6 +15,7 @@ import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ApiMembersExportRouteImport } from './routes/api/members-export'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
 import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activities/new'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
@@ -51,6 +52,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const ApiMembersExportRoute = ApiMembersExportRouteImport.update({
+  id: '/api/members-export',
+  path: '/api/members-export',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminActivitiesIndexRoute = AdminActivitiesIndexRouteImport.update({
   id: '/activities/',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/api/members-export': typeof ApiMembersExportRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/api/members-export': typeof ApiMembersExportRoute
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminIndexRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/api/members-export': typeof ApiMembersExportRoute
   '/_public/': typeof PublicIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/change-password'
     | '/login'
+    | '/api/members-export'
     | '/admin/'
     | '/admin/activities/new'
     | '/admin/members/new'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
   to:
     | '/change-password'
     | '/login'
+    | '/api/members-export'
     | '/'
     | '/admin'
     | '/admin/activities/new'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/change-password'
     | '/login'
+    | '/api/members-export'
     | '/_public/'
     | '/admin/'
     | '/admin/activities/new'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   ChangePasswordRoute: typeof ChangePasswordRoute
   LoginRoute: typeof LoginRoute
+  ApiMembersExportRoute: typeof ApiMembersExportRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/api/members-export': {
+      id: '/api/members-export'
+      path: '/api/members-export'
+      fullPath: '/api/members-export'
+      preLoaderRoute: typeof ApiMembersExportRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/activities/': {
       id: '/admin/activities/'
@@ -321,6 +341,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   ChangePasswordRoute: ChangePasswordRoute,
   LoginRoute: LoginRoute,
+  ApiMembersExportRoute: ApiMembersExportRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

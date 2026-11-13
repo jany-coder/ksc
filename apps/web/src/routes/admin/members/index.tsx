@@ -5,7 +5,7 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router'
-import { Plus, Search } from 'lucide-react'
+import { Download, Plus, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { MemberDrawer } from '../../../components/admin/member-drawer.tsx'
@@ -112,12 +112,24 @@ function MembersPage() {
             প্রকাশ হয় না।
           </p>
         </div>
-        {can(member.role, 'members.write') && (
-          <Link to="/admin/members/new" className={buttonVariants()}>
-            <Plus aria-hidden="true" />
-            নতুন সদস্য
-          </Link>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {can(member.role, 'members.export') && (
+            // A real download link: the server answers with a file.
+            <a
+              href="/api/members-export"
+              className={buttonVariants({ variant: 'outline' })}
+            >
+              <Download aria-hidden="true" />
+              CSV ডাউনলোড
+            </a>
+          )}
+          {can(member.role, 'members.write') && (
+            <Link to="/admin/members/new" className={buttonVariants()}>
+              <Plus aria-hidden="true" />
+              নতুন সদস্য
+            </Link>
+          )}
+        </div>
       </div>
 
       <nav
