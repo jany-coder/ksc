@@ -56,6 +56,18 @@
   --border: #e4e4e0;
   --input: #e4e4e0;
   --radius: 0.75rem;
+
+  /* Extra public-site colours from the design canvas. */
+  --ink: #121a17; /* headings and strong text */
+  --copy: #4b5c54; /* body paragraphs */
+  --subtle: #5c6b64; /* dates, captions */
+  --panel: #f2f5f2; /* alternating section background */
+  --line: #e2e7e3; /* card and divider borders */
+  --mint: #8fc9ac; /* accent text on dark green */
+  --mint-soft: #d5e5dc; /* body text on dark green */
+  --mint-muted: #a7c9b6; /* captions on dark green */
+  --mint-line: #2a5543; /* borders on dark green */
+  --footer: #121a17; /* footer background */
 }
 
 @theme inline {
@@ -84,6 +96,16 @@
   --color-ring: var(--ring);
   --color-blood: var(--blood);
   --color-brand-deep: var(--brand-deep);
+  --color-ink: var(--ink);
+  --color-copy: var(--copy);
+  --color-subtle: var(--subtle);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-mint: var(--mint);
+  --color-mint-soft: var(--mint-soft);
+  --color-mint-muted: var(--mint-muted);
+  --color-mint-line: var(--mint-line);
+  --color-footer: var(--footer);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
