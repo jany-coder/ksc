@@ -316,6 +316,35 @@ export const adminMessages = {
     bn: 'এই নম্বর অন্য একজন সদস্যের আছে।',
     en: 'Another member already has this number.',
   },
+  // --- archived members (the 30-day bin) ---
+  'bin.pageTitle': {
+    bn: 'মুছে ফেলা সদস্য — কলমা সোশ্যাল ক্লাব',
+    en: 'Deleted members — Kalma Social Club',
+  },
+  'bin.link': { bn: 'মুছে ফেলা সদস্য', en: 'Deleted members' },
+  'bin.title': { bn: 'মুছে ফেলা সদস্য', en: 'Deleted members' },
+  'bin.lead': {
+    bn: '৩০ দিন এখানে থাকে, তারপর স্থায়ীভাবে মুছে যায়। এর মধ্যে ফিরিয়ে আনা যায়।',
+    en: 'They stay here for 30 days, then are deleted for good. You can bring them back until then.',
+  },
+  'bin.empty': {
+    bn: 'মুছে ফেলা কোনো সদস্য নেই।',
+    en: 'No deleted members.',
+  },
+  'bin.deletedOn': { bn: 'মুছেছেন: {date}', en: 'Deleted on {date}' },
+  'bin.daysLeft': {
+    bn: 'আর {n} দিন বাকি',
+    en: '{n} days left',
+  },
+  'bin.restore': { bn: 'ফিরিয়ে আনুন', en: 'Restore' },
+  'bin.restoreFailed': {
+    bn: 'ফিরিয়ে আনা গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not restore. Try again.',
+  },
+  'bin.loadError': {
+    bn: 'তালিকা আনা যায়নি। পেজ রিফ্রেশ করুন।',
+    en: 'Could not load the list. Refresh the page.',
+  },
   'drawer.edit': { bn: 'তথ্য সম্পাদনা', en: 'Edit details' },
 
   // --- activities ---

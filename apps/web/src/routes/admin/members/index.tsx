@@ -127,6 +127,14 @@ function MembersPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {can(member.role, 'members.delete') && (
+            <Link
+              to="/admin/members/archived"
+              className={buttonVariants({ variant: 'outline' })}
+            >
+              {t('bin.link')}
+            </Link>
+          )}
           {can(member.role, 'members.export') && (
             // A real download link: the server answers with a file.
             <a

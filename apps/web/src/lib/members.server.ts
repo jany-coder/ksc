@@ -550,3 +550,57 @@ export async function changeMemberPhone(
   }
   return { ok: true }
 }
+
+export type ArchivedMemberRow = {
+  id: string
+  name: string
+  role: Role
+  // Dhaka calendar day, "YYYY-MM-DD".
+  archivedDate: string
+  // Whole days left before the member is deleted for good.
+  daysLeft: number
+}
+
+/** The 30-day bin. Call requirePermission('members.delete') first. */
+export async function listArchivedMembers(): Promise<ArchivedMemberRow[]> {
+  const rows = await db
+    .select({
+      id: members.id,
+      name: members.name,
+      role: members.role,
+      archivedDate: sql<string>`to_char(${members.archivedAt} at time zone 'Asia/Dhaka', 'YYYY-MM-DD')`,
+      daysLeft: sql<number>`greatest(0, ${ARCHIVE_DAYS} - floor(extract(epoch from (now() - ${members.archivedAt})) / 86400))::int`,
+    })
+    .from(members)
+    .where(isNotNull(members.archivedAt))
+    .orderBy(desc(members.archivedAt))
+  return rows
+}
+
+export type RestoreResult = { ok: true } | { ok: false; code: 'NOT_FOUND' }
+
+/** Take a member out of the bin. Call requirePermission('members.delete') first. */
+export async function restoreMember(
+  actorId: string,
+  memberId: string,
+): Promise<RestoreResult> {
+  const [target] = await db
+    .select({ id: members.id })
+    .from(members)
+    .where(and(eq(members.id, memberId), isNotNull(members.archivedAt)))
+    .limit(1)
+  if (!target) return { ok: false, code: 'NOT_FOUND' }
+  await db.batch([
+    db
+      .update(members)
+      .set({ archivedAt: null })
+      .where(eq(members.id, memberId)),
+    db.insert(auditLog).values({
+      actorId,
+      action: 'member.restore',
+      targetType: 'member',
+      targetId: memberId,
+    }),
+  ])
+  return { ok: true }
+}

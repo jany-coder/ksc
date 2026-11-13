@@ -9,7 +9,9 @@ import {
   changeMemberPhone,
   createMember,
   getMember,
+  listArchivedMembers,
   listMembers,
+  restoreMember,
   setMemberStatus,
   updateMember,
 } from './members.server.ts'
@@ -66,4 +68,19 @@ export const changeMemberPhoneFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const actor = await requirePermission('members.changePhone')
     return changeMemberPhone(actor.id, data.id, data.phone)
+  })
+
+// The 30-day bin: whoever may delete members may look at it and undo a delete.
+export const listArchivedMembersFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    await requirePermission('members.delete')
+    return listArchivedMembers()
+  },
+)
+
+export const restoreMemberFn = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid() }))
+  .handler(async ({ data }) => {
+    const actor = await requirePermission('members.delete')
+    return restoreMember(actor.id, data.id)
   })

@@ -25,6 +25,7 @@ import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activitie
 import { Route as AdminGalleryIndexRouteImport } from './routes/admin/gallery/index'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
 import { Route as AdminMembersIdRouteImport } from './routes/admin/members/$id'
+import { Route as AdminMembersArchivedRouteImport } from './routes/admin/members/archived'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
 import { Route as AdminNoticesIndexRouteImport } from './routes/admin/notices/index'
 import { Route as AdminNoticesIdRouteImport } from './routes/admin/notices/$id'
@@ -116,6 +117,11 @@ const AdminMembersIdRoute = AdminMembersIdRouteImport.update({
   path: '/members/$id',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminMembersArchivedRoute = AdminMembersArchivedRouteImport.update({
+  id: '/members/archived',
+  path: '/members/archived',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminMembersNewRoute = AdminMembersNewRouteImport.update({
   id: '/members/new',
   path: '/members/new',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/$id': typeof AdminMembersIdRoute
+  '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/$id': typeof AdminMembersIdRoute
+  '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/$id': typeof AdminMembersIdRoute
+  '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
@@ -234,6 +243,7 @@ export interface FileRouteTypes {
     | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/$id'
+    | '/admin/members/archived'
     | '/admin/members/new'
     | '/admin/notices/$id'
     | '/admin/notices/new'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/$id'
+    | '/admin/members/archived'
     | '/admin/members/new'
     | '/admin/notices/$id'
     | '/admin/notices/new'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/$id'
+    | '/admin/members/archived'
     | '/admin/members/new'
     | '/admin/notices/$id'
     | '/admin/notices/new'
@@ -416,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMembersIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/members/archived': {
+      id: '/admin/members/archived'
+      path: '/members/archived'
+      fullPath: '/admin/members/archived'
+      preLoaderRoute: typeof AdminMembersArchivedRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/members/new': {
       id: '/admin/members/new'
       path: '/members/new'
@@ -466,6 +485,7 @@ interface AdminRouteRouteChildren {
   AdminActivitiesIdRoute: typeof AdminActivitiesIdRoute
   AdminActivitiesNewRoute: typeof AdminActivitiesNewRoute
   AdminMembersIdRoute: typeof AdminMembersIdRoute
+  AdminMembersArchivedRoute: typeof AdminMembersArchivedRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
   AdminNoticesIdRoute: typeof AdminNoticesIdRoute
   AdminNoticesNewRoute: typeof AdminNoticesNewRoute
@@ -480,6 +500,7 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminActivitiesIdRoute: AdminActivitiesIdRoute,
   AdminActivitiesNewRoute: AdminActivitiesNewRoute,
   AdminMembersIdRoute: AdminMembersIdRoute,
+  AdminMembersArchivedRoute: AdminMembersArchivedRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,
   AdminNoticesIdRoute: AdminNoticesIdRoute,
   AdminNoticesNewRoute: AdminNoticesNewRoute,
