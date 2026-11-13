@@ -1,4 +1,5 @@
 import {
+  
   boolean,
   date,
   index,
@@ -7,10 +8,12 @@ import {
   time,
   timestamp,
   uniqueIndex,
-  uuid,
+  uuid
 } from 'drizzle-orm/pg-core'
+import type {AnyPgColumn} from 'drizzle-orm/pg-core';
 
 import { publishStatus } from './enums.ts'
+import { images } from './images.ts'
 import { members } from './members.ts'
 
 export const activities = pgTable(
@@ -27,9 +30,14 @@ export const activities = pgTable(
     eventDate: date('event_date'),
     eventTime: time('event_time'),
     location: text(),
-    // Points at images.id. The foreign key is added together with the images
-    // table, because the two tables reference each other.
-    coverImageId: uuid('cover_image_id'),
+    // The two tables reference each other (images.activity_id too), so the
+    // reference is a function: it is only read once both files have loaded.
+    // AnyPgColumn tells TypeScript the type, which it cannot infer in a cycle.
+    // Deleting the cover image keeps the activity and just clears the cover.
+    coverImageId: uuid('cover_image_id').references(
+      (): AnyPgColumn => images.id,
+      { onDelete: 'set null' },
+    ),
     status: publishStatus().notNull().default('draft'),
     featured: boolean().notNull().default(false),
     createdBy: uuid('created_by')
