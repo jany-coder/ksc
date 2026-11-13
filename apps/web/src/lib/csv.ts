@@ -7,16 +7,31 @@
 //     A leading ' makes the spreadsheet show it as plain text.
 const FORMULA_START = /^[=+\-@\t\r]/
 
-export function csvCell(value: string | number | boolean | null): string {
+/**
+ * A value that must stay text even if it looks like a number: a phone number
+ * "01712345678" would otherwise open in Excel as 1712345678 (leading zero lost).
+ * Written as ="01712345678", which Excel and Google Sheets show as the text.
+ * Only for values WE control (digits); user-typed text goes through the
+ * formula guard below instead.
+ */
+export class CsvText {
+  readonly digits: string
+  constructor(digits: string) {
+    if (!/^\d+$/.test(digits)) throw new Error('CsvText takes digits only')
+    this.digits = digits
+  }
+}
+
+export type CsvValue = string | number | boolean | null | CsvText
+
+export function csvCell(value: CsvValue): string {
   if (value === null) return ''
+  if (value instanceof CsvText) return `"=""${value.digits}"""`
   let text = String(value)
   if (FORMULA_START.test(text)) text = `'${text}`
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text
 }
 
-export function toCsv(
-  header: string[],
-  rows: (string | number | boolean | null)[][],
-): string {
+export function toCsv(header: string[], rows: CsvValue[][]): string {
   return [header, ...rows].map((r) => r.map(csvCell).join(',')).join('\r\n')
 }

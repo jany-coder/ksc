@@ -24,7 +24,7 @@ import type { Lang } from './i18n/core.ts'
 import type { MemberStatus } from './member-options.ts'
 import { PAGE_SIZE, escapeLike } from './members-query.ts'
 import type { MembersSearch } from './members-query.ts'
-import { toCsv } from './csv.ts'
+import { CsvText, toCsv } from './csv.ts'
 import { canManageMember } from './permissions.ts'
 import type { Role } from './permissions.ts'
 import { normalizePhone, toAsciiDigits } from './phone.ts'
@@ -415,7 +415,7 @@ export async function exportMembersCsv(
     ],
     rows.map((r) => [
       r.name,
-      r.phone,
+      new CsvText(r.phone),
       r.email,
       r.bloodGroup,
       r.address,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { csvCell, toCsv } from './csv.ts'
+import { CsvText, csvCell, toCsv } from './csv.ts'
 
 describe('csvCell', () => {
   it('leaves plain text alone, Bengali included', () => {
@@ -32,5 +32,15 @@ describe('csvCell', () => {
 describe('toCsv', () => {
   it('joins rows with CRLF', () => {
     expect(toCsv(['a', 'b'], [['1', true]])).toBe('a,b\r\n1,true')
+  })
+})
+
+describe('CsvText', () => {
+  it('keeps the leading zero of a phone number in Excel', () => {
+    expect(csvCell(new CsvText('01712345678'))).toBe('"=""01712345678"""')
+  })
+
+  it('refuses anything but digits', () => {
+    expect(() => new CsvText('=1+1')).toThrow()
   })
 })
