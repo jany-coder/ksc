@@ -79,10 +79,28 @@ export const adminMessages = {
     en: 'Admin panel — Kalma Social Club',
   },
   'dash.title': { bn: 'ড্যাশবোর্ড', en: 'Dashboard' },
-  'dash.soon': {
-    bn: '[ড্যাশবোর্ড শীঘ্রই আসছে]',
-    en: '[dashboard coming soon]',
+  'dash.lead': {
+    bn: 'ক্লাবের এক নজরে অবস্থা। এখানে শুধু সংখ্যা দেখানো হয়।',
+    en: 'The club at a glance. Only counts are shown here.',
   },
+  'dash.loadError': {
+    bn: 'তথ্য আনা যায়নি। পেজ রিফ্রেশ করে দেখুন।',
+    en: 'Could not load the figures. Refresh the page.',
+  },
+  'dash.members': { bn: 'সদস্য', en: 'Members' },
+  'dash.membersTotal': { bn: 'মোট সদস্য', en: 'Total members' },
+  'dash.pendingHint': {
+    bn: 'অনুমোদনের অপেক্ষায় — দেখুন',
+    en: 'Waiting for approval — review',
+  },
+  'dash.donors': {
+    bn: 'রক্তদাতা (সক্রিয় ও রক্তদানে ইচ্ছুক)',
+    en: 'Blood donors (active and willing)',
+  },
+  'dash.activities': { bn: 'কার্যক্রম', en: 'Activities' },
+  'dash.notices': { bn: 'নোটিশ', en: 'Notices' },
+  'dash.published': { bn: 'প্রকাশিত', en: 'Published' },
+  'dash.draft': { bn: 'খসড়া', en: 'Draft' },
 
   // --- members list ---
   'members.pageTitle': {
