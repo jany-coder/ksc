@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Hero } from '../../components/public/home/hero.tsx'
+import { QuickActions } from '../../components/public/home/quick-actions.tsx'
+import { WhatWeDo } from '../../components/public/home/what-we-do.tsx'
 
 export const Route = createFileRoute('/_public/')({
   head: () => ({
@@ -20,6 +22,8 @@ function Home() {
   return (
     <main>
       <Hero />
+      <QuickActions />
+      <WhatWeDo />
     </main>
   )
 }
