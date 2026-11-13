@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { listUpcomingActivitiesFn } from '../../lib/activities.functions.ts'
 import { About } from '../../components/public/home/about.tsx'
 import { GalleryTeaser } from '../../components/public/home/gallery-teaser.tsx'
 import { Hero } from '../../components/public/home/hero.tsx'
@@ -20,16 +21,19 @@ export const Route = createFileRoute('/_public/')({
       },
     ],
   }),
+  // Public data for every visitor: published activities happening today or later.
+  loader: () => listUpcomingActivitiesFn(),
   component: Home,
 })
 
 function Home() {
+  const upcoming = Route.useLoaderData()
   return (
     <main>
       <Hero />
       <QuickActions />
       <WhatWeDo />
-      <UpcomingActivities />
+      <UpcomingActivities items={upcoming} />
       <NoticeBoard />
       <GalleryTeaser />
       <About />
