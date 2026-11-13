@@ -17,6 +17,8 @@ export const membersSearchSchema = z.object({
   blood: z.enum(BLOOD_GROUPS).optional().catch(undefined),
   q: z.string().trim().max(60).optional().catch(undefined),
   page: z.number().int().min(1).optional().catch(undefined),
+  // The member whose detail drawer is open.
+  member: z.uuid().optional().catch(undefined),
 })
 export type MembersSearch = z.infer<typeof membersSearchSchema>
 

@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import {
   createColumnHelper,
   tableFeatures,
@@ -34,7 +35,7 @@ const dash = <span className="text-muted-foreground">—</span>
 const columns = helper.columns([
   helper.accessor('name', {
     header: 'সদস্য',
-    cell: ({ getValue }) => (
+    cell: ({ getValue, row }) => (
       <span className="flex items-center gap-2.5">
         <span
           aria-hidden="true"
@@ -42,7 +43,16 @@ const columns = helper.columns([
         >
           {initialOf(getValue())}
         </span>
-        <span className="font-medium text-foreground">{getValue()}</span>
+        {/* A real link: opens the detail drawer (?member=<id>), so it works with
+            middle-click and "copy link address" too. */}
+        <Link
+          to="/admin/members"
+          search={(prev) => ({ ...prev, member: row.original.id })}
+          resetScroll={false}
+          className="font-medium text-foreground hover:underline"
+        >
+          {getValue()}
+        </Link>
       </span>
     ),
   }),

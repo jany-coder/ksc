@@ -8,6 +8,7 @@ import {
 import { Plus, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { MemberDrawer } from '../../../components/admin/member-drawer.tsx'
 import { MembersTable } from '../../../components/admin/members-table.tsx'
 import { buttonVariants } from '../../../components/ui/button.tsx'
 import { Input } from '../../../components/ui/input.tsx'
@@ -39,7 +40,9 @@ export const Route = createFileRoute('/admin/members/')({
     if (!can(context.member.role, 'members.read'))
       throw redirect({ to: '/admin' })
   },
-  loaderDeps: ({ search }) => search,
+  // The open drawer is not part of the list: leave it out of the deps, so opening
+  // or closing it does not reload the list.
+  loaderDeps: ({ search: { member: _open, ...filters } }) => filters,
   loader: ({ context, deps }) =>
     context.queryClient.ensureQueryData(membersQuery(deps)),
   errorComponent: () => (
@@ -73,7 +76,7 @@ const chipClass =
   'inline-flex min-h-9 items-center rounded-lg border px-[13px] text-[13px] font-semibold'
 
 function MembersPage() {
-  const search = Route.useSearch()
+  const { member: openMemberId, ...search } = Route.useSearch()
   const { member } = Route.useRouteContext()
   const navigate = useNavigate()
   const { data } = useSuspenseQuery(membersQuery(search))
@@ -210,6 +213,20 @@ function MembersPage() {
           </div>
         </div>
       </div>
+
+      {openMemberId && (
+        <MemberDrawer
+          key={openMemberId}
+          memberId={openMemberId}
+          onClose={() =>
+            void navigate({
+              to: '/admin/members',
+              search: (prev) => ({ ...prev, member: undefined }),
+              resetScroll: false,
+            })
+          }
+        />
+      )}
     </main>
   )
 }

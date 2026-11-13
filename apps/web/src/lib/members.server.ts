@@ -1,6 +1,7 @@
 import '@tanstack/react-start/server-only'
 
-import { and, desc, ilike, isNull, like, or, sql } from 'drizzle-orm'
+import { and, desc, eq, ilike, isNull, like, or, sql } from 'drizzle-orm'
+import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 
 import { db } from '../db/index.ts'
 import { auditLog, members } from '../db/schema/index.ts'
@@ -166,4 +167,55 @@ export async function createMember(
   }
 
   return { ok: true, id }
+}
+
+export type MemberDetail = {
+  id: string
+  name: string
+  phone: string
+  email: string | null
+  bloodGroup: (typeof members.$inferSelect)['bloodGroup']
+  address: string | null
+  area: string | null
+  occupation: string | null
+  role: (typeof members.$inferSelect)['role']
+  status: MemberStatus
+  willingToDonate: boolean
+  // "YYYY-MM-DD".
+  lastDonationDate: string | null
+  // Dhaka calendar days, "YYYY-MM-DD".
+  consentDate: string
+  joinedDate: string
+  // True if this member has a login account. The account id itself never leaves
+  // the server.
+  hasLogin: boolean
+}
+
+const dhakaDay = (column: AnyPgColumn) =>
+  sql<string>`to_char(${column} at time zone 'Asia/Dhaka', 'YYYY-MM-DD')`
+
+/** One member with every field, for the detail drawer. Null if none (or archived). */
+export async function getMember(id: string): Promise<MemberDetail | null> {
+  const [row] = await db
+    .select({
+      id: members.id,
+      name: members.name,
+      phone: members.phone,
+      email: members.email,
+      bloodGroup: members.bloodGroup,
+      address: members.address,
+      area: members.area,
+      occupation: members.occupation,
+      role: members.role,
+      status: members.status,
+      willingToDonate: members.willingToDonate,
+      lastDonationDate: members.lastDonationDate,
+      consentDate: dhakaDay(members.consentGivenAt),
+      joinedDate: dhakaDay(members.joinedAt),
+      hasLogin: sql<boolean>`${members.userId} is not null`,
+    })
+    .from(members)
+    .where(and(eq(members.id, id), isNull(members.archivedAt)))
+    .limit(1)
+  return row ?? null
 }
