@@ -6,13 +6,15 @@ import { db } from '../db/index.ts'
 import { auditLog, members } from '../db/schema/index.ts'
 import { applicationFormSchema } from './application-form.ts'
 import { normalizePhone } from './phone.ts'
+import { verifyTurnstile } from './turnstile.server.ts'
 
 // At most this many applications per hour across the whole site. A crude brake
 // against a script flooding the member list; a CAPTCHA would be the real fix.
 export const MAX_APPLICATIONS_PER_HOUR = 20
 
 export type ApplyResult =
-  { ok: true } | { ok: false; code: 'INVALID_INPUT' | 'TRY_LATER' }
+  | { ok: true }
+  | { ok: false; code: 'INVALID_INPUT' | 'TRY_LATER' | 'CHALLENGE_FAILED' }
 
 function isUniqueViolation(error: unknown): boolean {
   const e = error as { code?: string; cause?: { code?: string } } | null
@@ -30,7 +32,10 @@ const blankToNull = (text: string) => (text === '' ? null : text)
  * person is a club member, which would leak exactly what CLAUDE.md section 3
  * says must stay private.
  */
-export async function submitApplication(input: unknown): Promise<ApplyResult> {
+export async function submitApplication(
+  input: unknown,
+  challengeToken?: string,
+): Promise<ApplyResult> {
   const parsed = applicationFormSchema.safeParse(input)
   if (!parsed.success) return { ok: false, code: 'INVALID_INPUT' }
   const v = parsed.data
@@ -39,6 +44,9 @@ export async function submitApplication(input: unknown): Promise<ApplyResult> {
 
   // Honeypot filled: a bot. Pretend it worked so it learns nothing.
   if (v.website.trim() !== '') return { ok: true }
+
+  if (!(await verifyTurnstile(challengeToken)))
+    return { ok: false, code: 'CHALLENGE_FAILED' }
 
   const [recent] = await db
     .select({ n: sql<number>`count(*)::int` })

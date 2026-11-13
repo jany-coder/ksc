@@ -307,6 +307,10 @@ export const publicMessages = {
     bn: 'এখন অনেক আবেদন জমা পড়ছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।',
     en: 'Many applications are coming in right now. Please try again in a little while.',
   },
+  'apply.errorChallenge': {
+    bn: 'আপনি যে মানুষ তা যাচাই করা যায়নি। আবার চেষ্টা করুন।',
+    en: 'We could not confirm you are a person. Please try again.',
+  },
   'apply.errorInvalid': {
     bn: 'তথ্য ঠিক নেই। ফর্মটি আবার দেখে নিন।',
     en: 'Some details are not right. Please check the form again.',

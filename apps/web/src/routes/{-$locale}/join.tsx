@@ -3,6 +3,10 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
+import {
+  TURNSTILE_SITE_KEY,
+  Turnstile,
+} from '../../components/public/turnstile.tsx'
 import { Button } from '../../components/ui/button.tsx'
 import { CheckboxField } from '../../components/ui/checkbox-field.tsx'
 import { FieldError } from '../../components/ui/field-error.tsx'
@@ -61,18 +65,26 @@ function JoinPage() {
     },
   })
 
+  const [token, setToken] = useState<string | null>(null)
+  const [resetKey, setResetKey] = useState(0)
+
   async function onSubmit(values: ApplicationFormInput) {
     setFormError(null)
     try {
-      const result = await submitApplicationFn({ data: values })
+      const result = await submitApplicationFn({
+        data: { form: values, challengeToken: token ?? undefined },
+      })
       if (result.ok) {
         setDone(true)
         return
       }
+      setResetKey((n) => n + 1) // a token works once: ask for a new one
       setFormError(
         result.code === 'TRY_LATER'
           ? t('apply.errorTryLater')
-          : t('apply.errorInvalid'),
+          : result.code === 'CHALLENGE_FAILED'
+            ? t('apply.errorChallenge')
+            : t('apply.errorInvalid'),
       )
     } catch {
       setFormError(t('apply.errorNetwork'))
@@ -281,11 +293,13 @@ function JoinPage() {
           </p>
         )}
 
+        <Turnstile onToken={setToken} resetKey={resetKey} />
+
         <Button
           type="submit"
           size="lg"
           className="h-12 self-start text-[17px]"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (Boolean(TURNSTILE_SITE_KEY) && !token)}
         >
           {isSubmitting ? t('apply.wait') : t('apply.submit')}
         </Button>
