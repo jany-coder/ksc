@@ -49,7 +49,7 @@ function GalleryPage() {
                 type="button"
                 onClick={() => setOpen(index)}
                 aria-label={t('gallery.openPhoto', { n: number(index + 1) })}
-                className="block w-full cursor-zoom-in overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="zoom block w-full cursor-zoom-in overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 <img
                   src={imageUrl(image.id, 'thumb')}

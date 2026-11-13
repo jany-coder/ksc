@@ -42,7 +42,7 @@ export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
             {items.map((item) => (
               <article
                 key={item.id}
-                className="flex flex-col overflow-hidden rounded-[10px] border border-line bg-card"
+                className="lift flex flex-col overflow-hidden rounded-[10px] border border-line bg-card"
               >
                 {item.imageUrl ? (
                   <img

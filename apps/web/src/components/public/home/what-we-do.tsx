@@ -53,7 +53,7 @@ export function WhatWeDo() {
           {ITEMS.map(({ title, text, icon: Icon, iconClass }) => (
             <article
               key={title}
-              className="rounded-[10px] border border-line bg-card px-7 py-8"
+              className="lift rounded-[10px] border border-line bg-card px-7 py-8"
             >
               <Icon
                 className={`size-[34px] ${iconClass}`}

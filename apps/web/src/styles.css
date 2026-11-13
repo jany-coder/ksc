@@ -141,3 +141,88 @@
     line-height: 1.7;
   }
 }
+
+/*
+ * Motion. Everything here is decoration, so it only runs for people who have
+ * not asked their device for reduced motion, and nothing is hidden without it:
+ * if a browser lacks scroll-driven animations the content simply stays put.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Hero: the text arrives line by line when the page loads. */
+  .hero-rise > * {
+    animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .hero-rise > :nth-child(2) {
+    animation-delay: 80ms;
+  }
+  .hero-rise > :nth-child(3) {
+    animation-delay: 160ms;
+  }
+  .hero-rise > :nth-child(4) {
+    animation-delay: 240ms;
+  }
+  .hero-fade {
+    animation: fade 1s ease 0.35s both;
+  }
+
+  /* Every later section eases in as it scrolls into view (CSS only, no JS). */
+  @supports (animation-timeline: view()) {
+    .theme-public main > section:not(:first-of-type) > div {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+  }
+
+  /* Cards lift a little and their photo zooms; borders, not shadows. */
+  .lift {
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .lift:hover {
+    transform: translateY(-4px);
+    border-color: var(--primary);
+  }
+  .lift img,
+  .zoom img {
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .lift:hover img,
+  .zoom:hover img {
+    transform: scale(1.05);
+  }
+
+  /* Buttons and links press in slightly. */
+  .theme-public a[class*='rounded'],
+  .theme-public button {
+    transition:
+      transform 0.15s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .theme-public a[class*='rounded']:active,
+  .theme-public button:active {
+    transform: scale(0.97);
+  }
+}

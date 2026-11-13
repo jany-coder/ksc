@@ -42,13 +42,14 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(260px,100%),1fr))] gap-4">
           {photos.length > 0
             ? photos.map((photo) => (
-                <img
-                  key={photo.id}
-                  src={photo.thumbUrl}
-                  alt={t('teaser.photoAlt')}
-                  loading="lazy"
-                  className="h-[230px] w-full rounded-lg object-cover"
-                />
+                <div key={photo.id} className="zoom overflow-hidden rounded-lg">
+                  <img
+                    src={photo.thumbUrl}
+                    alt={t('teaser.photoAlt')}
+                    loading="lazy"
+                    className="h-[230px] w-full object-cover"
+                  />
+                </div>
               ))
             : PLACEHOLDERS.map((label, i) => (
                 <div
