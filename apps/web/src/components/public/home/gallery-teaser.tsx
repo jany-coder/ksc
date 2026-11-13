@@ -1,6 +1,8 @@
+import { Link } from '@tanstack/react-router'
+
 // A taste of the gallery, on the dark section. Photos come in as props; until
-// real ones are uploaded, six placeholder tiles keep the grid. The full gallery
-// page and its link come later, so no dead button is shown here.
+// real ones are uploaded, six placeholder tiles keep the grid. The link to the
+// full gallery (/gallery) shows only once there are photos to see.
 export type GalleryPhoto = {
   id: string
   caption: string
@@ -51,6 +53,14 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
                 </div>
               ))}
         </div>
+        {photos.length > 0 && (
+          <Link
+            to="/gallery"
+            className="mt-8 inline-block text-[17px] font-semibold text-background underline underline-offset-4 hover:text-mint-muted"
+          >
+            সব ছবি দেখুন
+          </Link>
+        )}
       </div>
     </section>
   )

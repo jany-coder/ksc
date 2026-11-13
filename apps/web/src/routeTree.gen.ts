@@ -14,6 +14,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicGalleryRouteImport } from './routes/_public/gallery'
 import { Route as PublicJoinRouteImport } from './routes/_public/join'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
@@ -50,6 +51,11 @@ const LoginRoute = LoginRouteImport.update({
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicGalleryRoute = PublicGalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicJoinRoute = PublicJoinRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/gallery': typeof PublicGalleryRoute
   '/join': typeof PublicJoinRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/gallery': typeof PublicGalleryRoute
   '/join': typeof PublicJoinRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/_public/gallery': typeof PublicGalleryRoute
   '/_public/join': typeof PublicJoinRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/change-password'
     | '/login'
+    | '/gallery'
     | '/join'
     | '/api/images'
     | '/api/members-export'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
   to:
     | '/change-password'
     | '/login'
+    | '/gallery'
     | '/join'
     | '/api/images'
     | '/api/members-export'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/change-password'
     | '/login'
+    | '/_public/gallery'
     | '/_public/join'
     | '/api/images'
     | '/api/members-export'
@@ -282,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/gallery': {
+      id: '/_public/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof PublicGalleryRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/join': {
@@ -379,11 +398,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface PublicRouteRouteChildren {
+  PublicGalleryRoute: typeof PublicGalleryRoute
   PublicJoinRoute: typeof PublicJoinRoute
   PublicIndexRoute: typeof PublicIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicGalleryRoute: PublicGalleryRoute,
   PublicJoinRoute: PublicJoinRoute,
   PublicIndexRoute: PublicIndexRoute,
 }

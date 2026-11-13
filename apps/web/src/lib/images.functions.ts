@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 
-import { deleteImage, galleryAdminData } from './images.server.ts'
+import { deleteImage, galleryAdminData, listImages } from './images.server.ts'
 import { requirePermission } from './session.server.ts'
 
 export const galleryAdminDataFn = createServerFn({ method: 'GET' }).handler(
@@ -17,3 +17,10 @@ export const deleteImageFn = createServerFn({ method: 'POST' })
     await requirePermission('content.write')
     return deleteImage(data.id)
   })
+
+// Public: deliberately no permission check, because the gallery is public.
+// Safe because it returns only the id and size of each photo: never who
+// uploaded it, and never anything about a member.
+export const listPublicImagesFn = createServerFn({ method: 'GET' })
+  .validator(z.object({ limit: z.number().int().min(1).max(100) }))
+  .handler(({ data }) => listImages(data.limit))

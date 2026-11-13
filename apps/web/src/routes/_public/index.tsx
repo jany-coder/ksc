@@ -1,6 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { listUpcomingActivitiesFn } from '../../lib/activities.functions.ts'
+import { listPublicImagesFn } from '../../lib/images.functions.ts'
+import { imageUrl } from '../../lib/image-limits.ts'
 import { listPublicNoticesFn } from '../../lib/notices.functions.ts'
 import { About } from '../../components/public/home/about.tsx'
 import { GalleryTeaser } from '../../components/public/home/gallery-teaser.tsx'
@@ -25,17 +27,18 @@ export const Route = createFileRoute('/_public/')({
   // Public data for every visitor: published activities happening today or
   // later, and published notices.
   loader: async () => {
-    const [upcoming, notices] = await Promise.all([
+    const [upcoming, notices, images] = await Promise.all([
       listUpcomingActivitiesFn(),
       listPublicNoticesFn(),
+      listPublicImagesFn({ data: { limit: 6 } }),
     ])
-    return { upcoming, notices }
+    return { upcoming, notices, images }
   },
   component: Home,
 })
 
 function Home() {
-  const { upcoming, notices } = Route.useLoaderData()
+  const { upcoming, notices, images } = Route.useLoaderData()
   return (
     <main>
       <Hero />
@@ -43,7 +46,13 @@ function Home() {
       <WhatWeDo />
       <UpcomingActivities items={upcoming} />
       <NoticeBoard items={notices} />
-      <GalleryTeaser />
+      <GalleryTeaser
+        photos={images.map((image) => ({
+          id: image.id,
+          caption: 'ক্লাবের কার্যক্রমের ছবি',
+          thumbUrl: imageUrl(image.id, 'thumb'),
+        }))}
+      />
       <About />
       <Join />
     </main>
