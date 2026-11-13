@@ -5,6 +5,7 @@ import { memberFormSchema } from './member-form.ts'
 import { MEMBER_STATUSES } from './member-options.ts'
 import { membersSearchSchema } from './members-query.ts'
 import {
+  archiveMember,
   createMember,
   getMember,
   listMembers,
@@ -40,4 +41,12 @@ export const setMemberStatusFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const actor = await requirePermission('members.write')
     return setMemberStatus(actor, data.id, data.status)
+  })
+
+// Dangerous: super_admin only (CLAUDE.md section 4).
+export const archiveMemberFn = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid() }))
+  .handler(async ({ data }) => {
+    const actor = await requirePermission('members.delete')
+    return archiveMember(actor, data.id)
   })

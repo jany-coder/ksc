@@ -10,7 +10,11 @@ import type { ReactNode } from 'react'
 
 import { formatBnDate } from '../../lib/bn-datetime.ts'
 import { STATUS_LABEL, bloodLabel } from '../../lib/member-options.ts'
-import { getMemberFn, setMemberStatusFn } from '../../lib/members.functions.ts'
+import {
+  archiveMemberFn,
+  getMemberFn,
+  setMemberStatusFn,
+} from '../../lib/members.functions.ts'
 import { can, canManageMember } from '../../lib/permissions.ts'
 import type { Role } from '../../lib/permissions.ts'
 import { Button } from '../ui/button.tsx'
@@ -60,6 +64,23 @@ export function MemberDrawer({
   const dialog = useRef<HTMLDialogElement>(null)
   const queryClient = useQueryClient()
   const [actionError, setActionError] = useState<string | null>(null)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const deleteMutation = useMutation({
+    mutationFn: () => archiveMemberFn({ data: { id: memberId } }),
+    onSuccess: async (result) => {
+      if (!result.ok) {
+        setActionError('সদস্যকে মোছা গেল না।')
+        setConfirmingDelete(false)
+        return
+      }
+      await queryClient.invalidateQueries({ queryKey: ['members'] })
+      onClose() // the member is gone from the list, so close the drawer
+    },
+    onError: () => {
+      setActionError('সদস্যকে মোছা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setConfirmingDelete(false)
+    },
+  })
   const statusMutation = useMutation({
     mutationFn: (status: 'active' | 'suspended') =>
       setMemberStatusFn({ data: { id: memberId, status } }),
@@ -204,6 +225,41 @@ export function MemberDrawer({
                   </Button>
                 </>
               )}
+              {can(actor.role, 'members.delete') &&
+                (confirmingDelete ? (
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                    <p className="mb-2.5 text-sm text-red-800">
+                      সদস্যকে তালিকা থেকে সরিয়ে দেওয়া হবে এবং ৩০ দিন পর স্থায়ীভাবে
+                      মুছে যাবে। নিশ্চিত?
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        disabled={deleteMutation.isPending}
+                        onClick={() => deleteMutation.mutate()}
+                      >
+                        হ্যাঁ, মুছে ফেলুন
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setConfirmingDelete(false)}
+                      >
+                        না
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-red-700 hover:bg-red-50"
+                    onClick={() => setConfirmingDelete(true)}
+                  >
+                    সদস্যকে মুছে ফেলুন
+                  </Button>
+                ))}
             </div>
           )}
       </div>

@@ -1,10 +1,22 @@
 import '@tanstack/react-start/server-only'
 
-import { and, desc, eq, ilike, isNull, like, or, sql } from 'drizzle-orm'
+import {
+  and,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  isNotNull,
+  isNull,
+  like,
+  lt,
+  or,
+  sql,
+} from 'drizzle-orm'
 import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 
 import { db } from '../db/index.ts'
-import { auditLog, members } from '../db/schema/index.ts'
+import { auditLog, members, user } from '../db/schema/index.ts'
 import { memberFormSchema } from './member-form.ts'
 import { MEMBER_STATUSES } from './member-options.ts'
 import type { MemberStatus } from './member-options.ts'
@@ -266,4 +278,79 @@ export async function setMemberStatus(
     }),
   ])
   return { ok: true }
+}
+
+export const ARCHIVE_DAYS = 30
+
+export type ArchiveResult =
+  { ok: true } | { ok: false; code: 'NOT_FOUND' | 'FORBIDDEN' }
+
+/**
+ * "Delete" a member: they vanish from every list and lose any login at once, but
+ * the row stays for ARCHIVE_DAYS in case of a mistake, then
+ * purgeArchivedMembers() removes it for real. Call
+ * requirePermission('members.delete') first (super_admin only).
+ */
+export async function archiveMember(
+  actor: { id: string; role: Role },
+  memberId: string,
+): Promise<ArchiveResult> {
+  const [target] = await db
+    .select({ role: members.role })
+    .from(members)
+    .where(and(eq(members.id, memberId), isNull(members.archivedAt)))
+    .limit(1)
+  if (!target) return { ok: false, code: 'NOT_FOUND' }
+  if (!canManageMember(actor, { id: memberId, role: target.role }))
+    return { ok: false, code: 'FORBIDDEN' }
+
+  // Archive and log in one batch: both happen or neither. memberFromHeaders
+  // ignores archived members, so any session they hold stops working at once.
+  await db.batch([
+    db
+      .update(members)
+      .set({ archivedAt: sql`now()` })
+      .where(eq(members.id, memberId)),
+    db.insert(auditLog).values({
+      actorId: actor.id,
+      action: 'member.delete',
+      targetType: 'member',
+      targetId: memberId,
+    }),
+  ])
+  return { ok: true }
+}
+
+/**
+ * Really delete members archived more than ARCHIVE_DAYS ago, together with their
+ * login accounts. Meant to run on a schedule (not from any web request).
+ * Audit-log rows stay: they hold no personal data and must outlive the member.
+ * Returns how many members were removed.
+ */
+export async function purgeArchivedMembers(): Promise<number> {
+  const cutoff = sql`now() - make_interval(days => ${ARCHIVE_DAYS})`
+  const expired = await db
+    .select({ id: members.id, userId: members.userId })
+    .from(members)
+    .where(and(isNotNull(members.archivedAt), lt(members.archivedAt, cutoff)))
+  if (expired.length === 0) return 0
+
+  const deleteMembers = db.delete(members).where(
+    inArray(
+      members.id,
+      expired.map((m) => m.id),
+    ),
+  )
+  const userIds = expired.flatMap((m) => (m.userId ? [m.userId] : []))
+  if (userIds.length === 0) {
+    await deleteMembers
+  } else {
+    // One batch = one transaction. Deleting the user cascades to its account
+    // and sessions.
+    await db.batch([
+      deleteMembers,
+      db.delete(user).where(inArray(user.id, userIds)),
+    ])
+  }
+  return expired.length
 }
