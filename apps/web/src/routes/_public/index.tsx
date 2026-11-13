@@ -4,6 +4,7 @@ import { About } from '../../components/public/home/about.tsx'
 import { GalleryTeaser } from '../../components/public/home/gallery-teaser.tsx'
 import { Hero } from '../../components/public/home/hero.tsx'
 import { QuickActions } from '../../components/public/home/quick-actions.tsx'
+import { Join } from '../../components/public/home/join.tsx'
 import { NoticeBoard } from '../../components/public/home/notice-board.tsx'
 import { UpcomingActivities } from '../../components/public/home/upcoming-activities.tsx'
 import { WhatWeDo } from '../../components/public/home/what-we-do.tsx'
@@ -32,6 +33,7 @@ function Home() {
       <NoticeBoard />
       <GalleryTeaser />
       <About />
+      <Join />
     </main>
   )
 }
