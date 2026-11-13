@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 import { drizzle } from 'drizzle-orm/neon-http'
 
-import * as schema from './schema.ts'
+import * as schema from './schema/index.ts'
 
 // Neon's HTTP driver sends each query as a single HTTPS request. That suits
 // Cloudflare Workers, which cannot hold a long-lived TCP connection open the
