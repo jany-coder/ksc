@@ -2,3 +2,4 @@
 // here, and drizzle-kit reads this folder to generate migrations.
 // Each table lives in its own file and is re-exported below as it is added.
 export * from './enums.ts'
+export * from './members.ts'
