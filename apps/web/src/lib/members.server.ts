@@ -48,6 +48,7 @@ function searchCondition(q: string) {
 export async function listMembers(
   filters: MembersSearch,
 ): Promise<MembersPage> {
+  const page = filters.page ?? 1 // absent from the URL means the first page
   const where = and(
     isNull(members.archivedAt), // archived members are in the 30-day bin
     filters.status ? sql`${members.status} = ${filters.status}` : undefined,
@@ -72,7 +73,7 @@ export async function listMembers(
       .where(where)
       .orderBy(desc(members.joinedAt), desc(members.id))
       .limit(PAGE_SIZE)
-      .offset((filters.page - 1) * PAGE_SIZE),
+      .offset((page - 1) * PAGE_SIZE),
     db
       .select({ n: sql<number>`count(*)::int` })
       .from(members)
@@ -94,7 +95,7 @@ export async function listMembers(
     rows,
     total: total?.n ?? 0,
     counts,
-    page: filters.page,
+    page,
     pageSize: PAGE_SIZE,
   }
 }

@@ -23,10 +23,14 @@ type Props = {
 
 // Pages that exist get a link. The rest are shown, as in the approved design,
 // but greyed out and not clickable until they are built.
-type NavItem = { label: string; icon: LucideIcon; to?: '/admin' }
+type NavItem = {
+  label: string
+  icon: LucideIcon
+  to?: '/admin' | '/admin/members'
+}
 const NAV: NavItem[] = [
   { label: 'ড্যাশবোর্ড', icon: LayoutDashboard, to: '/admin' },
-  { label: 'সদস্য', icon: Users },
+  { label: 'সদস্য', icon: Users, to: '/admin/members' },
   { label: 'রক্তদাতা', icon: Droplet },
   { label: 'কার্যক্রম', icon: CalendarDays },
   { label: 'গ্যালারি', icon: Image },
@@ -89,7 +93,7 @@ export function AdminShell({ member, children }: Props) {
               <Link
                 key={label}
                 to={to}
-                activeOptions={{ exact: true }}
+                activeOptions={{ exact: to === '/admin' }}
                 className={cn(
                   itemClass,
                   'text-zinc-600 hover:bg-secondary hover:text-foreground',

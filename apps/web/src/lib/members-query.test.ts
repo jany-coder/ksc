@@ -16,8 +16,9 @@ describe('escapeLike', () => {
 })
 
 describe('membersSearchSchema', () => {
-  it('defaults to page 1 with no filters', () => {
-    expect(membersSearchSchema.parse({})).toEqual({ page: 1 })
+  it('fills in nothing when no filters are given', () => {
+    // No default page: a default would make the router rewrite the URL.
+    expect(membersSearchSchema.parse({})).toEqual({})
   })
 
   it('accepts valid filters', () => {
@@ -39,10 +40,10 @@ describe('membersSearchSchema', () => {
     })
     expect(parsed.status).toBeUndefined()
     expect(parsed.blood).toBeUndefined()
-    expect(parsed.page).toBe(1)
+    expect(parsed.page).toBeUndefined()
   })
 
-  it('rejects a non-integer page by falling back to 1', () => {
-    expect(membersSearchSchema.parse({ page: 2.5 }).page).toBe(1)
+  it('ignores a non-integer page', () => {
+    expect(membersSearchSchema.parse({ page: 2.5 }).page).toBeUndefined()
   })
 })

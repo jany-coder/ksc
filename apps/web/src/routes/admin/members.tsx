@@ -1,0 +1,235 @@
+import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
+import {
+  Link,
+  createFileRoute,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router'
+import { Search } from 'lucide-react'
+import { useEffect, useState } from 'react'
+
+import { MembersTable } from '../../components/admin/members-table.tsx'
+import { Input } from '../../components/ui/input.tsx'
+import {
+  BLOOD_GROUPS,
+  MEMBER_STATUSES,
+  STATUS_LABEL,
+  bloodLabel,
+} from '../../lib/member-options.ts'
+import { membersSearchSchema } from '../../lib/members-query.ts'
+import type { MembersSearch } from '../../lib/members-query.ts'
+import { listMembersFn } from '../../lib/members.functions.ts'
+import { can } from '../../lib/permissions.ts'
+import { cn } from '../../lib/utils.ts'
+
+// The key holds every filter, so each combination has its own cache entry.
+const membersQuery = (search: MembersSearch) =>
+  queryOptions({
+    queryKey: ['members', 'list', search],
+    queryFn: () => listMembersFn({ data: search }),
+  })
+
+export const Route = createFileRoute('/admin/members')({
+  head: () => ({ meta: [{ title: 'সদস্য — কলমা সোশ্যাল ক্লাব' }] }),
+  validateSearch: membersSearchSchema,
+  beforeLoad: ({ context }) => {
+    // The /admin guard already ran; this also keeps people off by role. The
+    // server function checks the permission again: that is the real lock.
+    if (!can(context.member.role, 'members.read'))
+      throw redirect({ to: '/admin' })
+  },
+  loaderDeps: ({ search }) => search,
+  loader: ({ context, deps }) =>
+    context.queryClient.ensureQueryData(membersQuery(deps)),
+  errorComponent: () => (
+    <main className="px-4 py-6 md:p-6">
+      <p role="alert" className="text-red-700">
+        সদস্যদের তালিকা লোড করা গেল না। পাতাটি রিফ্রেশ করে দেখুন।
+      </p>
+    </main>
+  ),
+  component: MembersPage,
+})
+
+// Build a search object without keys whose value is undefined, so the URL stays
+// clean (/admin/members, not /admin/members?status=undefined).
+function next(
+  prev: Partial<MembersSearch>,
+  patch: Partial<MembersSearch>,
+): MembersSearch {
+  // Any filter change drops the page (the old page may no longer exist); a
+  // caller that wants a page passes it in the patch.
+  const merged = { ...prev, page: undefined, ...patch }
+  const out: MembersSearch = {}
+  if (merged.status) out.status = merged.status
+  if (merged.blood) out.blood = merged.blood
+  if (merged.q) out.q = merged.q
+  if (merged.page && merged.page > 1) out.page = merged.page // page 1 = no param
+  return out
+}
+
+const chipClass =
+  'inline-flex min-h-9 items-center rounded-lg border px-[13px] text-[13px] font-semibold'
+
+function MembersPage() {
+  const search = Route.useSearch()
+  const navigate = useNavigate()
+  const { data } = useSuspenseQuery(membersQuery(search))
+  const { rows, total, counts, page, pageSize } = data // page: 1 when absent
+
+  // Search as you type, but wait for a pause so each keystroke is not a request.
+  const [text, setText] = useState(search.q ?? '')
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const q = text.trim()
+      if (q === (search.q ?? '')) return
+      void navigate({
+        to: '/admin/members',
+        search: (prev) => next(prev, { q: q || undefined }),
+        replace: true,
+      })
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [text, search.q, navigate])
+
+  const from = (page - 1) * pageSize + 1
+  const to = (page - 1) * pageSize + rows.length
+  const hasPrev = page > 1
+  const hasNext = page * pageSize < total
+
+  return (
+    <main className="flex flex-col gap-4 px-4 py-6 md:p-6">
+      <div>
+        <h1 className="mb-0.5 text-2xl font-semibold">সদস্য</h1>
+        <p className="text-sm text-muted-foreground">
+          ফোন নম্বর, ঠিকানা ও রক্তের গ্রুপ শুধু অ্যাডমিন দেখতে পান — ওয়েবসাইটে কোথাও
+          প্রকাশ হয় না।
+        </p>
+      </div>
+
+      <nav
+        aria-label="অবস্থা অনুযায়ী"
+        className="flex flex-wrap gap-1 border-b border-border"
+      >
+        {([undefined, ...MEMBER_STATUSES] as const).map((status) => {
+          const active = search.status === status
+          const count = status ? counts[status] : counts.all
+          return (
+            <Link
+              key={status ?? 'all'}
+              to="/admin/members"
+              search={(prev) => next(prev, { status })}
+              aria-current={active ? 'page' : undefined}
+              className={cn(
+                '-mb-px inline-flex min-h-9 items-center gap-[7px] border-b-2 px-3 text-sm',
+                active
+                  ? 'border-primary font-semibold text-primary'
+                  : 'border-transparent font-medium text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {status ? STATUS_LABEL[status] : 'সব'}
+              <span
+                className={cn(
+                  'rounded-full px-1.5 py-px text-[11px]',
+                  active
+                    ? 'bg-accent text-primary'
+                    : 'bg-secondary text-muted-foreground',
+                )}
+              >
+                {count}
+              </span>
+            </Link>
+          )
+        })}
+      </nav>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative min-w-0 max-w-[300px] flex-[1_1_220px]">
+          <Search
+            className="pointer-events-none absolute start-3 top-1/2 size-[15px] -translate-y-1/2 text-zinc-400"
+            aria-hidden="true"
+          />
+          <Input
+            type="search"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            aria-label="নাম বা নম্বর দিয়ে খুঁজুন"
+            placeholder="নাম বা নম্বর"
+            className="ps-9"
+          />
+        </div>
+        {([undefined, ...BLOOD_GROUPS] as const).map((group) => {
+          const active = search.blood === group
+          return (
+            <Link
+              key={group ?? 'all'}
+              to="/admin/members"
+              search={(prev) => next(prev, { blood: group })}
+              aria-current={active ? 'true' : undefined}
+              className={cn(
+                chipClass,
+                active
+                  ? 'border-zinc-900 bg-zinc-900 text-white'
+                  : 'border-border bg-card text-zinc-700 hover:bg-secondary',
+              )}
+            >
+              {group ? bloodLabel(group) : 'সব'}
+            </Link>
+          )
+        })}
+      </div>
+
+      <div className="overflow-hidden rounded-[10px] border border-border bg-card">
+        {rows.length > 0 ? (
+          <MembersTable rows={rows} />
+        ) : (
+          <p className="px-4 py-10 text-center text-muted-foreground">
+            {counts.all === 0
+              ? 'এখনো কোনো সদস্য যোগ হয়নি।'
+              : 'এই ফিল্টারে কোনো সদস্য পাওয়া যায়নি।'}
+          </p>
+        )}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 border-t border-border px-4 py-[11px]">
+          <span className="text-[13px] text-muted-foreground">
+            {counts.all} জনের মধ্যে {total} জন মিলেছে
+            {total > 0 ? ` · ${from}–${to} দেখানো হচ্ছে` : ''}
+          </span>
+          <div className="flex gap-1.5">
+            <PageLink enabled={hasPrev} page={page - 1} label="আগের" />
+            <PageLink enabled={hasNext} page={page + 1} label="পরের" />
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+}
+
+const pageClass =
+  'inline-flex min-h-8 items-center rounded-md border border-border bg-card px-3 text-[13px] text-zinc-700'
+
+function PageLink({
+  enabled,
+  page,
+  label,
+}: {
+  enabled: boolean
+  page: number
+  label: string
+}) {
+  return enabled ? (
+    <Link
+      to="/admin/members"
+      search={(prev) => next(prev, { page })}
+      className={cn(pageClass, 'hover:bg-secondary')}
+    >
+      {label}
+    </Link>
+  ) : (
+    <span
+      aria-disabled="true"
+      className={cn(pageClass, 'cursor-not-allowed opacity-50')}
+    >
+      {label}
+    </span>
+  )
+}
