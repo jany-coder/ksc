@@ -1,5 +1,4 @@
 import {
-  
   boolean,
   date,
   index,
@@ -8,9 +7,9 @@ import {
   time,
   timestamp,
   uniqueIndex,
-  uuid
+  uuid,
 } from 'drizzle-orm/pg-core'
-import type {AnyPgColumn} from 'drizzle-orm/pg-core';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 
 import { publishStatus } from './enums.ts'
 import { images } from './images.ts'
