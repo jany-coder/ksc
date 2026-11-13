@@ -15,6 +15,7 @@ import {
   getMemberFn,
   setMemberStatusFn,
 } from '../../lib/members.functions.ts'
+import { resetMemberPasswordFn } from '../../lib/password.functions.ts'
 import { can, canManageMember } from '../../lib/permissions.ts'
 import type { Role } from '../../lib/permissions.ts'
 import { Button } from '../ui/button.tsx'
@@ -65,6 +66,26 @@ export function MemberDrawer({
   const queryClient = useQueryClient()
   const [actionError, setActionError] = useState<string | null>(null)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  // Shown once after a reset. Lives only in this component: closing the drawer
+  // forgets it, and it is never put in the URL or the query cache.
+  const [tempPassword, setTempPassword] = useState<string | null>(null)
+  const resetMutation = useMutation({
+    mutationFn: () => resetMemberPasswordFn({ data: { id: memberId } }),
+    onSuccess: (result) => {
+      if (!result.ok) {
+        setActionError(
+          result.code === 'NO_LOGIN'
+            ? 'এই সদস্যের লগইন অ্যাকাউন্ট নেই।'
+            : 'পাসওয়ার্ড রিসেট করা গেল না।',
+        )
+        return
+      }
+      setActionError(null)
+      setTempPassword(result.tempPassword)
+    },
+    onError: () =>
+      setActionError('রিসেট করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।'),
+  })
   const deleteMutation = useMutation({
     mutationFn: () => archiveMemberFn({ data: { id: memberId } }),
     onSuccess: async (result) => {
@@ -194,6 +215,37 @@ export function MemberDrawer({
                 <p role="alert" className="text-sm text-red-700">
                   {actionError}
                 </p>
+              )}
+              {tempPassword && (
+                <div
+                  role="status"
+                  className="rounded-lg border border-green-200 bg-green-50 p-3"
+                >
+                  <p className="mb-1.5 text-sm text-green-900">
+                    অস্থায়ী পাসওয়ার্ড (শুধু এখন একবার দেখানো হচ্ছে — সদস্যকে জানিয়ে
+                    দিন। প্রথমবার ঢুকেই নতুন পাসওয়ার্ড দিতে হবে):
+                  </p>
+                  <code className="block rounded border border-green-200 bg-card px-2 py-1.5 font-mono text-base break-all select-all">
+                    {tempPassword}
+                  </code>
+                </div>
+              )}
+              {member.hasLogin && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={resetMutation.isPending}
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        'নতুন অস্থায়ী পাসওয়ার্ড তৈরি হবে এবং এই ব্যক্তি সব ডিভাইস থেকে বের হয়ে যাবেন। চালিয়ে যাবেন?',
+                      )
+                    )
+                      resetMutation.mutate()
+                  }}
+                >
+                  পাসওয়ার্ড রিসেট করুন
+                </Button>
               )}
               {member.status === 'suspended' ? (
                 <Button
