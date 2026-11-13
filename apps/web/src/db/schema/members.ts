@@ -40,9 +40,8 @@ export const members = pgTable(
     userId: uuid('user_id').references(() => user.id, { onDelete: 'set null' }),
 
     role: memberRole().notNull().default('member'),
-    // Null until the member gets login access. Member login is not in v1.
-    passwordHash: text('password_hash'),
-    // Set on account creation and after an admin resets a password.
+    // Set on account creation and after an admin resets a password. The password
+    // itself is stored by Better Auth in account.password, never here.
     mustChangePassword: boolean('must_change_password').notNull().default(true),
 
     status: memberStatus().notNull().default('pending'),
