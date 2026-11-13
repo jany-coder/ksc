@@ -178,6 +178,24 @@ export const adminMessages = {
     bn: 'নতুন অস্থায়ী পাসওয়ার্ড তৈরি হবে এবং এই ব্যক্তি সব ডিভাইস থেকে বের হয়ে যাবেন। চালিয়ে যাবেন?',
     en: 'A new temporary password will be created and this person will be signed out of every device. Continue?',
   },
+  'drawer.makeAdmin': { bn: 'অ্যাডমিন বানান', en: 'Make admin' },
+  'drawer.makeAdminConfirm': {
+    bn: 'এই সদস্যকে অ্যাডমিন বানাবেন? তিনি সব সদস্যের তথ্য দেখতে পারবেন। একটি অস্থায়ী পাসওয়ার্ড দেওয়া হবে।',
+    en: "Make this member an admin? They will be able to see every member's details. A temporary password will be given.",
+  },
+  'drawer.removeAdmin': { bn: 'অ্যাডমিন থেকে সরান', en: 'Remove as admin' },
+  'drawer.removeAdminConfirm': {
+    bn: 'অ্যাডমিন পদ সরাবেন? তার লগইন মুছে যাবে ও সব ডিভাইস থেকে বের হয়ে যাবেন; সদস্য হিসেবে থাকবেন।',
+    en: 'Remove admin access? Their login will be deleted and they will be signed out everywhere; they stay a member.',
+  },
+  'drawer.errMakeAdmin': {
+    bn: 'অ্যাডমিন বানানো গেল না। সদস্যকে আগে "সক্রিয়" করতে হবে।',
+    en: 'Could not make an admin. The member must be active first.',
+  },
+  'drawer.errRemoveAdmin': {
+    bn: 'অ্যাডমিন পদ সরানো গেল না।',
+    en: 'Could not remove admin access.',
+  },
   'drawer.reset': { bn: 'পাসওয়ার্ড রিসেট করুন', en: 'Reset password' },
   'drawer.activate': { bn: 'সক্রিয় করুন', en: 'Activate' },
   'drawer.suspend': { bn: 'স্থগিত করুন', en: 'Suspend' },

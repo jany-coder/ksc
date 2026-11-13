@@ -18,6 +18,7 @@ import {
   getMemberFn,
   setMemberStatusFn,
 } from '../../lib/members.functions.ts'
+import { makeAdminFn, removeAdminFn } from '../../lib/admins.functions.ts'
 import { resetMemberPasswordFn } from '../../lib/password.functions.ts'
 import { can, canManageMember } from '../../lib/permissions.ts'
 import type { Role } from '../../lib/permissions.ts'
@@ -89,6 +90,32 @@ export function MemberDrawer({
       setTempPassword(result.tempPassword)
     },
     onError: () => setActionError(t('drawer.errResetNet')),
+  })
+  const makeAdminMutation = useMutation({
+    mutationFn: () => makeAdminFn({ data: { id: memberId } }),
+    onSuccess: async (result) => {
+      if (!result.ok) {
+        setActionError(t('drawer.errMakeAdmin'))
+        return
+      }
+      setActionError(null)
+      setTempPassword(result.tempPassword)
+      await queryClient.invalidateQueries({ queryKey: ['members'] })
+    },
+    onError: () => setActionError(t('drawer.errMakeAdmin')),
+  })
+  const removeAdminMutation = useMutation({
+    mutationFn: () => removeAdminFn({ data: { id: memberId } }),
+    onSuccess: async (result) => {
+      if (!result.ok) {
+        setActionError(t('drawer.errRemoveAdmin'))
+        return
+      }
+      setActionError(null)
+      setTempPassword(null)
+      await queryClient.invalidateQueries({ queryKey: ['members'] })
+    },
+    onError: () => setActionError(t('drawer.errRemoveAdmin')),
   })
   const deleteMutation = useMutation({
     mutationFn: () => archiveMemberFn({ data: { id: memberId } }),
@@ -258,6 +285,32 @@ export function MemberDrawer({
                   }}
                 >
                   {t('drawer.reset')}
+                </Button>
+              )}
+              {can(actor.role, 'admins.manage') && member.role === 'member' && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={makeAdminMutation.isPending}
+                  onClick={() => {
+                    if (window.confirm(t('drawer.makeAdminConfirm')))
+                      makeAdminMutation.mutate()
+                  }}
+                >
+                  {t('drawer.makeAdmin')}
+                </Button>
+              )}
+              {can(actor.role, 'admins.manage') && member.role === 'admin' && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={removeAdminMutation.isPending}
+                  onClick={() => {
+                    if (window.confirm(t('drawer.removeAdminConfirm')))
+                      removeAdminMutation.mutate()
+                  }}
+                >
+                  {t('drawer.removeAdmin')}
                 </Button>
               )}
               {member.status === 'suspended' ? (
