@@ -218,6 +218,7 @@ function MembersPage() {
         <MemberDrawer
           key={openMemberId}
           memberId={openMemberId}
+          actor={member}
           onClose={() =>
             void navigate({
               to: '/admin/members',

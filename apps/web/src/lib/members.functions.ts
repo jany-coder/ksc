@@ -2,8 +2,14 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 
 import { memberFormSchema } from './member-form.ts'
+import { MEMBER_STATUSES } from './member-options.ts'
 import { membersSearchSchema } from './members-query.ts'
-import { createMember, getMember, listMembers } from './members.server.ts'
+import {
+  createMember,
+  getMember,
+  listMembers,
+  setMemberStatus,
+} from './members.server.ts'
 import { requirePermission } from './session.server.ts'
 
 // The permission check is the FIRST line, inside the server function: a route
@@ -27,4 +33,11 @@ export const getMemberFn = createServerFn({ method: 'GET' })
   .handler(async ({ data }) => {
     await requirePermission('members.read')
     return getMember(data.id)
+  })
+
+export const setMemberStatusFn = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid(), status: z.enum(MEMBER_STATUSES) }))
+  .handler(async ({ data }) => {
+    const actor = await requirePermission('members.write')
+    return setMemberStatus(actor, data.id, data.status)
   })

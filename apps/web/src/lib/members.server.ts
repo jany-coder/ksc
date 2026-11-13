@@ -10,6 +10,8 @@ import { MEMBER_STATUSES } from './member-options.ts'
 import type { MemberStatus } from './member-options.ts'
 import { PAGE_SIZE, escapeLike } from './members-query.ts'
 import type { MembersSearch } from './members-query.ts'
+import { canManageMember } from './permissions.ts'
+import type { Role } from './permissions.ts'
 import { normalizePhone, toAsciiDigits } from './phone.ts'
 
 // Read access to member data. Every caller must have checked
@@ -218,4 +220,50 @@ export async function getMember(id: string): Promise<MemberDetail | null> {
     .where(and(eq(members.id, id), isNull(members.archivedAt)))
     .limit(1)
   return row ?? null
+}
+
+export type SetStatusResult =
+  | { ok: true }
+  | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' | 'SELF' | 'FORBIDDEN' }
+
+/**
+ * Change a member's status (active / pending / suspended). Call
+ * requirePermission('members.write') first.
+ *
+ * Who may change whom is decided by canManageMember (permissions.ts). A suspended member loses access at once: memberFromHeaders only accepts
+ * 'active' members, so their next request is refused.
+ */
+export async function setMemberStatus(
+  actor: { id: string; role: Role },
+  memberId: string,
+  status: unknown,
+): Promise<SetStatusResult> {
+  if (!MEMBER_STATUSES.some((s) => s === status))
+    return { ok: false, code: 'INVALID_INPUT' }
+  const next = status as MemberStatus
+
+  if (memberId === actor.id) return { ok: false, code: 'SELF' }
+
+  const [target] = await db
+    .select({ role: members.role, status: members.status })
+    .from(members)
+    .where(and(eq(members.id, memberId), isNull(members.archivedAt)))
+    .limit(1)
+  if (!target) return { ok: false, code: 'NOT_FOUND' }
+  if (!canManageMember(actor, { id: memberId, role: target.role }))
+    return { ok: false, code: 'FORBIDDEN' }
+  if (target.status === next) return { ok: true } // nothing to do
+
+  // Update and log in one batch: both happen or neither.
+  await db.batch([
+    db.update(members).set({ status: next }).where(eq(members.id, memberId)),
+    db.insert(auditLog).values({
+      actorId: actor.id,
+      action: 'member.status_change',
+      targetType: 'member',
+      targetId: memberId,
+      meta: { from: target.status, to: next },
+    }),
+  ])
+  return { ok: true }
 }

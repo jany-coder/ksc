@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { can } from './permissions.ts'
+import { can, canManageMember } from './permissions.ts'
 import type { Action, Role } from './permissions.ts'
 
 // Mirrors the table in CLAUDE.md section 4. If a row changes there, change it
@@ -41,5 +41,28 @@ describe('can', () => {
     ] as const) {
       expect(can('admin', action)).toBe(false)
     }
+  })
+})
+
+describe('canManageMember', () => {
+  const admin = { id: 'a', role: 'admin' as const }
+  const boss = { id: 's', role: 'super_admin' as const }
+
+  it('never lets anyone manage themselves', () => {
+    expect(canManageMember(admin, admin)).toBe(false)
+    expect(canManageMember(boss, boss)).toBe(false)
+  })
+
+  it('lets an admin manage an ordinary member', () => {
+    expect(canManageMember(admin, { id: 'm', role: 'member' })).toBe(true)
+  })
+
+  it('stops an admin touching another admin or the super admin', () => {
+    expect(canManageMember(admin, { id: 'b', role: 'admin' })).toBe(false)
+    expect(canManageMember(admin, boss)).toBe(false)
+  })
+
+  it('lets the super admin manage an admin', () => {
+    expect(canManageMember(boss, admin)).toBe(true)
   })
 })

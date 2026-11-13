@@ -30,3 +30,22 @@ const allowed: Record<Action, readonly Role[]> = {
 export function can(role: Role, action: Action): boolean {
   return allowed[action].includes(role)
 }
+
+/**
+ * May `actor` change or remove `target`? (status, delete, password reset)
+ *  - never yourself: an admin must not lock themselves out or give themselves
+ *    back access;
+ *  - a plain admin may only touch ordinary members. Touching another admin or
+ *    the super admin needs super_admin, otherwise any admin could take over an
+ *    account by resetting its password.
+ * This is only the "who on whom" rule; the action itself (can() above) must be
+ * checked as well.
+ */
+export function canManageMember(
+  actor: { id: string; role: Role },
+  target: { id: string; role: Role },
+): boolean {
+  if (actor.id === target.id) return false
+  if (target.role !== 'member') return actor.role === 'super_admin'
+  return true
+}

@@ -1,11 +1,17 @@
-import { queryOptions, useQuery } from '@tanstack/react-query'
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { X } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { formatBnDate } from '../../lib/bn-datetime.ts'
 import { STATUS_LABEL, bloodLabel } from '../../lib/member-options.ts'
-import { getMemberFn } from '../../lib/members.functions.ts'
+import { getMemberFn, setMemberStatusFn } from '../../lib/members.functions.ts'
+import { can, canManageMember } from '../../lib/permissions.ts'
 import type { Role } from '../../lib/permissions.ts'
 import { Button } from '../ui/button.tsx'
 
@@ -42,12 +48,33 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
  */
 export function MemberDrawer({
   memberId,
+  actor,
   onClose,
 }: {
   memberId: string
+  // The signed-in admin. Used only to decide which buttons to show; the server
+  // function checks the same rules again.
+  actor: { id: string; role: Role }
   onClose: () => void
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
+  const queryClient = useQueryClient()
+  const [actionError, setActionError] = useState<string | null>(null)
+  const statusMutation = useMutation({
+    mutationFn: (status: 'active' | 'suspended') =>
+      setMemberStatusFn({ data: { id: memberId, status } }),
+    onSuccess: async (result) => {
+      if (!result.ok) {
+        setActionError('এই পরিবর্তন করা গেল না।')
+        return
+      }
+      setActionError(null)
+      // The list and the drawer both show the status.
+      await queryClient.invalidateQueries({ queryKey: ['members'] })
+    },
+    onError: () =>
+      setActionError('এই পরিবর্তন করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।'),
+  })
   const {
     data: member,
     isPending,
@@ -137,6 +164,48 @@ export function MemberDrawer({
             </dl>
           )}
         </div>
+
+        {member &&
+          can(actor.role, 'members.write') &&
+          canManageMember(actor, member) && (
+            <div className="flex flex-col gap-2 border-t border-border px-5 py-4">
+              {actionError && (
+                <p role="alert" className="text-sm text-red-700">
+                  {actionError}
+                </p>
+              )}
+              {member.status === 'suspended' ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={statusMutation.isPending}
+                  onClick={() => statusMutation.mutate('active')}
+                >
+                  সক্রিয় করুন
+                </Button>
+              ) : (
+                <>
+                  {member.status === 'pending' && (
+                    <Button
+                      type="button"
+                      disabled={statusMutation.isPending}
+                      onClick={() => statusMutation.mutate('active')}
+                    >
+                      সক্রিয় করুন
+                    </Button>
+                  )}
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    disabled={statusMutation.isPending}
+                    onClick={() => statusMutation.mutate('suspended')}
+                  >
+                    স্থগিত করুন
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
       </div>
     </dialog>
   )
