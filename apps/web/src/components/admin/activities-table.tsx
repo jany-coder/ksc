@@ -71,6 +71,21 @@ const columns = helper.columns([
       )
     },
   }),
+  // An explicit link, so editing and deleting are easy to find (the delete
+  // button itself is on the edit page, behind a confirmation).
+  helper.display({
+    id: 'actions',
+    header: () => <span className="sr-only">কাজ</span>,
+    cell: ({ row }) => (
+      <Link
+        to="/admin/activities/$id"
+        params={{ id: row.original.id }}
+        className="text-[13px] font-medium whitespace-nowrap text-primary hover:underline"
+      >
+        সম্পাদনা / মুছুন
+      </Link>
+    ),
+  }),
 ])
 
 export function ActivitiesTable({ rows }: { rows: ActivityRow[] }) {
