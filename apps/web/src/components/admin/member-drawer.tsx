@@ -4,7 +4,8 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
-import { X } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { Pencil, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
@@ -20,7 +21,7 @@ import {
 import { resetMemberPasswordFn } from '../../lib/password.functions.ts'
 import { can, canManageMember } from '../../lib/permissions.ts'
 import type { Role } from '../../lib/permissions.ts'
-import { Button } from '../ui/button.tsx'
+import { Button, buttonVariants } from '../ui/button.tsx'
 
 export const memberDetailQuery = (id: string) =>
   queryOptions({
@@ -238,6 +239,14 @@ export function MemberDrawer({
                   </code>
                 </div>
               )}
+              <Link
+                to="/admin/members/$id"
+                params={{ id: memberId }}
+                className={buttonVariants({ variant: 'outline' })}
+              >
+                <Pencil aria-hidden="true" />
+                {t('drawer.edit')}
+              </Link>
               {member.hasLogin && (
                 <Button
                   type="button"

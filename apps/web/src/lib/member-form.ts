@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { isRealDate } from './activity-form.ts'
 import { BLOOD_GROUPS, MEMBER_STATUSES } from './member-options.ts'
 import { normalizePhone } from './phone.ts'
 
@@ -39,3 +40,43 @@ export const memberFormSchema = z.object({
 })
 
 export type MemberFormInput = z.infer<typeof memberFormSchema>
+
+// Editing an existing member. Same fields as "new", except:
+//  - no phone: the number is the member's unique identity (and an admin's
+//    sign-in name), so it is never changed here;
+//  - no consent: it was recorded when the member joined and is not re-asked here;
+//  - no status: suspending / activating has its own buttons (and its own log entry);
+//  - plus the date of the last blood donation.
+export const memberEditSchema = memberFormSchema
+  .omit({ phone: true, status: true, consent: true })
+  .extend({
+    // '' means "none yet".
+    lastDonationDate: z
+      .string()
+      .refine((v) => v === '' || isRealDate(v), 'val.dateInvalid'),
+  })
+
+export type MemberEditInput = z.infer<typeof memberEditSchema>
+
+/** The saved member (as the detail drawer gets it) -> the edit form's starting values. */
+export function memberToEditValues(member: {
+  name: string
+  email: string | null
+  bloodGroup: MemberEditInput['bloodGroup'] | null
+  address: string | null
+  area: string | null
+  occupation: string | null
+  willingToDonate: boolean
+  lastDonationDate: string | null
+}): MemberEditInput {
+  return {
+    name: member.name,
+    email: member.email ?? '',
+    bloodGroup: member.bloodGroup ?? '',
+    address: member.address ?? '',
+    area: member.area ?? '',
+    occupation: member.occupation ?? '',
+    willingToDonate: member.willingToDonate,
+    lastDonationDate: member.lastDonationDate ?? '',
+  }
+}

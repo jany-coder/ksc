@@ -17,7 +17,7 @@ import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 
 import { db } from '../db/index.ts'
 import { auditLog, members, user } from '../db/schema/index.ts'
-import { memberFormSchema } from './member-form.ts'
+import { memberEditSchema, memberFormSchema } from './member-form.ts'
 import { MEMBER_STATUSES, STATUS_LABEL_KEY } from './member-options.ts'
 import { tFor } from './i18n/messages.ts'
 import type { Lang } from './i18n/core.ts'
@@ -428,4 +428,69 @@ export async function exportMembersCsv(
     ]),
   )
   return { csv, count: rows.length }
+}
+
+export type UpdateMemberResult =
+  | { ok: true }
+  | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' | 'FORBIDDEN' }
+
+/**
+ * Change a member's details. Call requirePermission('members.write') first.
+ *
+ * Who may change whom is canManageMember (permissions.ts): never yourself, and
+ * only a super_admin may touch another admin. The phone number, role, consent
+ * and status are NOT editable here (the phone is the member's identity and an
+ * admin's sign-in name). If the member has a login, its display name follows,
+ * in the SAME batch (one transaction). The audit entry records who and whom,
+ * never what changed: phone numbers and addresses stay out of the log
+ * (CLAUDE.md section 3).
+ */
+export async function updateMember(
+  actor: { id: string; role: Role },
+  memberId: string,
+  input: unknown,
+): Promise<UpdateMemberResult> {
+  const parsed = memberEditSchema.safeParse(input)
+  if (!parsed.success) return { ok: false, code: 'INVALID_INPUT' }
+  const v = parsed.data
+
+  const [target] = await db
+    .select({ role: members.role, userId: members.userId })
+    .from(members)
+    .where(and(eq(members.id, memberId), isNull(members.archivedAt)))
+    .limit(1)
+  if (!target) return { ok: false, code: 'NOT_FOUND' }
+  if (!canManageMember(actor, { id: memberId, role: target.role }))
+    return { ok: false, code: 'FORBIDDEN' }
+
+  const updateProfile = db
+    .update(members)
+    .set({
+      name: v.name,
+      email: blankToNull(v.email.toLowerCase()),
+      bloodGroup: v.bloodGroup === '' ? null : v.bloodGroup,
+      address: blankToNull(v.address),
+      area: blankToNull(v.area),
+      occupation: blankToNull(v.occupation),
+      willingToDonate: v.willingToDonate,
+      lastDonationDate: blankToNull(v.lastDonationDate),
+    })
+    .where(eq(members.id, memberId))
+  const log = db.insert(auditLog).values({
+    actorId: actor.id,
+    action: 'member.update',
+    targetType: 'member',
+    targetId: memberId,
+  })
+
+  if (target.userId) {
+    await db.batch([
+      updateProfile,
+      db.update(user).set({ name: v.name }).where(eq(user.id, target.userId)),
+      log,
+    ])
+  } else {
+    await db.batch([updateProfile, log])
+  }
+  return { ok: true }
 }

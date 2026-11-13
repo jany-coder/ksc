@@ -241,6 +241,43 @@ export const adminMessages = {
   },
   'memberNew.submit': { bn: 'সদস্য যোগ করুন', en: 'Add member' },
 
+  // --- edit member ---
+  'memberEdit.pageTitle': {
+    bn: 'সদস্য সম্পাদনা — কলমা সোশ্যাল ক্লাব',
+    en: 'Edit member — Kalma Social Club',
+  },
+  'memberEdit.title': { bn: 'সদস্য সম্পাদনা', en: 'Edit member' },
+  'memberEdit.lead': {
+    bn: 'নাম, যোগাযোগ ও রক্তদানের তথ্য বদলানো যায়। অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্যের তথ্যের ড্রয়ার ব্যবহার করুন।',
+    en: "You can change the name, contact and blood donation details. To change the status or reset a password, use the member's details drawer.",
+  },
+  'memberEdit.phoneLabel': { bn: 'মোবাইল নম্বর', en: 'Mobile number' },
+  'memberEdit.phoneLocked': {
+    bn: 'এই নম্বরটাই সদস্যের পরিচয় (অ্যাডমিন হলে লগইনের নামও), তাই এটি বদলানো যায় না।',
+    en: "This number is the member's identity (and an admin's sign-in name), so it cannot be changed.",
+  },
+  'memberEdit.lastDonation': {
+    bn: 'সর্বশেষ রক্তদানের তারিখ (ঐচ্ছিক)',
+    en: 'Date of last blood donation (optional)',
+  },
+  'memberEdit.notFound': {
+    bn: 'এই সদস্যকে পাওয়া যায়নি (হয়তো মুছে ফেলা হয়েছে)।',
+    en: 'This member was not found (they may have been deleted).',
+  },
+  'memberEdit.forbidden': {
+    bn: 'এই সদস্যকে বদলানোর অনুমতি আপনার নেই।',
+    en: 'You are not allowed to edit this member.',
+  },
+  'memberEdit.gone': {
+    bn: 'সদস্যটি আর নেই।',
+    en: 'This member no longer exists.',
+  },
+  'memberEdit.errSave': {
+    bn: 'পরিবর্তন সংরক্ষণ করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।',
+    en: 'Could not save the changes. Check your internet and try again.',
+  },
+  'drawer.edit': { bn: 'তথ্য সম্পাদনা', en: 'Edit details' },
+
   // --- activities ---
   'act.pageTitle': {
     bn: 'কার্যক্রম — কলমা সোশ্যাল ক্লাব',

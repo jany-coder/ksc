@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 
-import { memberFormSchema } from './member-form.ts'
+import { memberEditSchema, memberFormSchema } from './member-form.ts'
 import { MEMBER_STATUSES } from './member-options.ts'
 import { membersSearchSchema } from './members-query.ts'
 import {
@@ -10,6 +10,7 @@ import {
   getMember,
   listMembers,
   setMemberStatus,
+  updateMember,
 } from './members.server.ts'
 import { requirePermission } from './session.server.ts'
 
@@ -49,4 +50,11 @@ export const archiveMemberFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const actor = await requirePermission('members.delete')
     return archiveMember(actor, data.id)
+  })
+
+export const updateMemberFn = createServerFn({ method: 'POST' })
+  .validator(z.object({ id: z.uuid(), values: memberEditSchema }))
+  .handler(async ({ data }) => {
+    const actor = await requirePermission('members.write')
+    return updateMember(actor, data.id, data.values)
   })
