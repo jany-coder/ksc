@@ -1,7 +1,9 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Link, createFileRoute, redirect } from '@tanstack/react-router'
+import { Plus } from 'lucide-react'
 
 import { ActivitiesTable } from '../../../components/admin/activities-table.tsx'
+import { buttonVariants } from '../../../components/ui/button.tsx'
 import { listActivitiesFn } from '../../../lib/activities.functions.ts'
 import { can } from '../../../lib/permissions.ts'
 
@@ -35,12 +37,18 @@ function ActivitiesPage() {
 
   return (
     <main className="flex flex-col gap-4 px-4 py-6 md:p-6">
-      <div>
-        <h1 className="mb-0.5 text-2xl font-semibold">কার্যক্রম</h1>
-        <p className="text-sm text-muted-foreground">
-          প্রকাশিত কার্যক্রম ওয়েবসাইটের হোমপেজে দেখা যায়। খসড়া শুধু অ্যাডমিন দেখতে
-          পান।
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="mb-0.5 text-2xl font-semibold">কার্যক্রম</h1>
+          <p className="text-sm text-muted-foreground">
+            প্রকাশিত কার্যক্রম ওয়েবসাইটের হোমপেজে দেখা যায়। খসড়া শুধু অ্যাডমিন দেখতে
+            পান।
+          </p>
+        </div>
+        <Link to="/admin/activities/new" className={buttonVariants()}>
+          <Plus aria-hidden="true" />
+          নতুন কার্যক্রম
+        </Link>
       </div>
 
       <div className="overflow-hidden rounded-[10px] border border-border bg-card">

@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
+import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activities/new'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -54,6 +55,11 @@ const AdminActivitiesIndexRoute = AdminActivitiesIndexRouteImport.update({
   path: '/activities/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminActivitiesNewRoute = AdminActivitiesNewRouteImport.update({
+  id: '/activities/new',
+  path: '/activities/new',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminMembersIndexRoute = AdminMembersIndexRouteImport.update({
   id: '/members/',
   path: '/members/',
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities': typeof AdminActivitiesIndexRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_public/': typeof PublicIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/change-password'
     | '/login'
     | '/admin/'
+    | '/admin/activities/new'
     | '/admin/members/new'
     | '/api/auth/$'
     | '/admin/activities/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/'
     | '/admin'
+    | '/admin/activities/new'
     | '/admin/members/new'
     | '/api/auth/$'
     | '/admin/activities'
@@ -134,6 +145,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_public/'
     | '/admin/'
+    | '/admin/activities/new'
     | '/admin/members/new'
     | '/api/auth/$'
     | '/admin/activities/'
@@ -199,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminActivitiesIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/activities/new': {
+      id: '/admin/activities/new'
+      path: '/activities/new'
+      fullPath: '/admin/activities/new'
+      preLoaderRoute: typeof AdminActivitiesNewRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/members/': {
       id: '/admin/members/'
       path: '/members'
@@ -237,6 +256,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 
 interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminActivitiesNewRoute: typeof AdminActivitiesNewRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
   AdminActivitiesIndexRoute: typeof AdminActivitiesIndexRoute
   AdminMembersIndexRoute: typeof AdminMembersIndexRoute
@@ -244,6 +264,7 @@ interface AdminRouteRouteChildren {
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
+  AdminActivitiesNewRoute: AdminActivitiesNewRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,
   AdminActivitiesIndexRoute: AdminActivitiesIndexRoute,
   AdminMembersIndexRoute: AdminMembersIndexRoute,
