@@ -133,7 +133,8 @@
   h3,
   h4 {
     font-family: var(--font-heading);
-    letter-spacing: -0.012em;
+    /* Never tighten Bengali: negative spacing pulls the joined letters apart. */
+    letter-spacing: 0;
   }
   /* Older readers: body text 17-19px on the public site. */
   .theme-public {

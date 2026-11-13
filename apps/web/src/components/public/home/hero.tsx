@@ -16,7 +16,7 @@ export function Hero() {
             <span className="md:hidden">{t('site.locationShort')}</span>
             <span className="hidden md:inline">{t('hero.addressLong')}</span>
           </p>
-          <h1 className="mb-3 text-[29px] leading-[1.25] font-bold text-balance md:mb-6 md:text-[60px] md:leading-[1.18]">
+          <h1 className="mb-3 text-[29px] leading-[1.4] font-bold text-balance md:mb-6 md:text-[60px] md:leading-[1.3]">
             {t('hero.title')}
           </h1>
           <p className="mb-[18px] max-w-[60ch] text-base leading-relaxed text-mint-soft md:mb-9 md:text-[21px] md:leading-[1.7]">
@@ -50,7 +50,7 @@ export function Hero() {
             are left out on purpose (CLAUDE.md sections 3 and 8). */}
         <dl className="hero-fade hidden min-w-0 flex-[1_1_320px] grid-cols-[repeat(auto-fit,minmax(min(140px,100%),1fr))] gap-px border border-mint-line bg-mint-line md:grid">
           <div className="bg-brand-deep px-[22px] py-7">
-            <dd className="font-heading text-[40px] leading-tight font-bold text-background">
+            <dd className="font-heading text-[40px] leading-snug font-bold text-background">
               {t('hero.statYearValue')}
             </dd>
             <dt className="mt-1 text-[15px] text-mint-muted">

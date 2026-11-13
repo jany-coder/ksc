@@ -36,7 +36,7 @@ export function SiteHeader() {
             className="h-[29px] w-9 object-contain md:h-[37px] md:w-[46px]"
           />
           <span className="flex flex-col">
-            <span className="font-heading text-[17px] leading-tight font-bold text-brand-deep md:text-xl">
+            <span className="font-heading text-[17px] leading-snug font-bold text-brand-deep md:text-xl">
               {t('site.name')}
             </span>
             <span className="hidden text-[13px] leading-snug text-subtle md:block">

@@ -86,7 +86,7 @@ export function AdminShell({ member, children }: Props) {
             className="h-6 w-[30px] object-contain"
           />
           <span className="flex min-w-0 flex-col">
-            <span className="font-heading text-sm leading-tight font-semibold">
+            <span className="font-heading text-sm leading-snug font-semibold">
               {t('site.name')}
             </span>
             <span className="text-xs text-muted-foreground">
