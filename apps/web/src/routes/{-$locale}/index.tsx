@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { listUpcomingActivitiesFn } from '../../lib/activities.functions.ts'
 import { listPublicImagesFn } from '../../lib/images.functions.ts'
 import { imageUrl } from '../../lib/image-limits.ts'
+import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
 import { listPublicNoticesFn } from '../../lib/notices.functions.ts'
 import { About } from '../../components/public/home/about.tsx'
@@ -18,6 +19,7 @@ export const Route = createFileRoute('/{-$locale}/')({
   head: ({ params }) => {
     const t = tFor(params.locale === 'en' ? 'en' : 'bn')
     return {
+      links: alternateLinks(''),
       meta: [
         { title: t('home.title') },
         { name: 'description', content: t('home.description') },

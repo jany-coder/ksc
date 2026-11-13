@@ -5,12 +5,14 @@ import { useEffect, useRef, useState } from 'react'
 import { listPublicImagesFn } from '../../lib/images.functions.ts'
 import { imageUrl } from '../../lib/image-limits.ts'
 import { useNumber, useT } from '../../lib/i18n/index.tsx'
+import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
 
 export const Route = createFileRoute('/{-$locale}/gallery')({
   head: ({ params }) => {
     const t = tFor(params.locale === 'en' ? 'en' : 'bn')
     return {
+      links: alternateLinks('/gallery'),
       meta: [
         { title: t('gallery.pageTitle') },
         { name: 'description', content: t('gallery.description') },

@@ -17,6 +17,7 @@ import { applicationFormSchema } from '../../lib/application-form.ts'
 import type { ApplicationFormInput } from '../../lib/application-form.ts'
 import { submitApplicationFn } from '../../lib/applications.functions.ts'
 import { useLocaleParams, useT } from '../../lib/i18n/index.tsx'
+import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
 import { BLOOD_GROUPS, bloodLabel } from '../../lib/member-options.ts'
 
@@ -24,6 +25,7 @@ export const Route = createFileRoute('/{-$locale}/join')({
   head: ({ params }) => {
     const t = tFor(params.locale === 'en' ? 'en' : 'bn')
     return {
+      links: alternateLinks('/join'),
       meta: [
         { title: t('apply.pageTitle') },
         { name: 'description', content: t('apply.description') },
