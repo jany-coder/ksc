@@ -3,15 +3,11 @@ import { Link } from '@tanstack/react-router'
 import { buttonVariants } from '../../ui/button.tsx'
 import { cn } from '../../../lib/utils.ts'
 
-// The counts are placeholders on purpose: the club has not supplied real
-// numbers, and nothing here may be invented (CLAUDE.md section 8). 2024 is the
-// founding year from the club's own details.
-const STATS = [
-  { value: '[সংখ্যা]', label: 'নিবন্ধিত সদস্য' },
-  { value: '[সংখ্যা]', label: 'রক্তদাতা' },
-  { value: '[সংখ্যা]', label: 'সম্পন্ন কার্যক্রম' },
-  { value: '২০২৪', label: 'প্রতিষ্ঠার বছর' },
-]
+// Only facts the club has given us. Member, donor and activity counts are left
+// out on purpose: the club has not supplied real numbers and, for donors, a
+// public count is a privacy decision for the club to make (CLAUDE.md sections
+// 3 and 8). 2024 is the founding year from the club's own details.
+const STATS = [{ value: '২০২৪', label: 'প্রতিষ্ঠার বছর' }]
 
 export function Hero() {
   return (
