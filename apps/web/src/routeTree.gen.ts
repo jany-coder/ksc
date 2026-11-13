@@ -15,6 +15,7 @@ import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -48,6 +49,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminActivitiesIndexRoute = AdminActivitiesIndexRouteImport.update({
+  id: '/activities/',
+  path: '/activities/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminMembersIndexRoute = AdminMembersIndexRouteImport.update({
   id: '/members/',
   path: '/members/',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -81,6 +88,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/admin/activities': typeof AdminActivitiesIndexRoute
   '/admin/members': typeof AdminMembersIndexRoute
 }
 export interface FileRoutesById {
@@ -93,6 +101,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
 }
 export interface FileRouteTypes {
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/members/new'
     | '/api/auth/$'
+    | '/admin/activities/'
     | '/admin/members/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/members/new'
     | '/api/auth/$'
+    | '/admin/activities'
     | '/admin/members'
   id:
     | '__root__'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/members/new'
     | '/api/auth/$'
+    | '/admin/activities/'
     | '/admin/members/'
   fileRoutesById: FileRoutesById
 }
@@ -180,6 +192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/activities/': {
+      id: '/admin/activities/'
+      path: '/activities'
+      fullPath: '/admin/activities/'
+      preLoaderRoute: typeof AdminActivitiesIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/members/': {
       id: '/admin/members/'
       path: '/members'
@@ -219,12 +238,14 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
+  AdminActivitiesIndexRoute: typeof AdminActivitiesIndexRoute
   AdminMembersIndexRoute: typeof AdminMembersIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,
+  AdminActivitiesIndexRoute: AdminActivitiesIndexRoute,
   AdminMembersIndexRoute: AdminMembersIndexRoute,
 }
 
