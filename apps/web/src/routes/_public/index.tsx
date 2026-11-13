@@ -1,5 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { About } from '../../components/public/home/about.tsx'
+import { GalleryTeaser } from '../../components/public/home/gallery-teaser.tsx'
 import { Hero } from '../../components/public/home/hero.tsx'
 import { QuickActions } from '../../components/public/home/quick-actions.tsx'
 import { NoticeBoard } from '../../components/public/home/notice-board.tsx'
@@ -28,6 +30,8 @@ function Home() {
       <WhatWeDo />
       <UpcomingActivities />
       <NoticeBoard />
+      <GalleryTeaser />
+      <About />
     </main>
   )
 }
