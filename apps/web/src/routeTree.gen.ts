@@ -20,6 +20,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiMembersExportRouteImport } from './routes/api/members-export'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
+import { Route as AdminActivitiesIdRouteImport } from './routes/admin/activities/$id'
 import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activities/new'
 import { Route as AdminGalleryIndexRouteImport } from './routes/admin/gallery/index'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
@@ -83,6 +84,11 @@ const AdminActivitiesIndexRoute = AdminActivitiesIndexRouteImport.update({
   path: '/activities/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminActivitiesIdRoute = AdminActivitiesIdRouteImport.update({
+  id: '/activities/$id',
+  path: '/activities/$id',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const AdminActivitiesNewRoute = AdminActivitiesNewRouteImport.update({
   id: '/activities/new',
   path: '/activities/new',
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/api/members-export': typeof ApiMembersExportRoute
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/api/members-export': typeof ApiMembersExportRoute
   '/_public/': typeof PublicIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
     | '/api/images'
     | '/api/members-export'
     | '/admin/'
+    | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/new'
     | '/admin/notices/new'
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/api/members-export'
     | '/'
     | '/admin'
+    | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/new'
     | '/admin/notices/new'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/api/members-export'
     | '/_public/'
     | '/admin/'
+    | '/admin/activities/$id'
     | '/admin/activities/new'
     | '/admin/members/new'
     | '/admin/notices/new'
@@ -338,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminActivitiesIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/activities/$id': {
+      id: '/admin/activities/$id'
+      path: '/activities/$id'
+      fullPath: '/admin/activities/$id'
+      preLoaderRoute: typeof AdminActivitiesIdRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/activities/new': {
       id: '/admin/activities/new'
       path: '/activities/new'
@@ -415,6 +434,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 
 interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminActivitiesIdRoute: typeof AdminActivitiesIdRoute
   AdminActivitiesNewRoute: typeof AdminActivitiesNewRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
   AdminNoticesNewRoute: typeof AdminNoticesNewRoute
@@ -426,6 +446,7 @@ interface AdminRouteRouteChildren {
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
+  AdminActivitiesIdRoute: AdminActivitiesIdRoute,
   AdminActivitiesNewRoute: AdminActivitiesNewRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,
   AdminNoticesNewRoute: AdminNoticesNewRoute,

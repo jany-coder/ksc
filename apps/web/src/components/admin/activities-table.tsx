@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import {
   createColumnHelper,
   tableFeatures,
@@ -19,7 +20,14 @@ const columns = helper.columns([
     header: 'শিরোনাম',
     cell: ({ getValue, row }) => (
       <span className="flex flex-wrap items-center gap-2">
-        <span className="font-medium text-foreground">{getValue()}</span>
+        {/* A real link to the edit page. */}
+        <Link
+          to="/admin/activities/$id"
+          params={{ id: row.original.id }}
+          className="font-medium text-foreground hover:underline"
+        >
+          {getValue()}
+        </Link>
         {row.original.featured && (
           <span className="rounded-[5px] border border-border bg-secondary px-1.5 py-px text-[11px] font-semibold text-zinc-600">
             হোমপেজের উপরে

@@ -61,6 +61,8 @@ export const activityFormSchema = z.object({
   location: z.string().trim().max(200, 'স্থানের নাম অনেক বেশি লম্বা'),
   status: z.enum(ACTIVITY_STATUSES),
   featured: z.boolean(),
+  // A gallery photo shown on the activity's card; '' means none.
+  coverImageId: z.union([z.uuid(), z.literal('')]),
 })
 
 export type ActivityFormInput = z.infer<typeof activityFormSchema>

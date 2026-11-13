@@ -11,6 +11,7 @@ const valid = {
   location: '',
   status: 'draft',
   featured: false,
+  coverImageId: '',
 }
 const fails = (patch: object) =>
   !activityFormSchema.safeParse({ ...valid, ...patch }).success
@@ -57,5 +58,13 @@ describe('activityFormSchema', () => {
   it('only allows the known categories (or none) and the two statuses', () => {
     expect(fails({ category: 'অন্য' })).toBe(true)
     expect(fails({ status: 'archived' })).toBe(true)
+  })
+
+  it('accepts a cover photo id or none, but not a made-up value', () => {
+    expect(
+      fails({ coverImageId: '11111111-1111-4111-8111-111111111111' }),
+    ).toBe(false)
+    expect(fails({ coverImageId: '' })).toBe(false)
+    expect(fails({ coverImageId: 'not-an-id' })).toBe(true)
   })
 })
