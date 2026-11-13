@@ -5,10 +5,11 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router'
-import { Search } from 'lucide-react'
+import { Plus, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { MembersTable } from '../../../components/admin/members-table.tsx'
+import { buttonVariants } from '../../../components/ui/button.tsx'
 import { Input } from '../../../components/ui/input.tsx'
 import {
   BLOOD_GROUPS,
@@ -73,6 +74,7 @@ const chipClass =
 
 function MembersPage() {
   const search = Route.useSearch()
+  const { member } = Route.useRouteContext()
   const navigate = useNavigate()
   const { data } = useSuspenseQuery(membersQuery(search))
   const { rows, total, counts, page, pageSize } = data // page: 1 when absent
@@ -99,12 +101,20 @@ function MembersPage() {
 
   return (
     <main className="flex flex-col gap-4 px-4 py-6 md:p-6">
-      <div>
-        <h1 className="mb-0.5 text-2xl font-semibold">সদস্য</h1>
-        <p className="text-sm text-muted-foreground">
-          ফোন নম্বর, ঠিকানা ও রক্তের গ্রুপ শুধু অ্যাডমিন দেখতে পান — ওয়েবসাইটে কোথাও
-          প্রকাশ হয় না।
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="mb-0.5 text-2xl font-semibold">সদস্য</h1>
+          <p className="text-sm text-muted-foreground">
+            ফোন নম্বর, ঠিকানা ও রক্তের গ্রুপ শুধু অ্যাডমিন দেখতে পান — ওয়েবসাইটে কোথাও
+            প্রকাশ হয় না।
+          </p>
+        </div>
+        {can(member.role, 'members.write') && (
+          <Link to="/admin/members/new" className={buttonVariants()}>
+            <Plus aria-hidden="true" />
+            নতুন সদস্য
+          </Link>
+        )}
       </div>
 
       <nav
