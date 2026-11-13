@@ -9,18 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRouteRoute = AdminRouteRouteImport.update({
@@ -37,6 +37,11 @@ const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PublicIndexRoute = PublicIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicRouteRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
@@ -60,7 +65,7 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof PublicIndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
@@ -70,9 +75,9 @@ export interface FileRoutesByFullPath {
   '/admin/members/': typeof AdminMembersIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/': typeof PublicIndexRoute
   '/admin': typeof AdminIndexRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -80,10 +85,11 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_public': typeof PublicRouteRouteWithChildren
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/_public/': typeof PublicIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -102,19 +108,20 @@ export interface FileRouteTypes {
     | '/admin/members/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/change-password'
     | '/login'
+    | '/'
     | '/admin'
     | '/admin/members/new'
     | '/api/auth/$'
     | '/admin/members'
   id:
     | '__root__'
-    | '/'
+    | '/_public'
     | '/admin'
     | '/change-password'
     | '/login'
+    | '/_public/'
     | '/admin/'
     | '/admin/members/new'
     | '/api/auth/$'
@@ -122,7 +129,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  PublicRouteRoute: typeof PublicRouteRouteWithChildren
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   ChangePasswordRoute: typeof ChangePasswordRoute
   LoginRoute: typeof LoginRoute
@@ -131,11 +138,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_public': {
+      id: '/_public'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -158,6 +165,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_public/': {
+      id: '/_public/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -190,6 +204,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PublicRouteRouteChildren {
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
+  PublicRouteRouteChildren,
+)
+
 interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
@@ -207,7 +233,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  PublicRouteRoute: PublicRouteRouteWithChildren,
   AdminRouteRoute: AdminRouteRouteWithChildren,
   ChangePasswordRoute: ChangePasswordRoute,
   LoginRoute: LoginRoute,
