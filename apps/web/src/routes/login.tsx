@@ -22,7 +22,7 @@ export const Route = createFileRoute('/login')({
   }),
   // Already signed in? No reason to see the form.
   beforeLoad: async () => {
-    if (await getCurrentMemberFn()) throw redirect({ to: '/' })
+    if (await getCurrentMemberFn()) throw redirect({ to: '/admin' })
   },
   component: LoginPage,
 })
@@ -73,7 +73,7 @@ function LoginPage() {
         setFormError(messageFor(error.code))
         return
       }
-      await navigate({ to: '/' })
+      await navigate({ to: '/admin' })
     } catch {
       setFormError('সংযোগে সমস্যা হয়েছে। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
     }
