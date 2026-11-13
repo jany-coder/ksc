@@ -39,7 +39,7 @@ export function Hero() {
           <div className="flex flex-wrap gap-3.5">
             <Link
               to="/"
-              hash="jogdin"
+              hash="join"
               className={cn(
                 buttonVariants({ size: 'lg' }),
                 'min-h-12 w-full bg-background px-[26px] text-[17px] text-brand-deep hover:bg-background/90 md:w-auto',
@@ -49,7 +49,7 @@ export function Hero() {
             </Link>
             <Link
               to="/"
-              hash="kaj"
+              hash="what-we-do"
               className="hidden min-h-12 items-center justify-center rounded-lg border-[1.5px] border-[#4a6e5c] px-[26px] text-[17px] font-semibold text-background hover:border-mint md:inline-flex"
             >
               আমাদের কাজ দেখুন

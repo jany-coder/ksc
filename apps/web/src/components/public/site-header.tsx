@@ -4,13 +4,13 @@ import { buttonVariants } from '../ui/button.tsx'
 import { cn } from '../../lib/utils.ts'
 
 // Section anchors on the home page. They are router links with a hash, so they
-// also work from other public pages (/gallery -> /#kaj).
+// also work from other public pages (/gallery -> /#what-we-do).
 const NAV = [
-  { label: 'আমাদের কাজ', hash: 'kaj' },
-  { label: 'আসন্ন কার্যক্রম', hash: 'asonno' },
+  { label: 'আমাদের কাজ', hash: 'what-we-do' },
+  { label: 'আসন্ন কার্যক্রম', hash: 'upcoming' },
   { label: 'গ্যালারি', hash: 'gallery' },
   { label: 'নোটিশ', hash: 'notice' },
-  { label: 'পরিচিতি', hash: 'porichiti' },
+  { label: 'পরিচিতি', hash: 'about' },
 ]
 
 export function SiteHeader() {
@@ -52,7 +52,7 @@ export function SiteHeader() {
           ))}
           <Link
             to="/"
-            hash="jogdin"
+            hash="join"
             className={cn(
               buttonVariants({ size: 'lg' }),
               'min-h-11 px-5 text-base',

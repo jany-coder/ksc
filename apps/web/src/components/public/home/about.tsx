@@ -15,7 +15,7 @@ const VALUES = [
 
 export function About() {
   return (
-    <section id="porichiti" className="scroll-mt-4 py-14 md:py-[92px]">
+    <section id="about" className="scroll-mt-4 py-14 md:py-[92px]">
       <div className="mx-auto flex w-full max-w-[1180px] flex-wrap gap-12 px-5 md:gap-16 md:px-8">
         <div className="min-w-0 flex-[999_1_420px]">
           <h2 className="mb-6 text-[28px] font-bold text-brand-deep md:text-[40px]">

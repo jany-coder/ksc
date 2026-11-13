@@ -6,7 +6,7 @@ import type { LucideIcon } from 'lucide-react'
 // the header carries the links.
 const TABS: { label: string; icon: LucideIcon; hash?: string }[] = [
   { label: 'হোম', icon: House },
-  { label: 'কার্যক্রম', icon: CalendarDays, hash: 'asonno' },
+  { label: 'কার্যক্রম', icon: CalendarDays, hash: 'upcoming' },
   { label: 'গ্যালারি', icon: Image, hash: 'gallery' },
   { label: 'নোটিশ', icon: Bookmark, hash: 'notice' },
 ]

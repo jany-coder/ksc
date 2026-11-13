@@ -27,7 +27,7 @@ export function UpcomingActivities({
   const shown = items.length > 0 ? items : PLACEHOLDERS
   return (
     <section
-      id="asonno"
+      id="upcoming"
       className="scroll-mt-4 border-y border-line bg-panel py-14 md:py-[92px]"
     >
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">

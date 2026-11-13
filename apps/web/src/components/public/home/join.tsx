@@ -5,7 +5,7 @@
 export function Join() {
   return (
     <section
-      id="jogdin"
+      id="join"
       className="scroll-mt-4 border-t border-line bg-panel py-14 md:py-[88px]"
     >
       <div className="mx-auto flex w-full max-w-[1180px] flex-wrap items-center gap-12 px-5 md:px-8">
