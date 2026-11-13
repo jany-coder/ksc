@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "kalmasocialclub",
+  "compatibility_date": "2025-09-02",
+  // nodejs_compat: Better Auth and the Neon driver use Node APIs. It also puts
+  // plain variables on process.env, which db/index.ts and auth.ts read.
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "r2_buckets": [
+    {
+      // The name used in code: env.IMAGES (see src/lib/r2.server.ts).
+      "binding": "IMAGES",
+      "bucket_name": "ksc-images"
+    }
+  ]
+}
