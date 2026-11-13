@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicJoinRouteImport } from './routes/_public/join'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiMembersExportRouteImport } from './routes/api/members-export'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
 import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activities/new'
@@ -24,6 +25,7 @@ import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
 import { Route as AdminNoticesIndexRouteImport } from './routes/admin/notices/index'
 import { Route as AdminNoticesNewRouteImport } from './routes/admin/notices/new'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiMediaIdSizeRouteImport } from './routes/api/media/$id.$size'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -58,6 +60,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRouteRoute,
+} as any)
+const ApiImagesRoute = ApiImagesRouteImport.update({
+  id: '/api/images',
+  path: '/api/images',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiMembersExportRoute = ApiMembersExportRouteImport.update({
   id: '/api/members-export',
@@ -99,6 +106,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMediaIdSizeRoute = ApiMediaIdSizeRouteImport.update({
+  id: '/api/media/$id/$size',
+  path: '/api/media/$id/$size',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -106,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
   '/join': typeof PublicJoinRoute
+  '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
@@ -115,11 +128,13 @@ export interface FileRoutesByFullPath {
   '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
   '/admin/notices/': typeof AdminNoticesIndexRoute
+  '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
 }
 export interface FileRoutesByTo {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
   '/join': typeof PublicJoinRoute
+  '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/': typeof PublicIndexRoute
   '/admin': typeof AdminIndexRoute
@@ -130,6 +145,7 @@ export interface FileRoutesByTo {
   '/admin/activities': typeof AdminActivitiesIndexRoute
   '/admin/members': typeof AdminMembersIndexRoute
   '/admin/notices': typeof AdminNoticesIndexRoute
+  '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -138,6 +154,7 @@ export interface FileRoutesById {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
   '/_public/join': typeof PublicJoinRoute
+  '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/_public/': typeof PublicIndexRoute
   '/admin/': typeof AdminIndexRoute
@@ -148,6 +165,7 @@ export interface FileRoutesById {
   '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
   '/admin/notices/': typeof AdminNoticesIndexRoute
+  '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -157,6 +175,7 @@ export interface FileRouteTypes {
     | '/change-password'
     | '/login'
     | '/join'
+    | '/api/images'
     | '/api/members-export'
     | '/admin/'
     | '/admin/activities/new'
@@ -166,11 +185,13 @@ export interface FileRouteTypes {
     | '/admin/activities/'
     | '/admin/members/'
     | '/admin/notices/'
+    | '/api/media/$id/$size'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/change-password'
     | '/login'
     | '/join'
+    | '/api/images'
     | '/api/members-export'
     | '/'
     | '/admin'
@@ -181,6 +202,7 @@ export interface FileRouteTypes {
     | '/admin/activities'
     | '/admin/members'
     | '/admin/notices'
+    | '/api/media/$id/$size'
   id:
     | '__root__'
     | '/_public'
@@ -188,6 +210,7 @@ export interface FileRouteTypes {
     | '/change-password'
     | '/login'
     | '/_public/join'
+    | '/api/images'
     | '/api/members-export'
     | '/_public/'
     | '/admin/'
@@ -198,6 +221,7 @@ export interface FileRouteTypes {
     | '/admin/activities/'
     | '/admin/members/'
     | '/admin/notices/'
+    | '/api/media/$id/$size'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -205,8 +229,10 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   ChangePasswordRoute: typeof ChangePasswordRoute
   LoginRoute: typeof LoginRoute
+  ApiImagesRoute: typeof ApiImagesRoute
   ApiMembersExportRoute: typeof ApiMembersExportRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiMediaIdSizeRoute: typeof ApiMediaIdSizeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -259,6 +285,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
+    }
+    '/api/images': {
+      id: '/api/images'
+      path: '/api/images'
+      fullPath: '/api/images'
+      preLoaderRoute: typeof ApiImagesRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/members-export': {
       id: '/api/members-export'
@@ -316,6 +349,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/media/$id/$size': {
+      id: '/api/media/$id/$size'
+      path: '/api/media/$id/$size'
+      fullPath: '/api/media/$id/$size'
+      preLoaderRoute: typeof ApiMediaIdSizeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -362,8 +402,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   ChangePasswordRoute: ChangePasswordRoute,
   LoginRoute: LoginRoute,
+  ApiImagesRoute: ApiImagesRoute,
   ApiMembersExportRoute: ApiMembersExportRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiMediaIdSizeRoute: ApiMediaIdSizeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
