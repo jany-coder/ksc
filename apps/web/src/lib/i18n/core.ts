@@ -87,3 +87,19 @@ export function formatNumber(value: number, lang: Lang): string {
     useGrouping: false,
   }).format(value)
 }
+
+/**
+ * The page's language, read from the matched routes' context (the root route
+ * puts `lang` there). For <head> functions, which run outside React.
+ */
+/** The part of a route's <head> argument we use. Spelled out here, not inferred from
+ * the route tree: inferring it makes a route's type depend on itself. */
+export type HeadArgs = { matches: readonly { context?: unknown }[] }
+
+export function langOfMatches(matches: HeadArgs['matches']): Lang {
+  for (const match of matches) {
+    const lang = (match.context as { lang?: unknown } | undefined)?.lang
+    if (isLang(lang)) return lang
+  }
+  return DEFAULT_LANG
+}

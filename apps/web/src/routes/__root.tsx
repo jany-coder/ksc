@@ -8,7 +8,9 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import { LangProvider } from '../lib/i18n/index.tsx'
-import { resolveLang } from '../lib/i18n/core.ts'
+import { langOfMatches, resolveLang } from '../lib/i18n/core.ts'
+import type { HeadArgs } from '../lib/i18n/core.ts'
+import { tFor } from '../lib/i18n/messages.ts'
 import { getSavedLang } from '../lib/i18n/saved-lang.ts'
 import appCss from '../styles.css?url'
 
@@ -21,7 +23,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: ({ location }) => ({
     lang: resolveLang(location.pathname, getSavedLang()),
   }),
-  head: () => ({
+  head: ({ matches }: HeadArgs) => ({
     meta: [
       {
         charSet: 'utf-8',
@@ -31,7 +33,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'কলমা সোশ্যাল ক্লাব',
+        // The default page title; most pages set their own.
+        title: tFor(langOfMatches(matches))('site.name'),
       },
     ],
     links: [

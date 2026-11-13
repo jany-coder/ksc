@@ -15,10 +15,16 @@ import {
   getNoticeFn,
   updateNoticeFn,
 } from '../../../lib/notices.functions.ts'
+import { useT } from '../../../lib/i18n/index.tsx'
+import { langOfMatches } from '../../../lib/i18n/core.ts'
+import type { HeadArgs } from '../../../lib/i18n/core.ts'
+import { tFor } from '../../../lib/i18n/messages.ts'
 import { can } from '../../../lib/permissions.ts'
 
 export const Route = createFileRoute('/admin/notices/$id')({
-  head: () => ({ meta: [{ title: 'নোটিশ সম্পাদনা — কলমা সোশ্যাল ক্লাব' }] }),
+  head: ({ matches }: HeadArgs) => ({
+    meta: [{ title: tFor(langOfMatches(matches))('not.editPageTitle') }],
+  }),
   beforeLoad: ({ context }) => {
     // The server functions check again; this just keeps people off the page.
     if (!can(context.member.role, 'content.write'))
@@ -29,18 +35,24 @@ export const Route = createFileRoute('/admin/notices/$id')({
     if (!notice) throw notFound()
     return notice
   },
-  notFoundComponent: () => (
-    <main className="px-4 py-6 md:p-6">
-      <p className="mb-3">এই নোটিশটি পাওয়া যায়নি (হয়তো মুছে ফেলা হয়েছে)।</p>
-      <Link to="/admin/notices" className="text-primary hover:underline">
-        নোটিশের তালিকায় ফিরুন
-      </Link>
-    </main>
-  ),
+  notFoundComponent: NoticeNotFound,
   component: EditNoticePage,
 })
 
+function NoticeNotFound() {
+  const t = useT()
+  return (
+    <main className="px-4 py-6 md:p-6">
+      <p className="mb-3">{t('not.notFound')}</p>
+      <Link to="/admin/notices" className="text-primary hover:underline">
+        {t('not.backToList')}
+      </Link>
+    </main>
+  )
+}
+
 function EditNoticePage() {
+  const t = useT()
   const notice = Route.useLoaderData()
   const { id } = Route.useParams()
   const navigate = useNavigate()
@@ -58,7 +70,7 @@ function EditNoticePage() {
       await queryClient.invalidateQueries({ queryKey: ['notices'] })
       await navigate({ to: '/admin/notices' })
     } catch {
-      setDeleteError('মোছা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setDeleteError(t('a.deleteFailed'))
       setDeleting(false)
       setConfirming(false)
     }
@@ -66,20 +78,23 @@ function EditNoticePage() {
 
   return (
     <main className="px-4 py-6 md:p-6">
-      <nav aria-label="পথ" className="mb-3 text-sm text-muted-foreground">
+      <nav
+        aria-label={t('a.breadcrumb')}
+        className="mb-3 text-sm text-muted-foreground"
+      >
         <Link to="/admin/notices" className="hover:text-foreground">
-          নোটিশ
+          {t('not.title')}
         </Link>
         <span className="mx-1.5 text-zinc-300" aria-hidden="true">
           /
         </span>
-        <span className="text-foreground">সম্পাদনা</span>
+        <span className="text-foreground">{t('a.edit')}</span>
       </nav>
-      <h1 className="text-2xl font-semibold">নোটিশ সম্পাদনা</h1>
+      <h1 className="text-2xl font-semibold">{t('not.editTitle')}</h1>
 
       <NoticeForm
         initial={notice}
-        submitLabel="সংরক্ষণ করুন"
+        submitLabel={t('a.save')}
         onSubmit={async (values) => {
           const result = await updateNoticeFn({ data: { id, values } })
           if (!result.ok)
@@ -87,8 +102,8 @@ function EditNoticePage() {
               ok: false,
               message:
                 result.code === 'NOT_FOUND'
-                  ? 'নোটিশটি আর নেই।'
-                  : 'তথ্য ঠিক নেই। ফর্মটি আবার দেখে নিন।',
+                  ? t('not.gone')
+                  : t('a.invalidForm'),
             }
           await queryClient.invalidateQueries({ queryKey: ['notices'] })
           await navigate({ to: '/admin/notices' })
@@ -96,7 +111,9 @@ function EditNoticePage() {
         }}
         extra={
           <section className="rounded-[10px] border border-red-200 bg-card p-5">
-            <h2 className="mb-2 text-[15px] font-semibold">নোটিশ মুছুন</h2>
+            <h2 className="mb-2 text-[15px] font-semibold">
+              {t('not.deleteTitle')}
+            </h2>
             {deleteError && (
               <p role="alert" className="mb-2 text-sm text-red-700">
                 {deleteError}
@@ -105,7 +122,7 @@ function EditNoticePage() {
             {confirming ? (
               <>
                 <p className="mb-2.5 text-sm text-red-800">
-                  নোটিশটি স্থায়ীভাবে মুছে যাবে। নিশ্চিত?
+                  {t('not.deleteConfirm')}
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -114,7 +131,7 @@ function EditNoticePage() {
                     disabled={deleting}
                     onClick={() => void remove()}
                   >
-                    হ্যাঁ, মুছে ফেলুন
+                    {t('a.yesDelete')}
                   </Button>
                   <Button
                     type="button"
@@ -122,22 +139,21 @@ function EditNoticePage() {
                     disabled={deleting}
                     onClick={() => setConfirming(false)}
                   >
-                    না
+                    {t('a.no')}
                   </Button>
                 </div>
               </>
             ) : (
               <>
                 <p className="mb-2.5 text-[13px] text-muted-foreground">
-                  আর দরকার না হলে মুছে ফেলুন। শুধু লুকাতে চাইলে অবস্থা "খসড়া" করে
-                  সংরক্ষণ করুন।
+                  {t('a.hideInstead')}
                 </p>
                 <Button
                   type="button"
                   variant="destructive"
                   onClick={() => setConfirming(true)}
                 >
-                  মুছে ফেলুন
+                  {t('a.delete')}
                 </Button>
               </>
             )}

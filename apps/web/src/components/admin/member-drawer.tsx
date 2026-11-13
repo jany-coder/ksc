@@ -8,8 +8,10 @@ import { X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
-import { formatBnDate } from '../../lib/bn-datetime.ts'
-import { STATUS_LABEL, bloodLabel } from '../../lib/member-options.ts'
+import { formatDate } from '../../lib/datetime.ts'
+import { useLang, useT } from '../../lib/i18n/index.tsx'
+import type { MessageKey } from '../../lib/i18n/messages.ts'
+import { STATUS_LABEL_KEY, bloodLabel } from '../../lib/member-options.ts'
 import {
   archiveMemberFn,
   getMemberFn,
@@ -26,11 +28,11 @@ export const memberDetailQuery = (id: string) =>
     queryFn: () => getMemberFn({ data: { id } }),
   })
 
-const ROLE_LABEL: Record<Role, string> = {
-  super_admin: 'সুপার অ্যাডমিন',
-  admin: 'অ্যাডমিন',
-  member: 'সদস্য',
-}
+const ROLE_LABEL_KEY = {
+  super_admin: 'role.super_admin',
+  admin: 'role.admin',
+  member: 'role.member',
+} as const satisfies Record<Role, MessageKey>
 
 const dash = <span className="text-muted-foreground">—</span>
 
@@ -62,6 +64,8 @@ export function MemberDrawer({
   actor: { id: string; role: Role }
   onClose: () => void
 }) {
+  const t = useT()
+  const lang = useLang()
   const dialog = useRef<HTMLDialogElement>(null)
   const queryClient = useQueryClient()
   const [actionError, setActionError] = useState<string | null>(null)
@@ -75,22 +79,21 @@ export function MemberDrawer({
       if (!result.ok) {
         setActionError(
           result.code === 'NO_LOGIN'
-            ? 'এই সদস্যের লগইন অ্যাকাউন্ট নেই।'
-            : 'পাসওয়ার্ড রিসেট করা গেল না।',
+            ? t('drawer.errNoLogin')
+            : t('drawer.errReset'),
         )
         return
       }
       setActionError(null)
       setTempPassword(result.tempPassword)
     },
-    onError: () =>
-      setActionError('রিসেট করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।'),
+    onError: () => setActionError(t('drawer.errResetNet')),
   })
   const deleteMutation = useMutation({
     mutationFn: () => archiveMemberFn({ data: { id: memberId } }),
     onSuccess: async (result) => {
       if (!result.ok) {
-        setActionError('সদস্যকে মোছা গেল না।')
+        setActionError(t('drawer.errDelete'))
         setConfirmingDelete(false)
         return
       }
@@ -98,7 +101,7 @@ export function MemberDrawer({
       onClose() // the member is gone from the list, so close the drawer
     },
     onError: () => {
-      setActionError('সদস্যকে মোছা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setActionError(t('drawer.errDeleteNet'))
       setConfirmingDelete(false)
     },
   })
@@ -107,15 +110,14 @@ export function MemberDrawer({
       setMemberStatusFn({ data: { id: memberId, status } }),
     onSuccess: async (result) => {
       if (!result.ok) {
-        setActionError('এই পরিবর্তন করা গেল না।')
+        setActionError(t('drawer.errChange'))
         return
       }
       setActionError(null)
       // The list and the drawer both show the status.
       await queryClient.invalidateQueries({ queryKey: ['members'] })
     },
-    onError: () =>
-      setActionError('এই পরিবর্তন করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।'),
+    onError: () => setActionError(t('drawer.errChangeNet')),
   })
   const {
     data: member,
@@ -147,12 +149,13 @@ export function MemberDrawer({
               id="member-drawer-title"
               className="text-lg font-semibold break-words"
             >
-              {member ? member.name : 'সদস্যের তথ্য'}
+              {member ? member.name : t('drawer.title')}
             </h2>
             {member && (
               <p className="text-[13px] text-muted-foreground">
-                {STATUS_LABEL[member.status]}
-                {member.role !== 'member' && ` · ${ROLE_LABEL[member.role]}`}
+                {t(STATUS_LABEL_KEY[member.status])}
+                {member.role !== 'member' &&
+                  ` · ${t(ROLE_LABEL_KEY[member.role])}`}
               </p>
             )}
           </div>
@@ -160,7 +163,7 @@ export function MemberDrawer({
             type="button"
             variant="ghost"
             size="icon-sm"
-            aria-label="বন্ধ করুন"
+            aria-label={t('a.close')}
             onClick={() => dialog.current?.close()}
           >
             <X aria-hidden="true" />
@@ -168,40 +171,46 @@ export function MemberDrawer({
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-3">
-          {isPending && <p className="py-6 text-muted-foreground">লোড হচ্ছে…</p>}
+          {isPending && (
+            <p className="py-6 text-muted-foreground">{t('a.loading')}</p>
+          )}
           {isError && (
             <p role="alert" className="py-6 text-red-700">
-              তথ্য লোড করা গেল না। আবার চেষ্টা করুন।
+              {t('drawer.loadError')}
             </p>
           )}
           {member === null && (
-            <p className="py-6 text-muted-foreground">এই সদস্যকে পাওয়া যায়নি।</p>
+            <p className="py-6 text-muted-foreground">{t('drawer.notFound')}</p>
           )}
           {member && (
             <dl className="m-0">
-              <Field label="মোবাইল">
+              <Field label={t('drawer.mobile')}>
                 <span className="tabular-nums">{member.phone}</span>
               </Field>
-              <Field label="ইমেইল">{member.email ?? dash}</Field>
-              <Field label="রক্তের গ্রুপ">
+              <Field label={t('drawer.email')}>{member.email ?? dash}</Field>
+              <Field label={t('drawer.blood')}>
                 {member.bloodGroup ? bloodLabel(member.bloodGroup) : dash}
               </Field>
-              <Field label="রক্তদানে আগ্রহী">
-                {member.willingToDonate ? 'হ্যাঁ' : 'না'}
+              <Field label={t('drawer.willing')}>
+                {member.willingToDonate ? t('a.yes') : t('a.no')}
               </Field>
-              <Field label="সর্বশেষ রক্তদান">
+              <Field label={t('drawer.lastDonation')}>
                 {member.lastDonationDate
-                  ? formatBnDate(member.lastDonationDate)
+                  ? formatDate(member.lastDonationDate, lang)
                   : dash}
               </Field>
-              <Field label="ঠিকানা">{member.address ?? dash}</Field>
-              <Field label="এলাকা">{member.area ?? dash}</Field>
-              <Field label="পেশা">{member.occupation ?? dash}</Field>
-              <Field label="যোগদানের তারিখ">
-                {formatBnDate(member.joinedDate)}
+              <Field label={t('drawer.address')}>
+                {member.address ?? dash}
               </Field>
-              <Field label="তথ্য ব্যবহারে সম্মতি দিয়েছেন">
-                {formatBnDate(member.consentDate)}
+              <Field label={t('drawer.area')}>{member.area ?? dash}</Field>
+              <Field label={t('drawer.occupation')}>
+                {member.occupation ?? dash}
+              </Field>
+              <Field label={t('drawer.joined')}>
+                {formatDate(member.joinedDate, lang)}
+              </Field>
+              <Field label={t('drawer.consent')}>
+                {formatDate(member.consentDate, lang)}
               </Field>
             </dl>
           )}
@@ -222,8 +231,7 @@ export function MemberDrawer({
                   className="rounded-lg border border-green-200 bg-green-50 p-3"
                 >
                   <p className="mb-1.5 text-sm text-green-900">
-                    অস্থায়ী পাসওয়ার্ড (শুধু এখন একবার দেখানো হচ্ছে — সদস্যকে জানিয়ে
-                    দিন। প্রথমবার ঢুকেই নতুন পাসওয়ার্ড দিতে হবে):
+                    {t('drawer.tempPassword')}
                   </p>
                   <code className="block rounded border border-green-200 bg-card px-2 py-1.5 font-mono text-base break-all select-all">
                     {tempPassword}
@@ -236,15 +244,11 @@ export function MemberDrawer({
                   variant="outline"
                   disabled={resetMutation.isPending}
                   onClick={() => {
-                    if (
-                      window.confirm(
-                        'নতুন অস্থায়ী পাসওয়ার্ড তৈরি হবে এবং এই ব্যক্তি সব ডিভাইস থেকে বের হয়ে যাবেন। চালিয়ে যাবেন?',
-                      )
-                    )
+                    if (window.confirm(t('drawer.resetConfirm')))
                       resetMutation.mutate()
                   }}
                 >
-                  পাসওয়ার্ড রিসেট করুন
+                  {t('drawer.reset')}
                 </Button>
               )}
               {member.status === 'suspended' ? (
@@ -254,7 +258,7 @@ export function MemberDrawer({
                   disabled={statusMutation.isPending}
                   onClick={() => statusMutation.mutate('active')}
                 >
-                  সক্রিয় করুন
+                  {t('drawer.activate')}
                 </Button>
               ) : (
                 <>
@@ -264,7 +268,7 @@ export function MemberDrawer({
                       disabled={statusMutation.isPending}
                       onClick={() => statusMutation.mutate('active')}
                     >
-                      সক্রিয় করুন
+                      {t('drawer.activate')}
                     </Button>
                   )}
                   <Button
@@ -273,7 +277,7 @@ export function MemberDrawer({
                     disabled={statusMutation.isPending}
                     onClick={() => statusMutation.mutate('suspended')}
                   >
-                    স্থগিত করুন
+                    {t('drawer.suspend')}
                   </Button>
                 </>
               )}
@@ -281,8 +285,7 @@ export function MemberDrawer({
                 (confirmingDelete ? (
                   <div className="rounded-lg border border-red-200 bg-red-50 p-3">
                     <p className="mb-2.5 text-sm text-red-800">
-                      সদস্যকে তালিকা থেকে সরিয়ে দেওয়া হবে এবং ৩০ দিন পর স্থায়ীভাবে
-                      মুছে যাবে। নিশ্চিত?
+                      {t('drawer.deleteConfirm')}
                     </p>
                     <div className="flex gap-2">
                       <Button
@@ -291,14 +294,14 @@ export function MemberDrawer({
                         disabled={deleteMutation.isPending}
                         onClick={() => deleteMutation.mutate()}
                       >
-                        হ্যাঁ, মুছে ফেলুন
+                        {t('a.yesDelete')}
                       </Button>
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => setConfirmingDelete(false)}
                       >
-                        না
+                        {t('a.no')}
                       </Button>
                     </div>
                   </div>
@@ -309,7 +312,7 @@ export function MemberDrawer({
                     className="text-red-700 hover:bg-red-50"
                     onClick={() => setConfirmingDelete(true)}
                   >
-                    সদস্যকে মুছে ফেলুন
+                    {t('drawer.delete')}
                   </Button>
                 ))}
             </div>

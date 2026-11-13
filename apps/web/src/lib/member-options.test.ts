@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
 import { bloodGroup, memberStatus } from '../db/schema/enums.ts'
+import { messages } from './i18n/messages.ts'
 import {
   BLOOD_GROUPS,
   MEMBER_STATUSES,
-  STATUS_LABEL,
+  STATUS_LABEL_KEY,
   bloodLabel,
 } from './member-options.ts'
 
@@ -14,9 +15,12 @@ describe('member options', () => {
     expect([...MEMBER_STATUSES]).toEqual([...memberStatus.enumValues])
   })
 
-  it('has a Bengali label for every status', () => {
-    for (const status of MEMBER_STATUSES)
-      expect(STATUS_LABEL[status]).toBeTruthy()
+  it('has a message, in both languages, for every status', () => {
+    for (const status of MEMBER_STATUSES) {
+      const entry = messages[STATUS_LABEL_KEY[status]]
+      expect(entry.bn).toBeTruthy()
+      expect(entry.en).toBeTruthy()
+    }
   })
 
   it('shows the minus sign for negative blood groups only', () => {

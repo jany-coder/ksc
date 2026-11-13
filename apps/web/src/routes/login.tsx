@@ -13,13 +13,15 @@ import { authClient } from '../lib/auth-client.ts'
 import { getCurrentMemberFn } from '../lib/auth.functions.ts'
 import { FieldError } from '../components/ui/field-error.tsx'
 import { useT } from '../lib/i18n/index.tsx'
+import { langOfMatches } from '../lib/i18n/core.ts'
+import type { HeadArgs } from '../lib/i18n/core.ts'
 import { tFor } from '../lib/i18n/messages.ts'
 import { normalizePhone } from '../lib/phone.ts'
 
 export const Route = createFileRoute('/login')({
-  head: ({ match }) => ({
+  head: ({ matches }: HeadArgs) => ({
     meta: [
-      { title: tFor(match.context.lang)('auth.pageTitleSignIn') },
+      { title: tFor(langOfMatches(matches))('auth.pageTitleSignIn') },
       // Member and admin pages are never indexed (CLAUDE.md section 3).
       { name: 'robots', content: 'noindex' },
     ],

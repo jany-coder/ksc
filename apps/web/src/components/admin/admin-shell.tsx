@@ -12,8 +12,11 @@ import {
 import type { LucideIcon } from 'lucide-react'
 
 import { authClient } from '../../lib/auth-client.ts'
+import { useT } from '../../lib/i18n/index.tsx'
+import type { MessageKey } from '../../lib/i18n/messages.ts'
 import type { Role } from '../../lib/permissions.ts'
 import { cn } from '../../lib/utils.ts'
+import { LangToggle } from '../lang-toggle.tsx'
 import { Button } from '../ui/button.tsx'
 
 type Props = {
@@ -24,7 +27,7 @@ type Props = {
 // Pages that exist get a link. The rest are shown, as in the approved design,
 // but greyed out and not clickable until they are built.
 type NavItem = {
-  label: string
+  label: MessageKey
   icon: LucideIcon
   to?:
     | '/admin'
@@ -34,20 +37,20 @@ type NavItem = {
     | '/admin/gallery'
 }
 const NAV: NavItem[] = [
-  { label: 'ড্যাশবোর্ড', icon: LayoutDashboard, to: '/admin' },
-  { label: 'সদস্য', icon: Users, to: '/admin/members' },
-  { label: 'রক্তদাতা', icon: Droplet },
-  { label: 'কার্যক্রম', icon: CalendarDays, to: '/admin/activities' },
-  { label: 'গ্যালারি', icon: Image, to: '/admin/gallery' },
-  { label: 'নোটিশ', icon: Bell, to: '/admin/notices' },
-  { label: 'সেটিংস', icon: Settings },
+  { label: 'shell.dashboard', icon: LayoutDashboard, to: '/admin' },
+  { label: 'shell.members', icon: Users, to: '/admin/members' },
+  { label: 'shell.donors', icon: Droplet },
+  { label: 'shell.activities', icon: CalendarDays, to: '/admin/activities' },
+  { label: 'shell.gallery', icon: Image, to: '/admin/gallery' },
+  { label: 'shell.notices', icon: Bell, to: '/admin/notices' },
+  { label: 'shell.settings', icon: Settings },
 ]
 
-const ROLE_LABEL: Record<Role, string> = {
-  super_admin: 'সুপার অ্যাডমিন',
-  admin: 'অ্যাডমিন',
-  member: 'সদস্য',
-}
+const ROLE_LABEL_KEY = {
+  super_admin: 'role.super_admin',
+  admin: 'role.admin',
+  member: 'role.member',
+} as const satisfies Record<Role, MessageKey>
 
 // First letter as a person sees it. Bengali letters can be several code points
 // (conjuncts), so cut by grapheme rather than by character.
@@ -63,6 +66,7 @@ const itemClass =
   'flex min-h-9 shrink-0 items-center gap-2.5 rounded-md px-2.5 text-sm font-medium'
 
 export function AdminShell({ member, children }: Props) {
+  const t = useT()
   const navigate = useNavigate()
 
   async function signOut() {
@@ -83,14 +87,16 @@ export function AdminShell({ member, children }: Props) {
           />
           <span className="flex min-w-0 flex-col">
             <span className="font-heading text-sm leading-tight font-semibold">
-              কলমা সোশ্যাল ক্লাব
+              {t('site.name')}
             </span>
-            <span className="text-xs text-muted-foreground">অ্যাডমিন</span>
+            <span className="text-xs text-muted-foreground">
+              {t('shell.admin')}
+            </span>
           </span>
         </div>
 
         <nav
-          aria-label="প্রধান মেনু"
+          aria-label={t('nav.main')}
           className="flex gap-0.5 overflow-x-auto md:flex-col"
         >
           {NAV.map(({ label, icon: Icon, to }) =>
@@ -109,23 +115,27 @@ export function AdminShell({ member, children }: Props) {
                 }}
               >
                 <Icon className="size-[17px]" aria-hidden="true" />
-                {label}
+                {t(label)}
               </Link>
             ) : (
               <span
                 key={label}
                 aria-disabled="true"
-                title="শীঘ্রই আসছে"
+                title={t('shell.soon')}
                 className={cn(itemClass, 'cursor-not-allowed text-zinc-400')}
               >
                 <Icon className="size-[17px]" aria-hidden="true" />
-                {label}
+                {t(label)}
               </span>
             ),
           )}
         </nav>
 
-        <div className="mt-3 flex items-center gap-2.5 border-t border-border pt-3 md:mt-auto">
+        <div className="mt-3 border-t border-border pt-3 md:mt-auto">
+          <LangToggle className="w-full justify-center" />
+        </div>
+
+        <div className="mt-3 flex items-center gap-2.5 border-t border-border pt-3">
           <span
             aria-hidden="true"
             className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground"
@@ -137,14 +147,14 @@ export function AdminShell({ member, children }: Props) {
               {member.name}
             </span>
             <span className="text-xs text-muted-foreground">
-              {ROLE_LABEL[member.role]}
+              {t(ROLE_LABEL_KEY[member.role])}
             </span>
           </span>
           <Button
             variant="outline"
             size="icon-sm"
             onClick={signOut}
-            aria-label="সাইন আউট"
+            aria-label={t('shell.signOut')}
           >
             <LogOut aria-hidden="true" />
           </Button>

@@ -19,17 +19,23 @@ import { NativeSelect } from '../../../components/ui/native-select.tsx'
 import {
   BLOOD_GROUPS,
   MEMBER_STATUSES,
-  STATUS_LABEL,
+  STATUS_LABEL_KEY,
   bloodLabel,
 } from '../../../lib/member-options.ts'
 import { memberFormSchema } from '../../../lib/member-form.ts'
 import type { MemberFormInput } from '../../../lib/member-form.ts'
 import { createMemberFn } from '../../../lib/members.functions.ts'
+import { useT } from '../../../lib/i18n/index.tsx'
+import { langOfMatches } from '../../../lib/i18n/core.ts'
+import type { HeadArgs } from '../../../lib/i18n/core.ts'
+import { tFor } from '../../../lib/i18n/messages.ts'
 import { can } from '../../../lib/permissions.ts'
 import { cn } from '../../../lib/utils.ts'
 
 export const Route = createFileRoute('/admin/members/new')({
-  head: () => ({ meta: [{ title: 'নতুন সদস্য — কলমা সোশ্যাল ক্লাব' }] }),
+  head: ({ matches }: HeadArgs) => ({
+    meta: [{ title: tFor(langOfMatches(matches))('memberNew.pageTitle') }],
+  }),
   beforeLoad: ({ context }) => {
     // The server function checks again; this just keeps people off the page.
     if (!can(context.member.role, 'members.write'))
@@ -41,11 +47,10 @@ export const Route = createFileRoute('/admin/members/new')({
 // The consent wording. It is a legal statement, so it lives in ONE place and
 // should be reviewed by the club (and a lawyer, if the club wants one) before
 // real members are added. Nobody involved in building this is a lawyer.
-const CONSENT_LABEL =
-  'সদস্য নিজে তাঁর নাম, ফোন নম্বর, ঠিকানা ও রক্তের গ্রুপ ক্লাবের রেকর্ডে রাখার সম্মতি দিয়েছেন।'
-const CONSENT_NOTE = 'এই তথ্য শুধু অ্যাডমিন দেখতে পান, ওয়েবসাইটে কোথাও প্রকাশ হয় না।'
+// The wording is in the messages (memberNew.consent / consentNote).
 
 function NewMemberPage() {
+  const t = useT()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [formError, setFormError] = useState<string | null>(null)
@@ -78,11 +83,11 @@ function NewMemberPage() {
       if (!result.ok) {
         if (result.code === 'PHONE_TAKEN') {
           setError('phone', {
-            message: 'এই নম্বরে আগে থেকেই একজন সদস্য আছেন (আর্কাইভ করা হলেও)।',
+            message: 'memberNew.phoneTaken', // a message key: FieldError translates it
           })
           setFocus('phone')
         } else {
-          setFormError('তথ্য ঠিক নেই। ফর্মটি আবার দেখে নিন।')
+          setFormError(t('a.invalidForm'))
         }
         return
       }
@@ -91,7 +96,7 @@ function NewMemberPage() {
       await queryClient.invalidateQueries({ queryKey: ['members'] })
       await navigate({ to: '/admin/members' })
     } catch {
-      setFormError('সদস্য যোগ করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setFormError(t('memberNew.errSave'))
     }
   }
 
@@ -107,11 +112,11 @@ function NewMemberPage() {
         className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
-        সদস্য তালিকায় ফিরুন
+        {t('memberNew.back')}
       </Link>
-      <h1 className="text-2xl font-semibold">নতুন সদস্য</h1>
+      <h1 className="text-2xl font-semibold">{t('memberNew.title')}</h1>
       <p className="mt-0.5 text-sm text-muted-foreground">
-        তারকা-চিহ্নিত ঘরগুলো আবশ্যক। বাকিগুলো পরে সম্পাদনা করা যাবে।
+        {t('memberNew.lead')}
       </p>
 
       <form
@@ -121,7 +126,7 @@ function NewMemberPage() {
       >
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="name">নাম *</Label>
+            <Label htmlFor="name">{t('memberNew.name')}</Label>
             <Input
               id="name"
               autoComplete="off"
@@ -133,7 +138,7 @@ function NewMemberPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="phone">মোবাইল নম্বর *</Label>
+            <Label htmlFor="phone">{t('memberNew.phone')}</Label>
             <Input
               id="phone"
               type="tel"
@@ -147,7 +152,7 @@ function NewMemberPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="email">ইমেইল (ঐচ্ছিক)</Label>
+            <Label htmlFor="email">{t('memberNew.email')}</Label>
             <Input
               id="email"
               type="email"
@@ -161,13 +166,13 @@ function NewMemberPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="bloodGroup">রক্তের গ্রুপ</Label>
+            <Label htmlFor="bloodGroup">{t('memberNew.blood')}</Label>
             <NativeSelect
               id="bloodGroup"
               aria-invalid={invalid('bloodGroup')}
               {...register('bloodGroup')}
             >
-              <option value="">জানা নেই</option>
+              <option value="">{t('memberNew.bloodUnknown')}</option>
               {BLOOD_GROUPS.map((g) => (
                 <option key={g} value={g}>
                   {bloodLabel(g)}
@@ -177,7 +182,7 @@ function NewMemberPage() {
           </div>
 
           <div className="space-y-1.5 md:col-span-2">
-            <Label htmlFor="address">ঠিকানা (ঐচ্ছিক)</Label>
+            <Label htmlFor="address">{t('memberNew.address')}</Label>
             <Input
               id="address"
               autoComplete="off"
@@ -189,7 +194,7 @@ function NewMemberPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="area">এলাকা (ঐচ্ছিক)</Label>
+            <Label htmlFor="area">{t('memberNew.area')}</Label>
             <Input
               id="area"
               autoComplete="off"
@@ -201,7 +206,7 @@ function NewMemberPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="occupation">পেশা (ঐচ্ছিক)</Label>
+            <Label htmlFor="occupation">{t('memberNew.occupation')}</Label>
             <Input
               id="occupation"
               autoComplete="off"
@@ -216,11 +221,11 @@ function NewMemberPage() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="status">অবস্থা</Label>
+            <Label htmlFor="status">{t('a.status')}</Label>
             <NativeSelect id="status" {...register('status')}>
               {MEMBER_STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {STATUS_LABEL[s]}
+                  {t(STATUS_LABEL_KEY[s])}
                 </option>
               ))}
             </NativeSelect>
@@ -228,7 +233,7 @@ function NewMemberPage() {
 
           <div className="flex items-end pb-1.5">
             <CheckboxField
-              label="রক্ত দিতে রাজি"
+              label={t('memberNew.willing')}
               {...register('willingToDonate')}
             />
           </div>
@@ -241,8 +246,8 @@ function NewMemberPage() {
           )}
         >
           <CheckboxField
-            label={CONSENT_LABEL}
-            description={CONSENT_NOTE}
+            label={t('memberNew.consent')}
+            description={t('memberNew.consentNote')}
             aria-invalid={invalid('consent')}
             aria-describedby={describedBy('consent')}
             {...register('consent')}
@@ -261,13 +266,13 @@ function NewMemberPage() {
 
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'অপেক্ষা করুন…' : 'সদস্য যোগ করুন'}
+            {isSubmitting ? t('a.wait') : t('memberNew.submit')}
           </Button>
           <Link
             to="/admin/members"
             className={buttonVariants({ variant: 'outline' })}
           >
-            বাতিল
+            {t('a.cancel')}
           </Link>
         </div>
       </form>

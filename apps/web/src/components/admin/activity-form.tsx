@@ -6,11 +6,13 @@ import { useForm } from 'react-hook-form'
 
 import {
   ACTIVITY_CATEGORIES,
+  ACTIVITY_CATEGORY_KEY,
   ACTIVITY_STATUSES,
-  ACTIVITY_STATUS_LABEL,
+  ACTIVITY_STATUS_LABEL_KEY,
   activityFormSchema,
 } from '../../lib/activity-form.ts'
 import type { ActivityFormInput } from '../../lib/activity-form.ts'
+import { useNumber, useT } from '../../lib/i18n/index.tsx'
 import { imageUrl } from '../../lib/image-limits.ts'
 import { Button, buttonVariants } from '../ui/button.tsx'
 import { CheckboxField } from '../ui/checkbox-field.tsx'
@@ -42,6 +44,8 @@ export function ActivityForm({
   // Extra cards for the side column, e.g. the delete button.
   extra?: ReactNode
 }) {
+  const t = useT()
+  const number = useNumber()
   const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
@@ -60,7 +64,7 @@ export function ActivityForm({
       const result = await onSubmit(values)
       if (!result.ok) setFormError(result.message)
     } catch {
-      setFormError('কার্যক্রম সংরক্ষণ করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setFormError(t('act.errSave'))
     }
   }
 
@@ -78,10 +82,10 @@ export function ActivityForm({
       <div className="flex min-w-0 flex-[999_1_440px] flex-col gap-4">
         <section className={`${card} flex flex-col gap-4`}>
           <div className="space-y-1.5">
-            <Label htmlFor="title">শিরোনাম *</Label>
+            <Label htmlFor="title">{t('act.fTitle')}</Label>
             <Input
               id="title"
-              placeholder="যেমন: ফ্রি রক্তের গ্রুপ নির্ণয় ক্যাম্প"
+              placeholder={t('act.fTitlePh')}
               autoComplete="off"
               aria-invalid={invalid('title')}
               aria-describedby={describedBy('title')}
@@ -92,7 +96,7 @@ export function ActivityForm({
 
           <div className="flex flex-wrap gap-3.5">
             <div className="min-w-0 flex-[1_1_150px] space-y-1.5">
-              <Label htmlFor="eventDate">তারিখ</Label>
+              <Label htmlFor="eventDate">{t('act.fDate')}</Label>
               <Input
                 id="eventDate"
                 type="date"
@@ -106,7 +110,7 @@ export function ActivityForm({
               />
             </div>
             <div className="min-w-0 flex-[1_1_120px] space-y-1.5">
-              <Label htmlFor="eventTime">সময়</Label>
+              <Label htmlFor="eventTime">{t('act.fTime')}</Label>
               <Input
                 id="eventTime"
                 type="time"
@@ -120,10 +124,10 @@ export function ActivityForm({
               />
             </div>
             <div className="min-w-0 flex-[2_1_200px] space-y-1.5">
-              <Label htmlFor="location">স্থান</Label>
+              <Label htmlFor="location">{t('act.fPlace')}</Label>
               <Input
                 id="location"
-                placeholder="ক্লাব প্রাঙ্গণ, কলমা"
+                placeholder={t('act.fPlacePh')}
                 autoComplete="off"
                 aria-invalid={invalid('location')}
                 aria-describedby={describedBy('location')}
@@ -137,11 +141,11 @@ export function ActivityForm({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="description">বিবরণ</Label>
+            <Label htmlFor="description">{t('act.fDescription')}</Label>
             <Textarea
               id="description"
               rows={7}
-              placeholder="কার্যক্রমটি কী নিয়ে, কারা অংশ নিতে পারবেন, কী আনতে হবে — সংক্ষেপে লিখুন।"
+              placeholder={t('act.fDescriptionPh')}
               aria-invalid={invalid('description')}
               aria-describedby={describedBy('description')}
               {...register('description')}
@@ -157,7 +161,9 @@ export function ActivityForm({
             radio button inside a <label>, so it works with keyboard and screen
             readers; the photo is just its picture. */}
         <fieldset className={card}>
-          <legend className="px-1 text-[15px] font-semibold">কভার ছবি</legend>
+          <legend className="px-1 text-[15px] font-semibold">
+            {t('act.fCover')}
+          </legend>
           {photos.length > 0 ? (
             <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2">
               <label className="flex aspect-square cursor-pointer items-center justify-center rounded-lg border border-border p-1 text-center text-xs text-muted-foreground has-[:checked]:border-primary has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:focus-visible]:outline-2">
@@ -167,7 +173,7 @@ export function ActivityForm({
                   className="sr-only"
                   {...register('coverImageId')}
                 />
-                ছবি ছাড়া
+                {t('act.fCoverNone')}
               </label>
               {photos.map((photo, index) => (
                 <label
@@ -177,7 +183,7 @@ export function ActivityForm({
                   <input
                     type="radio"
                     value={photo.id}
-                    aria-label={`ছবি ${index + 1}`}
+                    aria-label={t('act.fCoverN', { n: number(index + 1) })}
                     className="sr-only"
                     {...register('coverImageId')}
                   />
@@ -192,12 +198,12 @@ export function ActivityForm({
             </div>
           ) : (
             <p className="mt-2 text-sm text-muted-foreground">
-              গ্যালারিতে এখনো কোনো ছবি নেই।{' '}
+              {t('act.fCoverEmpty')}{' '}
               <Link
                 to="/admin/gallery"
                 className="font-medium text-primary hover:underline"
               >
-                আগে ছবি যোগ করুন
+                {t('act.fCoverAdd')}
               </Link>
               ।
             </p>
@@ -211,37 +217,34 @@ export function ActivityForm({
 
       <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-4">
         <section className={`${card} flex flex-col gap-4`}>
-          <h2 className="text-[15px] font-semibold">প্রকাশের সেটিং</h2>
+          <h2 className="text-[15px] font-semibold">
+            {t('a.publishSettings')}
+          </h2>
           <div className="space-y-1.5">
-            <Label htmlFor="status">অবস্থা</Label>
+            <Label htmlFor="status">{t('a.status')}</Label>
             <NativeSelect id="status" {...register('status')}>
               {ACTIVITY_STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {ACTIVITY_STATUS_LABEL[s]}
+                  {t(ACTIVITY_STATUS_LABEL_KEY[s])}
                 </option>
               ))}
             </NativeSelect>
             <p className="text-[13px] text-muted-foreground">
-              {publishing
-                ? 'প্রকাশিত হলে সাথে সাথে ওয়েবসাইটে দেখা যাবে।'
-                : 'খসড়া শুধু অ্যাডমিন দেখতে পান।'}
+              {publishing ? t('a.publishNote') : t('a.draftNote')}
             </p>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="category">ধরন</Label>
+            <Label htmlFor="category">{t('act.fType')}</Label>
             <NativeSelect id="category" {...register('category')}>
-              <option value="">বেছে নেওয়া হয়নি</option>
+              <option value="">{t('act.fTypeNone')}</option>
               {ACTIVITY_CATEGORIES.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {t(ACTIVITY_CATEGORY_KEY[c])}
                 </option>
               ))}
             </NativeSelect>
           </div>
-          <CheckboxField
-            label="হোমপেজের উপরে দেখান"
-            {...register('featured')}
-          />
+          <CheckboxField label={t('act.fFeatured')} {...register('featured')} />
         </section>
 
         {formError && (
@@ -256,14 +259,15 @@ export function ActivityForm({
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting
-              ? 'অপেক্ষা করুন…'
-              : (submitLabel ?? (publishing ? 'প্রকাশ করুন' : 'খসড়া রাখুন'))}
+              ? t('a.wait')
+              : (submitLabel ??
+                (publishing ? t('a.publish') : t('a.saveDraft')))}
           </Button>
           <Link
             to="/admin/activities"
             className={buttonVariants({ variant: 'outline' })}
           >
-            বাতিল
+            {t('a.cancel')}
           </Link>
         </div>
 

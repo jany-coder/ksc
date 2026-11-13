@@ -16,11 +16,13 @@ export const MEMBER_STATUSES = ['active', 'pending', 'suspended'] as const
 export type BloodGroup = (typeof BLOOD_GROUPS)[number]
 export type MemberStatus = (typeof MEMBER_STATUSES)[number]
 
-export const STATUS_LABEL: Record<MemberStatus, string> = {
-  active: 'সক্রিয়',
-  pending: 'অপেক্ষমাণ',
-  suspended: 'স্থগিত',
-}
+// Message keys (see lib/i18n), not text: the page shows them in the reader's
+// language with t(STATUS_LABEL_KEY[status]).
+export const STATUS_LABEL_KEY = {
+  active: 'status.active',
+  pending: 'status.pending',
+  suspended: 'status.suspended',
+} as const satisfies Record<MemberStatus, string>
 
 // The database stores a hyphen ("O-"); the design shows a proper minus ("O−").
 export function bloodLabel(group: BloodGroup): string {

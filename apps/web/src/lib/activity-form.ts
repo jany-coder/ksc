@@ -23,10 +23,21 @@ export const ACTIVITY_CATEGORY_SLUG: Record<
 }
 
 export const ACTIVITY_STATUSES = ['draft', 'published'] as const
-export const ACTIVITY_STATUS_LABEL = {
-  draft: 'খসড়া',
-  published: 'প্রকাশিত',
+// Message keys, shown with t(...) in the reader's language.
+export const ACTIVITY_STATUS_LABEL_KEY = {
+  draft: 'status.draft',
+  published: 'status.published',
 } as const
+
+// The database stores the Bengali category name (older rows depend on it), so
+// the value stays Bengali; only what the person SEES is translated.
+export const ACTIVITY_CATEGORY_KEY = {
+  রক্তদান: 'cat.blood',
+  'ত্রাণ ও সহায়তা': 'cat.relief',
+  শিক্ষা: 'cat.education',
+  খেলাধুলা: 'cat.sports',
+  সভা: 'cat.meeting',
+} as const satisfies Record<(typeof ACTIVITY_CATEGORIES)[number], string>
 
 // "2026-02-31" has the right shape but is not a day: check it really exists.
 export function isRealDate(value: string): boolean {

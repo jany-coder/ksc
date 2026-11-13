@@ -6,10 +6,11 @@ import { useForm } from 'react-hook-form'
 
 import {
   NOTICE_STATUSES,
-  NOTICE_STATUS_LABEL,
+  NOTICE_STATUS_LABEL_KEY,
   noticeFormSchema,
 } from '../../lib/notice-form.ts'
 import type { NoticeFormInput } from '../../lib/notice-form.ts'
+import { useT } from '../../lib/i18n/index.tsx'
 import { Button, buttonVariants } from '../ui/button.tsx'
 import { CheckboxField } from '../ui/checkbox-field.tsx'
 import { FieldError } from '../ui/field-error.tsx'
@@ -36,6 +37,7 @@ export function NoticeForm({
   // Extra cards for the side column, e.g. the delete button.
   extra?: ReactNode
 }) {
+  const t = useT()
   const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
@@ -54,7 +56,7 @@ export function NoticeForm({
       const result = await onSubmit(values)
       if (!result.ok) setFormError(result.message)
     } catch {
-      setFormError('নোটিশ সংরক্ষণ করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।')
+      setFormError(t('not.errSave'))
     }
   }
 
@@ -72,7 +74,7 @@ export function NoticeForm({
       <div className="flex min-w-0 flex-[999_1_440px] flex-col gap-4">
         <section className={`${card} flex flex-col gap-4`}>
           <div className="space-y-1.5">
-            <Label htmlFor="title">শিরোনাম *</Label>
+            <Label htmlFor="title">{t('not.fTitle')}</Label>
             <Input
               id="title"
               autoComplete="off"
@@ -83,7 +85,7 @@ export function NoticeForm({
             <FieldError id="title-error" message={errors.title?.message} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="body">বিবরণ *</Label>
+            <Label htmlFor="body">{t('not.fBody')}</Label>
             <Textarea
               id="body"
               rows={7}
@@ -98,26 +100,23 @@ export function NoticeForm({
 
       <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-4">
         <section className={`${card} flex flex-col gap-4`}>
-          <h2 className="text-[15px] font-semibold">প্রকাশের সেটিং</h2>
+          <h2 className="text-[15px] font-semibold">
+            {t('a.publishSettings')}
+          </h2>
           <div className="space-y-1.5">
-            <Label htmlFor="status">অবস্থা</Label>
+            <Label htmlFor="status">{t('a.status')}</Label>
             <NativeSelect id="status" {...register('status')}>
               {NOTICE_STATUSES.map((s) => (
                 <option key={s} value={s}>
-                  {NOTICE_STATUS_LABEL[s]}
+                  {t(NOTICE_STATUS_LABEL_KEY[s])}
                 </option>
               ))}
             </NativeSelect>
             <p className="text-[13px] text-muted-foreground">
-              {publishing
-                ? 'প্রকাশিত হলে সাথে সাথে ওয়েবসাইটে দেখা যাবে।'
-                : 'খসড়া শুধু অ্যাডমিন দেখতে পান।'}
+              {publishing ? t('a.publishNote') : t('a.draftNote')}
             </p>
           </div>
-          <CheckboxField
-            label="জরুরি নোটিশ (উপরে লাল চিহ্নসহ দেখাবে)"
-            {...register('urgent')}
-          />
+          <CheckboxField label={t('not.fUrgent')} {...register('urgent')} />
         </section>
 
         {formError && (
@@ -132,14 +131,15 @@ export function NoticeForm({
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting
-              ? 'অপেক্ষা করুন…'
-              : (submitLabel ?? (publishing ? 'প্রকাশ করুন' : 'খসড়া রাখুন'))}
+              ? t('a.wait')
+              : (submitLabel ??
+                (publishing ? t('a.publish') : t('a.saveDraft')))}
           </Button>
           <Link
             to="/admin/notices"
             className={buttonVariants({ variant: 'outline' })}
           >
-            বাতিল
+            {t('a.cancel')}
           </Link>
         </div>
 

@@ -1,5 +1,6 @@
 import { makeT } from './core.ts'
 import type { Lang } from './core.ts'
+import { adminMessages } from './messages.admin.ts'
 import { authMessages } from './messages.auth.ts'
 import { publicMessages } from './messages.public.ts'
 import { validationMessages } from './messages.validation.ts'
@@ -10,6 +11,7 @@ export const messages = {
   ...publicMessages,
   ...validationMessages,
   ...authMessages,
+  ...adminMessages,
 }
 export type MessageKey = keyof typeof messages
 

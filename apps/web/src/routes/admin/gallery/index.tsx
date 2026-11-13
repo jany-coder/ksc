@@ -25,6 +25,11 @@ import {
   resizeForUpload,
   uploadResized,
 } from '../../../lib/image-resize.ts'
+import { langOfMatches } from '../../../lib/i18n/core.ts'
+import type { HeadArgs } from '../../../lib/i18n/core.ts'
+import { useLang, useT } from '../../../lib/i18n/index.tsx'
+import { tFor } from '../../../lib/i18n/messages.ts'
+import type { MessageKey } from '../../../lib/i18n/messages.ts'
 import { can } from '../../../lib/permissions.ts'
 import { cn } from '../../../lib/utils.ts'
 
@@ -35,40 +40,47 @@ const galleryQuery = () =>
   })
 
 export const Route = createFileRoute('/admin/gallery/')({
-  head: () => ({ meta: [{ title: 'গ্যালারি — কলমা সোশ্যাল ক্লাব' }] }),
+  head: ({ matches }: HeadArgs) => ({
+    meta: [{ title: tFor(langOfMatches(matches))('gal.pageTitle') }],
+  }),
   beforeLoad: ({ context }) => {
     // Keeps people off the page; the server checks the permission too.
     if (!can(context.member.role, 'content.write'))
       throw redirect({ to: '/admin' })
   },
   loader: ({ context }) => context.queryClient.ensureQueryData(galleryQuery()),
-  errorComponent: () => (
-    <main className="px-4 py-6 md:p-6">
-      <p role="alert" className="text-red-700">
-        গ্যালারি লোড করা গেল না। পাতাটি রিফ্রেশ করে দেখুন।
-      </p>
-    </main>
-  ),
+  errorComponent: GalleryError,
   component: GalleryPage,
 })
 
-// What went wrong, in words for the person uploading.
-function messageFor(code: string): string {
+function GalleryError() {
+  const t = useT()
+  return (
+    <main className="px-4 py-6 md:p-6">
+      <p role="alert" className="text-red-700">
+        {t('gal.loadError')}
+      </p>
+    </main>
+  )
+}
+
+// What went wrong, as a message key (shown in the reader's language).
+function messageKeyFor(code: string): MessageKey {
   switch (code) {
     case 'UNREADABLE':
-      return 'ছবিটি খোলা গেল না (হয়তো এই ধরনের ফাইল সমর্থিত নয়)।'
+      return 'gal.errUnreadable'
     case 'WEBP_UNSUPPORTED':
-      return 'এই ব্রাউজারে ছবি ছোট করা যায় না। Chrome বা Edge ব্যবহার করুন।'
+      return 'gal.errWebp'
     case 'TOO_BIG':
     case 'TOO_LARGE':
-      return 'ছবিটি অনেক বড়, ছোট করেও সীমার মধ্যে আনা গেল না।'
+      return 'gal.errTooBig'
     case 'STORAGE_FULL':
-      return 'ছবি রাখার জায়গা প্রায় শেষ, নতুন ছবি নেওয়া বন্ধ আছে।'
+      return 'gal.errFull'
     case 'UNAUTHENTICATED':
     case 'FORBIDDEN':
-      return 'ছবি দেওয়ার অনুমতি নেই। আবার লগইন করুন।'
+      return 'gal.errAuth'
     default:
-      return 'আপলোড হলো না। ইন্টারনেট দেখে আবার চেষ্টা করুন।'
+      return 'gal.errGeneric'
   }
 }
 
@@ -76,10 +88,13 @@ type UploadItem = {
   key: number
   name: string
   status: 'working' | 'done' | 'error'
-  message?: string
+  // A message key; shown in the reader's language when rendered.
+  messageKey?: MessageKey
 }
 
 function GalleryPage() {
+  const t = useT()
+  const lang = useLang()
   const { data } = useSuspenseQuery(galleryQuery())
   const queryClient = useQueryClient()
   const input = useRef<HTMLInputElement>(null)
@@ -116,14 +131,17 @@ function GalleryPage() {
         if (outcome.ok) {
           update(key, { status: 'done' })
         } else {
-          update(key, { status: 'error', message: messageFor(outcome.code) })
+          update(key, {
+            status: 'error',
+            messageKey: messageKeyFor(outcome.code),
+          })
           // Out of space: the rest would fail the same way.
           if (outcome.code === 'STORAGE_FULL') break
         }
       } catch (error) {
         update(key, {
           status: 'error',
-          message: messageFor(
+          messageKey: messageKeyFor(
             error instanceof ResizeError ? error.code : 'FAILED',
           ),
         })
@@ -140,18 +158,15 @@ function GalleryPage() {
       setDeleteError(null)
       await queryClient.invalidateQueries({ queryKey: ['images'] })
     },
-    onError: () => setDeleteError('ছবিটি মোছা গেল না। আবার চেষ্টা করুন।'),
+    onError: () => setDeleteError(t('gal.deleteError')),
   })
 
   return (
     <main className="flex flex-col gap-4 px-4 py-6 md:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="mb-0.5 text-2xl font-semibold">গ্যালারি</h1>
-          <p className="text-sm text-muted-foreground">
-            এখানে দেওয়া সব ছবি ওয়েবসাইটের গ্যালারিতে দেখা যায়। ছবি আপলোডের আগে
-            নিজে থেকেই ছোট হয়ে যায়।
-          </p>
+          <h1 className="mb-0.5 text-2xl font-semibold">{t('gal.title')}</h1>
+          <p className="text-sm text-muted-foreground">{t('gal.lead')}</p>
         </div>
         <div>
           <input
@@ -170,28 +185,28 @@ function GalleryPage() {
             onClick={() => input.current?.click()}
           >
             <Upload aria-hidden="true" />
-            {busy ? 'আপলোড হচ্ছে…' : 'ছবি যোগ করুন'}
+            {busy ? t('gal.uploading') : t('gal.add')}
           </Button>
         </div>
       </div>
 
       {/* Storage meter: R2 is free up to 10 GB; we warn at 6 GB and refuse at 8 GB. */}
       <section
-        aria-label="ছবি রাখার জায়গা"
+        aria-label={t('gal.storage')}
         className="rounded-[10px] border border-border bg-card p-4"
       >
         <p className="mb-2 text-sm">
-          ব্যবহৃত: <strong>{formatBytes(data.usedBytes)}</strong>{' '}
-          <span className="text-muted-foreground">
-            / {formatBytes(STORAGE_FREE_BYTES)} (বিনামূল্যের সীমা)
-          </span>
+          {t('gal.used', {
+            used: formatBytes(data.usedBytes, lang),
+            free: formatBytes(STORAGE_FREE_BYTES, lang),
+          })}
         </p>
         <div
           role="meter"
           aria-valuemin={0}
           aria-valuemax={STORAGE_FREE_BYTES}
           aria-valuenow={Math.round(data.usedBytes)}
-          aria-label="ব্যবহৃত জায়গা"
+          aria-label={t('gal.meter')}
           className="h-2 overflow-hidden rounded-full bg-secondary"
         >
           <div
@@ -206,14 +221,15 @@ function GalleryPage() {
         </div>
         {data.state === 'warn' && (
           <p role="status" className="mt-2 text-sm text-yellow-800">
-            জায়গা কমে আসছে ({formatBytes(STORAGE_WARN_BYTES)} পার হয়েছে)।{' '}
-            {formatBytes(STORAGE_STOP_BYTES)}-তে নতুন ছবি নেওয়া বন্ধ হয়ে যাবে।
-            পুরনো অপ্রয়োজনীয় ছবি মুছে দিন।
+            {t('gal.warn', {
+              warn: formatBytes(STORAGE_WARN_BYTES, lang),
+              stop: formatBytes(STORAGE_STOP_BYTES, lang),
+            })}
           </p>
         )}
         {full && (
           <p role="alert" className="mt-2 text-sm text-red-700">
-            জায়গা প্রায় শেষ। নতুন ছবি নেওয়া বন্ধ। পুরনো ছবি মুছে জায়গা করুন।
+            {t('gal.full')}
           </p>
         )}
       </section>
@@ -233,9 +249,11 @@ function GalleryPage() {
                   item.status === 'working' && 'text-muted-foreground',
                 )}
               >
-                {item.status === 'working' && 'প্রক্রিয়া চলছে…'}
-                {item.status === 'done' && 'হয়েছে'}
-                {item.status === 'error' && item.message}
+                {item.status === 'working' && t('gal.working')}
+                {item.status === 'done' && t('gal.done')}
+                {item.status === 'error' &&
+                  item.messageKey &&
+                  t(item.messageKey)}
               </span>
             </li>
           ))}
@@ -260,7 +278,7 @@ function GalleryPage() {
                 width={image.width}
                 height={image.height}
                 loading="lazy"
-                alt="ক্লাবের ছবি"
+                alt={t('gal.photoAlt')}
                 className="aspect-square w-full object-cover"
               />
               <Button
@@ -268,10 +286,10 @@ function GalleryPage() {
                 variant="destructive"
                 size="icon-sm"
                 className="absolute end-2 top-2"
-                aria-label="ছবিটি মুছুন"
+                aria-label={t('gal.deleteAria')}
                 disabled={remove.isPending}
                 onClick={() => {
-                  if (window.confirm('ছবিটি স্থায়ীভাবে মুছে ফেলবেন?'))
+                  if (window.confirm(t('gal.deleteConfirm')))
                     remove.mutate(image.id)
                 }}
               >
@@ -282,7 +300,7 @@ function GalleryPage() {
         </ul>
       ) : (
         <p className="rounded-[10px] border border-border bg-card px-4 py-10 text-center text-muted-foreground">
-          এখনো কোনো ছবি যোগ হয়নি।
+          {t('gal.empty')}
         </p>
       )}
     </main>

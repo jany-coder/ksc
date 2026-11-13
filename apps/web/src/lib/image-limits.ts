@@ -38,10 +38,11 @@ export function isValidDimension(value: number): boolean {
   return Number.isInteger(value) && value >= 1 && value <= MAX_DIMENSION
 }
 
-const number = new Intl.NumberFormat('bn-BD', { maximumFractionDigits: 1 })
-
-/** 3_500_000 -> "৩.৫ MB". */
-export function formatBytes(bytes: number): string {
+/** 3_500_000 -> "৩.৫ MB" in Bengali, "3.5 MB" in English. */
+export function formatBytes(bytes: number, lang: 'bn' | 'en' = 'bn'): string {
+  const number = new Intl.NumberFormat(lang === 'bn' ? 'bn-BD' : 'en-GB', {
+    maximumFractionDigits: 1,
+  })
   if (bytes >= GB) return `${number.format(bytes / GB)} GB`
   if (bytes >= 1_000_000) return `${number.format(bytes / 1_000_000)} MB`
   return `${number.format(Math.max(1, Math.round(bytes / 1000)))} KB`

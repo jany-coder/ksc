@@ -12,6 +12,8 @@ import { Label } from '../components/ui/label.tsx'
 import { authClient } from '../lib/auth-client.ts'
 import { getCurrentMemberFn } from '../lib/auth.functions.ts'
 import { useT } from '../lib/i18n/index.tsx'
+import { langOfMatches } from '../lib/i18n/core.ts'
+import type { HeadArgs } from '../lib/i18n/core.ts'
 import { tFor } from '../lib/i18n/messages.ts'
 import {
   MIN_PASSWORD_LENGTH,
@@ -20,9 +22,9 @@ import {
 import { changePasswordFn } from '../lib/password.functions.ts'
 
 export const Route = createFileRoute('/change-password')({
-  head: ({ match }) => ({
+  head: ({ matches }: HeadArgs) => ({
     meta: [
-      { title: tFor(match.context.lang)('auth.pageTitleChange') },
+      { title: tFor(langOfMatches(matches))('auth.pageTitleChange') },
       { name: 'robots', content: 'noindex' },
     ],
   }),

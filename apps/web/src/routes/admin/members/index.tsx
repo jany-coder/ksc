@@ -9,13 +9,17 @@ import { Download, Plus, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { MemberDrawer } from '../../../components/admin/member-drawer.tsx'
+import { useNumber, useT } from '../../../lib/i18n/index.tsx'
+import { langOfMatches } from '../../../lib/i18n/core.ts'
+import type { HeadArgs } from '../../../lib/i18n/core.ts'
+import { tFor } from '../../../lib/i18n/messages.ts'
 import { MembersTable } from '../../../components/admin/members-table.tsx'
 import { buttonVariants } from '../../../components/ui/button.tsx'
 import { Input } from '../../../components/ui/input.tsx'
 import {
   BLOOD_GROUPS,
   MEMBER_STATUSES,
-  STATUS_LABEL,
+  STATUS_LABEL_KEY,
   bloodLabel,
 } from '../../../lib/member-options.ts'
 import { membersSearchSchema } from '../../../lib/members-query.ts'
@@ -32,7 +36,9 @@ const membersQuery = (search: MembersSearch) =>
   })
 
 export const Route = createFileRoute('/admin/members/')({
-  head: () => ({ meta: [{ title: 'সদস্য — কলমা সোশ্যাল ক্লাব' }] }),
+  head: ({ matches }: HeadArgs) => ({
+    meta: [{ title: tFor(langOfMatches(matches))('members.pageTitle') }],
+  }),
   validateSearch: membersSearchSchema,
   beforeLoad: ({ context }) => {
     // The /admin guard already ran; this also keeps people off by role. The
@@ -45,13 +51,7 @@ export const Route = createFileRoute('/admin/members/')({
   loaderDeps: ({ search: { member: _open, ...filters } }) => filters,
   loader: ({ context, deps }) =>
     context.queryClient.ensureQueryData(membersQuery(deps)),
-  errorComponent: () => (
-    <main className="px-4 py-6 md:p-6">
-      <p role="alert" className="text-red-700">
-        সদস্যদের তালিকা লোড করা গেল না। পাতাটি রিফ্রেশ করে দেখুন।
-      </p>
-    </main>
-  ),
+  errorComponent: MembersError,
   component: MembersPage,
 })
 
@@ -75,7 +75,20 @@ function next(
 const chipClass =
   'inline-flex min-h-9 items-center rounded-lg border px-[13px] text-[13px] font-semibold'
 
+function MembersError() {
+  const t = useT()
+  return (
+    <main className="px-4 py-6 md:p-6">
+      <p role="alert" className="text-red-700">
+        {t('members.loadError')}
+      </p>
+    </main>
+  )
+}
+
 function MembersPage() {
+  const t = useT()
+  const number = useNumber()
   const { member: openMemberId, ...search } = Route.useSearch()
   const { member } = Route.useRouteContext()
   const navigate = useNavigate()
@@ -106,10 +119,11 @@ function MembersPage() {
     <main className="flex flex-col gap-4 px-4 py-6 md:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="mb-0.5 text-2xl font-semibold">সদস্য</h1>
+          <h1 className="mb-0.5 text-2xl font-semibold">
+            {t('members.title')}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            ফোন নম্বর, ঠিকানা ও রক্তের গ্রুপ শুধু অ্যাডমিন দেখতে পান — ওয়েবসাইটে কোথাও
-            প্রকাশ হয় না।
+            {t('members.privacy')}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -120,20 +134,20 @@ function MembersPage() {
               className={buttonVariants({ variant: 'outline' })}
             >
               <Download aria-hidden="true" />
-              CSV ডাউনলোড
+              {t('members.csv')}
             </a>
           )}
           {can(member.role, 'members.write') && (
             <Link to="/admin/members/new" className={buttonVariants()}>
               <Plus aria-hidden="true" />
-              নতুন সদস্য
+              {t('members.add')}
             </Link>
           )}
         </div>
       </div>
 
       <nav
-        aria-label="অবস্থা অনুযায়ী"
+        aria-label={t('members.byStatus')}
         className="flex flex-wrap gap-1 border-b border-border"
       >
         {([undefined, ...MEMBER_STATUSES] as const).map((status) => {
@@ -152,7 +166,7 @@ function MembersPage() {
                   : 'border-transparent font-medium text-muted-foreground hover:text-foreground',
               )}
             >
-              {status ? STATUS_LABEL[status] : 'সব'}
+              {status ? t(STATUS_LABEL_KEY[status]) : t('a.all')}
               <span
                 className={cn(
                   'rounded-full px-1.5 py-px text-[11px]',
@@ -161,7 +175,7 @@ function MembersPage() {
                     : 'bg-secondary text-muted-foreground',
                 )}
               >
-                {count}
+                {number(count)}
               </span>
             </Link>
           )
@@ -178,8 +192,8 @@ function MembersPage() {
             type="search"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            aria-label="নাম বা নম্বর দিয়ে খুঁজুন"
-            placeholder="নাম বা নম্বর"
+            aria-label={t('members.searchLabel')}
+            placeholder={t('members.searchPlaceholder')}
             className="ps-9"
           />
         </div>
@@ -198,7 +212,7 @@ function MembersPage() {
                   : 'border-border bg-card text-zinc-700 hover:bg-secondary',
               )}
             >
-              {group ? bloodLabel(group) : 'সব'}
+              {group ? bloodLabel(group) : t('a.all')}
             </Link>
           )
         })}
@@ -210,18 +224,23 @@ function MembersPage() {
         ) : (
           <p className="px-4 py-10 text-center text-muted-foreground">
             {counts.all === 0
-              ? 'এখনো কোনো সদস্য যোগ হয়নি।'
-              : 'এই ফিল্টারে কোনো সদস্য পাওয়া যায়নি।'}
+              ? t('members.emptyNone')
+              : t('members.emptyFilter')}
           </p>
         )}
         <div className="flex flex-wrap items-center justify-between gap-2.5 border-t border-border px-4 py-[11px]">
           <span className="text-[13px] text-muted-foreground">
-            {counts.all} জনের মধ্যে {total} জন মিলেছে
-            {total > 0 ? ` · ${from}–${to} দেখানো হচ্ছে` : ''}
+            {t('members.summary', {
+              all: number(counts.all),
+              total: number(total),
+            })}
+            {total > 0
+              ? t('members.range', { from: number(from), to: number(to) })
+              : ''}
           </span>
           <div className="flex gap-1.5">
-            <PageLink enabled={hasPrev} page={page - 1} label="আগের" />
-            <PageLink enabled={hasNext} page={page + 1} label="পরের" />
+            <PageLink enabled={hasPrev} page={page - 1} label={t('a.prev')} />
+            <PageLink enabled={hasNext} page={page + 1} label={t('a.next')} />
           </div>
         </div>
       </div>

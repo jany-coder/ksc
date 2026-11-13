@@ -1,4 +1,4 @@
-import { formatDate } from '../../../lib/datetime.ts'
+import { formatDate, formatEventWhen } from '../../../lib/datetime.ts'
 import { useLang, useT } from '../../../lib/i18n/index.tsx'
 
 // "Notice board". Real notices come in as props. Until then, placeholders: in
@@ -46,9 +46,7 @@ export function NoticeBoard({ items = [] }: { items?: Notice[] }) {
               <span className="flex-[0_0_96px] pt-[3px] text-[15px] text-subtle">
                 {n.publishedDate
                   ? formatDate(n.publishedDate, lang)
-                  : lang === 'bn'
-                    ? '[তারিখ]'
-                    : '[date]'}
+                  : formatEventWhen(null, null, lang)}
               </span>
               <div className="min-w-0 flex-[999_1_240px]">
                 <h3 className="mb-1.5 flex flex-wrap items-center gap-2.5 text-xl font-semibold text-ink">

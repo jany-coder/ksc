@@ -10,10 +10,16 @@ import { ActivityForm } from '../../../components/admin/activity-form.tsx'
 import { createActivityFn } from '../../../lib/activities.functions.ts'
 import type { ActivityFormInput } from '../../../lib/activity-form.ts'
 import { listPublicImagesFn } from '../../../lib/images.functions.ts'
+import { useT } from '../../../lib/i18n/index.tsx'
+import { langOfMatches } from '../../../lib/i18n/core.ts'
+import type { HeadArgs } from '../../../lib/i18n/core.ts'
+import { tFor } from '../../../lib/i18n/messages.ts'
 import { can } from '../../../lib/permissions.ts'
 
 export const Route = createFileRoute('/admin/activities/new')({
-  head: () => ({ meta: [{ title: 'নতুন কার্যক্রম — কলমা সোশ্যাল ক্লাব' }] }),
+  head: ({ matches }: HeadArgs) => ({
+    meta: [{ title: tFor(langOfMatches(matches))('act.newPageTitle') }],
+  }),
   beforeLoad: ({ context }) => {
     // The server function checks again; this just keeps people off the page.
     if (!can(context.member.role, 'content.write'))
@@ -37,30 +43,33 @@ const EMPTY: ActivityFormInput = {
 }
 
 function NewActivityPage() {
+  const t = useT()
   const photos = Route.useLoaderData()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   return (
     <main className="px-4 py-6 md:p-6">
-      <nav aria-label="পথ" className="mb-3 text-sm text-muted-foreground">
+      <nav
+        aria-label={t('a.breadcrumb')}
+        className="mb-3 text-sm text-muted-foreground"
+      >
         <Link to="/admin/activities" className="hover:text-foreground">
-          কার্যক্রম
+          {t('act.title')}
         </Link>
         <span className="mx-1.5 text-zinc-300" aria-hidden="true">
           /
         </span>
-        <span className="text-foreground">নতুন</span>
+        <span className="text-foreground">{t('a.new')}</span>
       </nav>
-      <h1 className="text-2xl font-semibold">নতুন কার্যক্রম</h1>
+      <h1 className="text-2xl font-semibold">{t('act.add')}</h1>
 
       <ActivityForm
         initial={EMPTY}
         photos={photos}
         onSubmit={async (values) => {
           const result = await createActivityFn({ data: values })
-          if (!result.ok)
-            return { ok: false, message: 'তথ্য ঠিক নেই। ফর্মটি আবার দেখে নিন।' }
+          if (!result.ok) return { ok: false, message: t('a.invalidForm') }
           // Cached lists would not show the new activity until they expire.
           await queryClient.invalidateQueries({ queryKey: ['activities'] })
           await navigate({ to: '/admin/activities' })

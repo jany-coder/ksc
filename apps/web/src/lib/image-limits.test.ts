@@ -64,6 +64,11 @@ describe('formatBytes / imageUrl', () => {
     expect(formatBytes(6_000_000_000)).toContain('GB')
   })
 
+  it('writes English digits for English', () => {
+    expect(formatBytes(3_500_000, 'en')).toBe('3.5 MB')
+    expect(formatBytes(3_500_000, 'bn')).toBe('৩.৫ MB')
+  })
+
   it('builds the media URL', () => {
     expect(imageUrl('abc', 'thumb')).toBe('/api/media/abc/thumb')
   })

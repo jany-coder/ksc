@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
+import { DEFAULT_LANG, readLangFromCookieHeader } from '../../lib/i18n/core.ts'
 import { exportMembersCsv } from '../../lib/members.server.ts'
 import { can } from '../../lib/permissions.ts'
 import { memberFromHeaders } from '../../lib/session.server.ts'
@@ -20,7 +21,11 @@ export const Route = createFileRoute('/api/members-export')({
         if (member.mustChangePassword || !can(member.role, 'members.export'))
           return new Response('Forbidden', { status: 403 })
 
-        const { csv } = await exportMembersCsv(member.id)
+        // The column headings follow the language the admin chose in the panel.
+        const lang =
+          readLangFromCookieHeader(request.headers.get('cookie')) ??
+          DEFAULT_LANG
+        const { csv } = await exportMembersCsv(member.id, lang)
         const date = new Date().toISOString().slice(0, 10)
         return new Response(`${BOM}${csv}`, {
           headers: {

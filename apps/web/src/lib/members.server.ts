@@ -18,7 +18,9 @@ import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 import { db } from '../db/index.ts'
 import { auditLog, members, user } from '../db/schema/index.ts'
 import { memberFormSchema } from './member-form.ts'
-import { MEMBER_STATUSES, STATUS_LABEL } from './member-options.ts'
+import { MEMBER_STATUSES, STATUS_LABEL_KEY } from './member-options.ts'
+import { tFor } from './i18n/messages.ts'
+import type { Lang } from './i18n/core.ts'
 import type { MemberStatus } from './member-options.ts'
 import { PAGE_SIZE, escapeLike } from './members-query.ts'
 import type { MembersSearch } from './members-query.ts'
@@ -39,6 +41,8 @@ export type MemberRow = {
   bloodGroup: (typeof members.$inferSelect)['bloodGroup']
   area: string | null
   occupation: string | null
+  // Shown as a badge next to the name for admins and the super admin.
+  role: (typeof members.$inferSelect)['role']
   status: MemberStatus
 }
 
@@ -84,6 +88,7 @@ export async function listMembers(
         bloodGroup: members.bloodGroup,
         area: members.area,
         occupation: members.occupation,
+        role: members.role,
         status: members.status,
       })
       .from(members)
@@ -364,7 +369,9 @@ export async function purgeArchivedMembers(): Promise<number> {
  */
 export async function exportMembersCsv(
   actorId: string,
+  lang: Lang,
 ): Promise<{ csv: string; count: number }> {
+  const t = tFor(lang)
   const rows = await db
     .select({
       name: members.name,
@@ -394,17 +401,17 @@ export async function exportMembersCsv(
 
   const csv = toCsv(
     [
-      'নাম',
-      'মোবাইল',
-      'ইমেইল',
-      'রক্তের গ্রুপ',
-      'ঠিকানা',
-      'এলাকা',
-      'পেশা',
-      'অবস্থা',
-      'রক্তদানে আগ্রহী',
-      'সর্বশেষ রক্তদান',
-      'যোগদানের তারিখ',
+      t('csv.name'),
+      t('csv.mobile'),
+      t('csv.email'),
+      t('csv.blood'),
+      t('csv.address'),
+      t('csv.area'),
+      t('csv.occupation'),
+      t('csv.status'),
+      t('csv.willing'),
+      t('csv.lastDonation'),
+      t('csv.joined'),
     ],
     rows.map((r) => [
       r.name,
@@ -414,8 +421,8 @@ export async function exportMembersCsv(
       r.address,
       r.area,
       r.occupation,
-      STATUS_LABEL[r.status],
-      r.willingToDonate ? 'হ্যাঁ' : 'না',
+      t(STATUS_LABEL_KEY[r.status]),
+      r.willingToDonate ? t('a.yes') : t('a.no'),
       r.lastDonationDate,
       r.joinedDate,
     ]),
