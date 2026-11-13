@@ -8,13 +8,15 @@ const NORMALISED = /^01[3-9][0-9]{8}$/
 
 const BENGALI_ZERO = 0x09e6 // '০'
 
+/** Bengali digits ০-৯ -> 0-9. People type them on a Bengali keyboard. */
+export function toAsciiDigits(input: string): string {
+  return input.replace(/[০-৯]/g, (d) => String(d.charCodeAt(0) - BENGALI_ZERO))
+}
+
 /** Returns the stored form, or null if the input is not a Bangladeshi mobile number. */
 export function normalizePhone(input: string): string | null {
-  // Bengali digits ০-৯ -> 0-9. Members will type them on a Bengali keyboard.
-  // Then drop everything that is not a digit: spaces, dashes, dots, brackets, '+'.
-  let digits = input
-    .replace(/[০-৯]/g, (d) => String(d.charCodeAt(0) - BENGALI_ZERO))
-    .replace(/\D/g, '')
+  // Drop everything that is not a digit: spaces, dashes, dots, brackets, '+'.
+  let digits = toAsciiDigits(input).replace(/\D/g, '')
 
   // Country code, written with a 00 prefix or without it.
   if (digits.startsWith('00880')) digits = digits.slice(5)

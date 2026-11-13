@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { normalizePhone } from './phone.ts'
+import { normalizePhone, toAsciiDigits } from './phone.ts'
 
 describe('normalizePhone', () => {
   const stored = '01712345678'
@@ -44,5 +44,12 @@ describe('normalizePhone', () => {
     for (const p of ['013', '014', '015', '016', '017', '018', '019']) {
       expect(normalizePhone(`${p}12345678`)).toBe(`${p}12345678`)
     }
+  })
+})
+
+describe('toAsciiDigits', () => {
+  it('converts Bengali digits and leaves everything else alone', () => {
+    expect(toAsciiDigits('০১৭১-২৩abc')).toBe('0171-23abc')
+    expect(toAsciiDigits('0171')).toBe('0171')
   })
 })
