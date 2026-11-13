@@ -14,7 +14,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
-import { Route as AdminMembersRouteImport } from './routes/admin/members'
+import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -42,9 +42,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminMembersRoute = AdminMembersRouteImport.update({
-  id: '/members',
-  path: '/members',
+const AdminMembersIndexRoute = AdminMembersIndexRouteImport.update({
+  id: '/members/',
+  path: '/members/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -58,17 +58,17 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
-  '/admin/members': typeof AdminMembersRoute
   '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/admin/members/': typeof AdminMembersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
-  '/admin/members': typeof AdminMembersRoute
   '/admin': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/admin/members': typeof AdminMembersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,9 +76,9 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
-  '/admin/members': typeof AdminMembersRoute
   '/admin/': typeof AdminIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/admin/members/': typeof AdminMembersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,26 +87,26 @@ export interface FileRouteTypes {
     | '/admin'
     | '/change-password'
     | '/login'
-    | '/admin/members'
     | '/admin/'
     | '/api/auth/$'
+    | '/admin/members/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/change-password'
     | '/login'
-    | '/admin/members'
     | '/admin'
     | '/api/auth/$'
+    | '/admin/members'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/change-password'
     | '/login'
-    | '/admin/members'
     | '/admin/'
     | '/api/auth/$'
+    | '/admin/members/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -154,11 +154,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/members': {
-      id: '/admin/members'
+    '/admin/members/': {
+      id: '/admin/members/'
       path: '/members'
-      fullPath: '/admin/members'
-      preLoaderRoute: typeof AdminMembersRouteImport
+      fullPath: '/admin/members/'
+      preLoaderRoute: typeof AdminMembersIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/api/auth/$': {
@@ -172,13 +172,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteRouteChildren {
-  AdminMembersRoute: typeof AdminMembersRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminMembersIndexRoute: typeof AdminMembersIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
-  AdminMembersRoute: AdminMembersRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminMembersIndexRoute: AdminMembersIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

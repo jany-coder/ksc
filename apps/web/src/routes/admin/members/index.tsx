@@ -8,19 +8,19 @@ import {
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { MembersTable } from '../../components/admin/members-table.tsx'
-import { Input } from '../../components/ui/input.tsx'
+import { MembersTable } from '../../../components/admin/members-table.tsx'
+import { Input } from '../../../components/ui/input.tsx'
 import {
   BLOOD_GROUPS,
   MEMBER_STATUSES,
   STATUS_LABEL,
   bloodLabel,
-} from '../../lib/member-options.ts'
-import { membersSearchSchema } from '../../lib/members-query.ts'
-import type { MembersSearch } from '../../lib/members-query.ts'
-import { listMembersFn } from '../../lib/members.functions.ts'
-import { can } from '../../lib/permissions.ts'
-import { cn } from '../../lib/utils.ts'
+} from '../../../lib/member-options.ts'
+import { membersSearchSchema } from '../../../lib/members-query.ts'
+import type { MembersSearch } from '../../../lib/members-query.ts'
+import { listMembersFn } from '../../../lib/members.functions.ts'
+import { can } from '../../../lib/permissions.ts'
+import { cn } from '../../../lib/utils.ts'
 
 // The key holds every filter, so each combination has its own cache entry.
 const membersQuery = (search: MembersSearch) =>
@@ -29,7 +29,7 @@ const membersQuery = (search: MembersSearch) =>
     queryFn: () => listMembersFn({ data: search }),
   })
 
-export const Route = createFileRoute('/admin/members')({
+export const Route = createFileRoute('/admin/members/')({
   head: () => ({ meta: [{ title: 'সদস্য — কলমা সোশ্যাল ক্লাব' }] }),
   validateSearch: membersSearchSchema,
   beforeLoad: ({ context }) => {
