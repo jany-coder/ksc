@@ -18,7 +18,11 @@ import {
   getMemberFn,
   setMemberStatusFn,
 } from '../../lib/members.functions.ts'
-import { makeAdminFn, removeAdminFn } from '../../lib/admins.functions.ts'
+import {
+  makeAdminFn,
+  makeSuperAdminFn,
+  removeAdminFn,
+} from '../../lib/admins.functions.ts'
 import { resetMemberPasswordFn } from '../../lib/password.functions.ts'
 import { can, canManageMember } from '../../lib/permissions.ts'
 import type { Role } from '../../lib/permissions.ts'
@@ -99,6 +103,20 @@ export function MemberDrawer({
         return
       }
       setActionError(null)
+      setTempPassword(result.tempPassword)
+      await queryClient.invalidateQueries({ queryKey: ['members'] })
+    },
+    onError: () => setActionError(t('drawer.errMakeAdmin')),
+  })
+  const makeSuperMutation = useMutation({
+    mutationFn: () => makeSuperAdminFn({ data: { id: memberId } }),
+    onSuccess: async (result) => {
+      if (!result.ok) {
+        setActionError(t('drawer.errMakeAdmin'))
+        return
+      }
+      setActionError(null)
+      // Null for an admin who keeps their password.
       setTempPassword(result.tempPassword)
       await queryClient.invalidateQueries({ queryKey: ['members'] })
     },
@@ -300,6 +318,20 @@ export function MemberDrawer({
                   {t('drawer.makeAdmin')}
                 </Button>
               )}
+              {can(actor.role, 'admins.manage') &&
+                member.role !== 'super_admin' && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={makeSuperMutation.isPending}
+                    onClick={() => {
+                      if (window.confirm(t('drawer.makeSuperConfirm')))
+                        makeSuperMutation.mutate()
+                    }}
+                  >
+                    {t('drawer.makeSuper')}
+                  </Button>
+                )}
               {can(actor.role, 'admins.manage') && member.role === 'admin' && (
                 <Button
                   type="button"

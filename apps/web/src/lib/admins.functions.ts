@@ -14,6 +14,15 @@ export const makeAdminFn = createServerFn({ method: 'POST' })
     return makeAdmin(actor.id, data.id)
   })
 
+// The most dangerous role: same permission, and the server refuses a non-super
+// caller, so it cannot be reached by a plain admin.
+export const makeSuperAdminFn = createServerFn({ method: 'POST' })
+  .validator(target)
+  .handler(async ({ data }) => {
+    const actor = await requirePermission('admins.manage')
+    return makeAdmin(actor.id, data.id, 'super_admin')
+  })
+
 export const removeAdminFn = createServerFn({ method: 'POST' })
   .validator(target)
   .handler(async ({ data }) => {

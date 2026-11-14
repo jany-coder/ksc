@@ -183,6 +183,11 @@ export const adminMessages = {
     bn: 'এই সদস্যকে অ্যাডমিন বানাবেন? তিনি সব সদস্যের তথ্য দেখতে পারবেন। একটি অস্থায়ী পাসওয়ার্ড দেওয়া হবে।',
     en: "Make this member an admin? They will be able to see every member's details. A temporary password will be given.",
   },
+  'drawer.makeSuper': { bn: 'সুপার অ্যাডমিন বানান', en: 'Make super admin' },
+  'drawer.makeSuperConfirm': {
+    bn: 'সুপার অ্যাডমিন বানাবেন? তিনি সদস্য মুছতে, CSV নিতে এবং অ্যাডমিন বানাতে ও সরাতে পারবেন। নিশ্চিত না হলে বানাবেন না।',
+    en: 'Make a super admin? They will be able to delete members, export the CSV, and create or remove admins. Do not do this unless you are sure.',
+  },
   'drawer.removeAdmin': { bn: 'অ্যাডমিন থেকে সরান', en: 'Remove as admin' },
   'drawer.removeAdminConfirm': {
     bn: 'অ্যাডমিন পদ সরাবেন? তার লগইন মুছে যাবে ও সব ডিভাইস থেকে বের হয়ে যাবেন; সদস্য হিসেবে থাকবেন।',

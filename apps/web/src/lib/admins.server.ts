@@ -12,7 +12,9 @@ import { generateTempPassword } from './temp-password.ts'
 // (a super admin is never a target: only 'member' -> 'admin' and back).
 
 export type MakeAdminResult =
-  | { ok: true; tempPassword: string }
+  // tempPassword is null when the person already had a login (an admin being
+  // promoted keeps the password they have).
+  | { ok: true; tempPassword: string | null }
   | { ok: false; code: 'NOT_FOUND' | 'NOT_ACTIVE' | 'ALREADY_ADMIN' | 'FAILED' }
 
 /**
@@ -22,6 +24,7 @@ export type MakeAdminResult =
 export async function makeAdmin(
   actorId: string,
   memberId: string,
+  role: 'admin' | 'super_admin' = 'admin',
 ): Promise<MakeAdminResult> {
   const [target] = await db
     .select({
@@ -35,7 +38,13 @@ export async function makeAdmin(
     .where(and(eq(members.id, memberId), isNull(members.archivedAt)))
     .limit(1)
   if (!target) return { ok: false, code: 'NOT_FOUND' }
-  if (target.role !== 'member' || actorId === memberId)
+  // 'admin' is for plain members; 'super_admin' also accepts an admin (a step
+  // up). Never yourself, and never someone who already has that role.
+  const canBecome =
+    role === 'admin'
+      ? target.role === 'member'
+      : target.role === 'member' || target.role === 'admin'
+  if (!canBecome || actorId === memberId)
     return { ok: false, code: 'ALREADY_ADMIN' }
   // A pending or suspended person must not become an admin by a slip.
   if (target.status !== 'active') return { ok: false, code: 'NOT_ACTIVE' }
@@ -43,6 +52,8 @@ export async function makeAdmin(
   const tempPassword = generateTempPassword()
   const ctx = await auth.$context
   let userId = target.userId
+  // An admin who is promoted keeps their password and their login.
+  let newPassword: string | null = tempPassword
 
   try {
     if (!userId) {
@@ -64,6 +75,8 @@ export async function makeAdmin(
         accountId: userId,
         password: await ctx.password.hash(tempPassword),
       })
+    } else if (target.role === 'admin') {
+      newPassword = null
     } else {
       await ctx.internalAdapter.updatePassword(
         userId,
@@ -74,11 +87,15 @@ export async function makeAdmin(
     await db.batch([
       db
         .update(members)
-        .set({ role: 'admin', userId, mustChangePassword: true })
+        .set(
+          newPassword === null
+            ? { role }
+            : { role, userId, mustChangePassword: true },
+        )
         .where(eq(members.id, memberId)),
       db.insert(auditLog).values({
         actorId,
-        action: 'admin.create',
+        action: role === 'super_admin' ? 'superadmin.create' : 'admin.create',
         targetType: 'member',
         targetId: memberId,
       }),
@@ -89,7 +106,7 @@ export async function makeAdmin(
       await db.delete(user).where(eq(user.id, userId))
     return { ok: false, code: 'FAILED' }
   }
-  return { ok: true, tempPassword }
+  return { ok: true, tempPassword: newPassword }
 }
 
 export type RemoveAdminResult =
