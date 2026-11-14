@@ -12,7 +12,8 @@ export function Hero() {
     <section className="bg-brand-deep py-7 text-background md:py-24">
       <div className="mx-auto flex w-full max-w-[1180px] flex-wrap items-center gap-14 px-5 md:px-8">
         <div className="hero-rise min-w-0 flex-[999_1_460px]">
-          <p className="mb-2.5 text-sm font-medium text-mint md:mb-[18px] md:text-lg">
+          {/* Anek Bangla draws the digit in "কলমা ১" fully; Hind Siliguri's is too small. */}
+          <p className="mb-2.5 font-heading text-sm font-medium text-mint md:mb-[18px] md:text-lg">
             <span className="md:hidden">{t('site.locationShort')}</span>
             <span className="hidden md:inline">{t('hero.addressLong')}</span>
           </p>
