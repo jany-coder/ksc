@@ -29,7 +29,7 @@ export function NoticeBoard({ items = [] }: { items?: Notice[] }) {
   return (
     <section
       id="notice"
-      className="scroll-mt-4 border-y border-line bg-accent py-14 md:py-[92px]"
+      className="scroll-mt-4 md:scroll-mt-20 border-y border-line bg-accent py-14 md:py-[92px]"
     >
       <div className="mx-auto flex w-full max-w-[1180px] flex-wrap gap-14 px-5 md:px-8">
         <div className="min-w-0 flex-[1_1_280px]">

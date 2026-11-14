@@ -41,7 +41,10 @@ const ITEMS: {
 export function WhatWeDo() {
   const t = useT()
   return (
-    <section id="what-we-do" className="scroll-mt-4 py-14 md:py-[92px]">
+    <section
+      id="what-we-do"
+      className="scroll-mt-4 md:scroll-mt-20 py-14 md:py-[92px]"
+    >
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
         <h2 className="mb-3.5 text-[28px] font-bold text-brand-deep md:text-[40px]">
           {t('whatWeDo.title')}

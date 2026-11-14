@@ -21,7 +21,7 @@ export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
   return (
     <section
       id="upcoming"
-      className="scroll-mt-4 border-y border-line bg-panel py-14 md:py-[92px]"
+      className="scroll-mt-4 md:scroll-mt-20 border-y border-line bg-panel py-14 md:py-[92px]"
     >
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
         <div className="mb-9 md:mb-11">
