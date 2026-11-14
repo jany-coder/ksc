@@ -5,7 +5,10 @@
   // nodejs_compat: Better Auth and the Neon driver use Node APIs. It also puts
   // plain variables on process.env, which db/index.ts and auth.ts read.
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
+  // Our own entry (src/server.ts): the same web handler plus the daily purge job.
+  "main": "src/server.ts",
+  // 03:00 Dhaka time = 21:00 UTC. Deletes members archived more than 30 days ago.
+  "triggers": { "crons": ["0 21 * * *"] },
   "r2_buckets": [
     {
       // The name used in code: env.IMAGES (see src/lib/r2.server.ts).
