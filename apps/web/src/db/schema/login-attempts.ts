@@ -1,6 +1,6 @@
 import { integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
-// Per-phone login throttle: 5 attempts, then locked for 15 minutes
+// Per-phone login throttle: 10 attempts, then locked for 15 minutes
 // (CLAUDE.md section 5). Keyed by the normalised phone, not by IP: phone
 // numbers are public knowledge locally, so the password is the only barrier.
 // Rows are created for any well-formed phone, whether or not an account
