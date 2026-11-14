@@ -19,8 +19,8 @@ export const authMessages = {
   'auth.password': { bn: 'পাসওয়ার্ড', en: 'Password' },
   'auth.wait': { bn: 'অপেক্ষা করুন…', en: 'Please wait…' },
   'auth.errorWrong': {
-    bn: 'নম্বর বা পাসওয়ার্ড ঠিক নয়। পরপর ৫ বার ভুল হলে ১৫ মিনিটের জন্য সাইন ইন বন্ধ থাকবে।',
-    en: 'The number or password is not correct. After 5 wrong tries in a row, sign-in is blocked for 15 minutes.',
+    bn: 'নম্বর বা পাসওয়ার্ড ঠিক নয়। পরপর ১০ বার ভুল হলে ১৫ মিনিটের জন্য সাইন ইন বন্ধ থাকবে।',
+    en: 'The number or password is not correct. After 10 wrong tries in a row, sign-in is blocked for 15 minutes.',
   },
   'auth.errorLocked': {
     bn: 'অনেকবার ভুল হয়েছে। ১৫ মিনিট পরে আবার চেষ্টা করুন।',
@@ -60,8 +60,8 @@ export const authMessages = {
   'auth.changeSubmit': { bn: 'পাসওয়ার্ড বদলান', en: 'Change password' },
   'auth.signOut': { bn: 'সাইন আউট', en: 'Sign out' },
   'auth.errorWrongCurrent': {
-    bn: 'বর্তমান পাসওয়ার্ড ঠিক নয়। পরপর ৫ বার ভুল হলে ১৫ মিনিটের জন্য বন্ধ থাকবে।',
-    en: 'The current password is not correct. After 5 wrong tries in a row, it is blocked for 15 minutes.',
+    bn: 'বর্তমান পাসওয়ার্ড ঠিক নয়। পরপর ১০ বার ভুল হলে ১৫ মিনিটের জন্য বন্ধ থাকবে।',
+    en: 'The current password is not correct. After 10 wrong tries in a row, it is blocked for 15 minutes.',
   },
   'auth.errorSession': {
     bn: 'সেশন শেষ হয়ে গেছে। আবার সাইন ইন করুন।',

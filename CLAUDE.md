@@ -149,7 +149,7 @@ Other rules:
 - **Password reset is manual:** an admin generates a temporary password. Set
   `mustChangePassword = true`; the user cannot reach any other page until
   they set a new one. Same flag on first login after account creation.
-- **Rate limit login:** 5 failed attempts on a phone number → locked 15
+- **Rate limit login:** 10 failed attempts on a phone number → locked 15
   minutes. Phone numbers are public knowledge locally, so the password is
   the only barrier.
 - **Sessions last 60–90 days.** Members visit rarely; frequent re-login

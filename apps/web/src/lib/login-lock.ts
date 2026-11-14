@@ -5,7 +5,7 @@ import { eq, sql } from 'drizzle-orm'
 import { db } from '../db/index.ts'
 import { loginAttempts as t } from '../db/schema/index.ts'
 
-// 5 attempts on a phone number, then locked for 15 minutes (CLAUDE.md
+// 10 attempts on a phone number, then locked for 15 minutes (CLAUDE.md
 // section 5). Better Auth's own rate limit works per IP and cannot do this.
 //
 // Why a slot is claimed BEFORE the password is checked: if we counted only
@@ -15,7 +15,7 @@ import { loginAttempts as t } from '../db/schema/index.ts'
 //
 // Neon over HTTP has no multi-statement transactions, so every function here
 // is a single statement on purpose.
-export const MAX_ATTEMPTS = 5
+export const MAX_ATTEMPTS = 10
 export const LOCK_MINUTES = 15
 
 const locked = sql`${t.lockedUntil} > now()`
