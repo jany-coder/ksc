@@ -431,22 +431,22 @@ export async function exportMembersCsv(
 }
 
 export type UpdateMemberResult =
-  | { ok: true }
-  | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' | 'FORBIDDEN' }
+  { ok: true } | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' }
 
 /**
  * Change a member's details. Call requirePermission('members.write') first.
  *
- * Who may change whom is canManageMember (permissions.ts): never yourself, and
- * only a super_admin may touch another admin. The phone number, role, consent
- * and status are NOT editable here (the phone is the member's identity and an
- * admin's sign-in name). If the member has a login, its display name follows,
+ * Every admin and super admin may edit anyone's details, themselves and other
+ * admins included: this changes information only, never access. The phone
+ * number, role, consent and status are NOT editable here (the phone is the
+ * member's identity and an admin's sign-in name; a super admin changes it
+ * separately, see changeMemberPhone). If the member has a login, its display name follows,
  * in the SAME batch (one transaction). The audit entry records who and whom,
  * never what changed: phone numbers and addresses stay out of the log
  * (CLAUDE.md section 3).
  */
 export async function updateMember(
-  actor: { id: string; role: Role },
+  actor: { id: string },
   memberId: string,
   input: unknown,
 ): Promise<UpdateMemberResult> {
@@ -455,13 +455,11 @@ export async function updateMember(
   const v = parsed.data
 
   const [target] = await db
-    .select({ role: members.role, userId: members.userId })
+    .select({ userId: members.userId })
     .from(members)
     .where(and(eq(members.id, memberId), isNull(members.archivedAt)))
     .limit(1)
   if (!target) return { ok: false, code: 'NOT_FOUND' }
-  if (!canManageMember(actor, { id: memberId, role: target.role }))
-    return { ok: false, code: 'FORBIDDEN' }
 
   const updateProfile = db
     .update(members)

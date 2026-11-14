@@ -21,7 +21,7 @@ import {
   getMemberFn,
   updateMemberFn,
 } from '../../../lib/members.functions.ts'
-import { can, canManageMember } from '../../../lib/permissions.ts'
+import { can } from '../../../lib/permissions.ts'
 
 export const Route = createFileRoute('/admin/members/$id')({
   head: ({ matches }: HeadArgs) => ({
@@ -62,14 +62,6 @@ function EditMemberPage() {
   const queryClient = useQueryClient()
   const router = useRouter()
 
-  // Same rule the server applies (never yourself; only a super admin edits an
-  // admin). The server function refuses it too: this just explains instead of
-  // showing a form that would fail.
-  const allowed = canManageMember(
-    { id: actor.id, role: actor.role },
-    { id: member.id, role: member.role },
-  )
-
   return (
     <main className="px-4 py-6 md:p-6">
       <Link
@@ -85,60 +77,49 @@ function EditMemberPage() {
         {t('memberEdit.lead')}
       </p>
 
-      {allowed ? (
-        <>
-          <MemberEditForm
-            initial={memberToEditValues(member)}
-            phone={member.phone}
-            onSubmit={async (values) => {
-              const result = await updateMemberFn({ data: { id, values } })
+      <>
+        <MemberEditForm
+          initial={memberToEditValues(member)}
+          phone={member.phone}
+          onSubmit={async (values) => {
+            const result = await updateMemberFn({ data: { id, values } })
+            if (!result.ok)
+              return {
+                ok: false,
+                message:
+                  result.code === 'NOT_FOUND'
+                    ? t('memberEdit.gone')
+                    : t('a.invalidForm'),
+              }
+            await queryClient.invalidateQueries({ queryKey: ['members'] })
+            // Back to the list with this member's drawer open, to see the result.
+            await navigate({ to: '/admin/members', search: { member: id } })
+            return { ok: true }
+          }}
+        />
+        {can(actor.role, 'members.changePhone') && member.id !== actor.id && (
+          <ChangePhoneForm
+            onSubmit={async (phone) => {
+              const result = await changeMemberPhoneFn({
+                data: { id, phone },
+              })
               if (!result.ok)
                 return {
                   ok: false,
                   message:
-                    result.code === 'NOT_FOUND'
-                      ? t('memberEdit.gone')
-                      : result.code === 'FORBIDDEN'
-                        ? t('memberEdit.forbidden')
-                        : t('a.invalidForm'),
+                    result.code === 'PHONE_TAKEN'
+                      ? t('memberEdit.phoneTaken')
+                      : result.code === 'NOT_FOUND'
+                        ? t('memberEdit.gone')
+                        : t('memberEdit.phoneInvalid'),
                 }
               await queryClient.invalidateQueries({ queryKey: ['members'] })
-              // Back to the list with this member's drawer open, to see the result.
-              await navigate({ to: '/admin/members', search: { member: id } })
+              await router.invalidate()
               return { ok: true }
             }}
           />
-          {can(actor.role, 'members.changePhone') && (
-            <ChangePhoneForm
-              onSubmit={async (phone) => {
-                const result = await changeMemberPhoneFn({
-                  data: { id, phone },
-                })
-                if (!result.ok)
-                  return {
-                    ok: false,
-                    message:
-                      result.code === 'PHONE_TAKEN'
-                        ? t('memberEdit.phoneTaken')
-                        : result.code === 'NOT_FOUND'
-                          ? t('memberEdit.gone')
-                          : t('memberEdit.phoneInvalid'),
-                  }
-                await queryClient.invalidateQueries({ queryKey: ['members'] })
-                await router.invalidate()
-                return { ok: true }
-              }}
-            />
-          )}
-        </>
-      ) : (
-        <p
-          role="alert"
-          className="mt-5 max-w-2xl rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-        >
-          {t('memberEdit.forbidden')}
-        </p>
-      )}
+        )}
+      </>
     </main>
   )
 }

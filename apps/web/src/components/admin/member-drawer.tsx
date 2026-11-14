@@ -264,6 +264,23 @@ export function MemberDrawer({
 
         {member &&
           can(actor.role, 'members.write') &&
+          !canManageMember(actor, member) && (
+            // Yourself or another admin: details can be edited, but status,
+            // password and role actions stay with the rules in canManageMember.
+            <div className="flex flex-col gap-2 border-t border-border px-5 py-4">
+              <Link
+                to="/admin/members/$id"
+                params={{ id: memberId }}
+                className={buttonVariants({ variant: 'outline' })}
+              >
+                <Pencil aria-hidden="true" />
+                {t('drawer.edit')}
+              </Link>
+            </div>
+          )}
+
+        {member &&
+          can(actor.role, 'members.write') &&
           canManageMember(actor, member) && (
             <div className="flex flex-col gap-2 border-t border-border px-5 py-4">
               {actionError && (

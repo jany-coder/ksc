@@ -305,10 +305,6 @@ export const adminMessages = {
     bn: 'এই সদস্যকে পাওয়া যায়নি (হয়তো মুছে ফেলা হয়েছে)।',
     en: 'This member was not found (they may have been deleted).',
   },
-  'memberEdit.forbidden': {
-    bn: 'এই সদস্যকে বদলানোর অনুমতি আপনার নেই।',
-    en: 'You are not allowed to edit this member.',
-  },
   'memberEdit.gone': {
     bn: 'সদস্যটি আর নেই।',
     en: 'This member no longer exists.',
