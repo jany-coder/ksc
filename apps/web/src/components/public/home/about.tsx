@@ -17,7 +17,7 @@ export function About() {
   return (
     <section
       id="about"
-      className="scroll-mt-4 md:scroll-mt-20 py-14 md:py-[92px]"
+      className="scroll-mt-4 md:scroll-mt-16 py-14 md:py-[92px]"
     >
       <div className="mx-auto flex w-full max-w-[1180px] flex-wrap gap-12 px-5 md:gap-16 md:px-8">
         <div className="min-w-0 flex-[999_1_420px]">

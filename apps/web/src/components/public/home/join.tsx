@@ -11,7 +11,7 @@ export function Join() {
   return (
     <section
       id="join"
-      className="scroll-mt-4 md:scroll-mt-20 bg-primary py-14 text-primary-foreground md:py-[88px]"
+      className="scroll-mt-4 md:scroll-mt-16 bg-primary py-14 text-primary-foreground md:py-[88px]"
     >
       <div className="mx-auto flex w-full max-w-[1180px] flex-wrap items-center gap-12 px-5 md:px-8">
         <div className="min-w-0 flex-[999_1_400px]">

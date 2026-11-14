@@ -28,7 +28,7 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
   return (
     <section
       id="gallery"
-      className="scroll-mt-4 md:scroll-mt-20 bg-brand-deep py-14 md:py-[92px]"
+      className="scroll-mt-4 md:scroll-mt-16 bg-brand-deep py-14 md:py-[92px]"
     >
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
         <div className="mb-9 md:mb-11">

@@ -21,8 +21,8 @@ export function SiteHeader() {
   const localeParams = useLocaleParams()
 
   return (
-    <header className="z-30 border-b border-line bg-background md:sticky md:top-0">
-      <div className="mx-auto flex min-h-[60px] w-full max-w-[1180px] flex-wrap items-center gap-5 px-5 py-3 md:min-h-[68px] md:px-8 md:py-2.5">
+    <header className="border-b border-line bg-background">
+      <div className="mx-auto flex min-h-[60px] w-full max-w-[1180px] flex-wrap items-center gap-5 px-5 py-3 md:min-h-[84px] md:px-8 md:py-3.5">
         <Link
           to="/{-$locale}"
           params={localeParams}

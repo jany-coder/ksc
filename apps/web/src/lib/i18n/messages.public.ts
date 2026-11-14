@@ -28,6 +28,7 @@ export const publicMessages = {
 
   // --- navigation ---
   'nav.main': { bn: 'প্রধান মেনু', en: 'Main menu' },
+  'nav.sections': { bn: 'পাতার অংশ', en: 'Sections of the page' },
   'nav.quick': { bn: 'দ্রুত মেনু', en: 'Quick menu' },
   'nav.whatWeDo': { bn: 'আমাদের কাজ', en: 'What we do' },
   'nav.upcoming': { bn: 'আসন্ন কার্যক্রম', en: 'Upcoming activities' },

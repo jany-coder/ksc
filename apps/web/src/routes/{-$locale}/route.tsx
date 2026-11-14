@@ -2,6 +2,7 @@ import { Outlet, createFileRoute, notFound } from '@tanstack/react-router'
 
 import { MobileTabBar } from '../../components/public/mobile-tab-bar.tsx'
 import { SiteFooter } from '../../components/public/site-footer.tsx'
+import { SectionBar } from '../../components/public/section-bar.tsx'
 import { SiteHeader } from '../../components/public/site-header.tsx'
 
 // Layout for every public page: they share the header, footer and the public
@@ -21,6 +22,7 @@ function PublicLayout() {
     // pb-[60px] keeps the last content clear of the fixed bottom tab bar.
     <div className="theme-public min-h-screen scroll-smooth bg-background pb-[60px] text-ink md:pb-0">
       <SiteHeader />
+      <SectionBar />
       <Outlet />
       <SiteFooter />
       <MobileTabBar />
