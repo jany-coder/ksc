@@ -104,13 +104,17 @@ export const publicMessages = {
     en: "The club's announcements, decisions and urgent news are posted here.",
   },
   'notice.urgent': { bn: 'জরুরি', en: 'Urgent' },
-  'notice.placeholderTitle': {
-    bn: '[নোটিশের শিরোনাম]',
-    en: '[notice title]',
+  'notice.emptyTitle': {
+    bn: 'এই মুহূর্তে কোনো নোটিশ নেই',
+    en: 'No notices right now',
   },
-  'notice.placeholderBody': {
-    bn: '[নোটিশের বিবরণ]',
-    en: '[notice details]',
+  'notice.emptyText': {
+    bn: 'নতুন ঘোষণা বা জরুরি খবর প্রকাশ হলে এখানে দেখা যাবে।',
+    en: 'New announcements and urgent news will appear here when they are posted.',
+  },
+  'notice.emptyFacebook': {
+    bn: 'সর্বশেষ খবরের জন্য আমাদের ফেসবুক পেজ দেখুন',
+    en: 'See our Facebook page for the latest news',
   },
 
   // --- home: gallery teaser ---
