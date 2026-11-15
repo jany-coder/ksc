@@ -52,8 +52,8 @@ export const publicMessages = {
   },
   'footer.contact': { bn: 'যোগাযোগ', en: 'Contact' },
   'footer.mobile': {
-    bn: 'মোবাইল: [নম্বর দিন]',
-    en: 'Mobile: [add number]',
+    bn: 'মোবাইল: 01xxxxxxxxx',
+    en: 'Mobile: 01xxxxxxxxx',
   },
   'footer.facebook': { bn: 'ফেসবুক পেজ', en: 'Facebook page' },
   'footer.copyright': {
