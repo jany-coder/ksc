@@ -1,3 +1,11 @@
+/*
+ * SITE FONT — the one place to change it.
+ * To switch fonts, change the Google Fonts URL on the next line and the family
+ * name in --site-font below; every page, heading and button follows.
+ * Noto Sans Bengali: made for screens, clear digits (১ ২ ৩ ...), covers English
+ * too, and has every weight from 400 to 700.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400..700&display=swap');
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
@@ -70,11 +78,14 @@
   --footer: #121a17; /* footer background */
 }
 
+:root {
+  --site-font: 'Noto Sans Bengali', ui-sans-serif, system-ui, sans-serif;
+}
+
 @theme inline {
-  --font-sans:
-    'Hind Siliguri', 'Noto Sans Bengali', ui-sans-serif, system-ui, sans-serif;
-  --font-heading:
-    'Anek Bangla', 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
+  /* Body text and headings use the same site font (set at the top of this file). */
+  --font-sans: var(--site-font);
+  --font-heading: var(--site-font);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

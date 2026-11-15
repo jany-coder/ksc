@@ -47,10 +47,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       },
       {
         rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap',
-      },
-      {
-        rel: 'stylesheet',
         href: appCss,
       },
     ],
