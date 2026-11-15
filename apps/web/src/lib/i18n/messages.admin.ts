@@ -373,8 +373,8 @@ export const adminMessages = {
   },
   'act.title': { bn: 'কার্যক্রম', en: 'Activities' },
   'act.lead': {
-    bn: 'প্রকাশিত কার্যক্রম ওয়েবসাইটের হোমপেজে দেখা যায়। খসড়া শুধু অ্যাডমিন দেখতে পান।',
-    en: 'Published activities appear on the website home page. Only admins can see drafts.',
+    bn: 'প্রকাশিত কার্যক্রমের তারিখ আজ বা পরে হলে হোমপেজের “আসন্ন কার্যক্রম”-এ দেখা যায়। তারিখ পেরিয়ে গেলে “আমাদের কার্যক্রম”-এ কার্ড হিসেবে আসে (হোমপেজে সর্বশেষ ৯টি, বাকিগুলো আর্কাইভে)। খসড়া শুধু অ্যাডমিন দেখতে পান।',
+    en: 'A published activity dated today or later shows under “Upcoming activities” on the home page. Once its date has passed it moves to “Our activities” as a card (the newest 9 on the home page, the rest in the archive). Only admins can see drafts.',
   },
   'act.loadError': {
     bn: 'কার্যক্রমের তালিকা লোড করা গেল না। পাতাটি রিফ্রেশ করে দেখুন।',

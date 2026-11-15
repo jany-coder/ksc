@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { listUpcomingActivitiesFn } from '../../lib/activities.functions.ts'
+import {
+  listRecentActivitiesFn,
+  listUpcomingActivitiesFn,
+} from '../../lib/activities.functions.ts'
 import { listPublicImagesFn } from '../../lib/images.functions.ts'
 import { imageUrl } from '../../lib/image-limits.ts'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
@@ -28,28 +31,29 @@ export const Route = createFileRoute('/{-$locale}/')({
       ],
     }
   },
-  // Public data for every visitor: published activities happening today or
-  // later, and published notices.
+  // Public data for every visitor: the newest past activities, published
+  // activities happening today or later, notices and photos.
   loader: async () => {
-    const [upcoming, notices, images] = await Promise.all([
+    const [recent, upcoming, notices, images] = await Promise.all([
+      listRecentActivitiesFn(),
       listUpcomingActivitiesFn(),
       listPublicNoticesFn(),
       listPublicImagesFn({ data: { limit: 6 } }),
     ])
-    return { upcoming, notices, images }
+    return { recent, upcoming, notices, images }
   },
   component: Home,
 })
 
 function Home() {
-  const { upcoming, notices, images } = Route.useLoaderData()
+  const { recent, upcoming, notices, images } = Route.useLoaderData()
   return (
     <main>
       <Hero />
       <QuickActions />
       <WhatWeDo />
       <About />
-      <Activities />
+      <Activities items={recent} />
       <UpcomingActivities items={upcoming} />
       <NoticeBoard items={notices} />
       <GalleryTeaser

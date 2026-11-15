@@ -209,85 +209,31 @@ export const homeMessages = {
     bn: 'আমরা বিশ্বাস করি, ছোট ছোট উদ্যোগের ধারাবাহিকতাই একসময় বড় সামাজিক পরিবর্তনের ভিত্তি তৈরি করে।',
     en: 'We believe that small initiatives, kept up steadily, eventually lay the foundation for big social change.',
   },
-  'activities.year2025': { bn: '২০২৫ সালের কার্যক্রম', en: 'Activities of 2025' },
-  'activities.year2026': { bn: '২০২৬ সালের কার্যক্রম', en: 'Activities of 2026' },
-
-  'activities.a1Date': { bn: '৩১ জানুয়ারি', en: '31 January' },
-  'activities.a1Title': {
-    bn: 'প্রথম সামাজিক মিলনমেলা',
-    en: 'First social gathering',
-  },
-  'activities.a1Text': {
-    bn: 'এলাকার মানুষের পারস্পরিক পরিচয়, সম্প্রীতি ও সামাজিক বন্ধন দৃঢ় করার লক্ষ্যে প্রথম সামাজিক মিলনমেলার আয়োজন করা হয়। এই আয়োজন সম্মিলিত সামাজিক উদ্যোগের প্রতি মানুষের আগ্রহ ও অংশগ্রহণের সম্ভাবনা তুলে ধরে।',
-    en: 'The first social gathering was held to strengthen acquaintance, harmony and social bonds among the people of the area. It showed people’s interest in joint social initiatives, and the potential for their participation.',
-  },
-  'activities.a2Date': { bn: '২৬ মার্চ', en: '26 March' },
-  'activities.a2Title': { bn: 'সম্মিলিত ইফতার আয়োজন', en: 'Community iftar' },
-  'activities.a2Text': {
-    bn: 'কলমা ওয়াজ আলী স্কুলে এলাকার মানুষের অংশগ্রহণে ইফতার আয়োজন করা হয়। পারস্পরিক সম্প্রীতি ও সৌহার্দ্য বৃদ্ধিই ছিল এই উদ্যোগের মূল উদ্দেশ্য।',
-    en: 'An iftar was held at Kalma Wazed Ali School with the people of the area taking part. The main aim was to increase mutual harmony and goodwill.',
-  },
-  'activities.a3Date': { bn: '১৮ ও ৩১ মে', en: '18 and 31 May' },
-  'activities.a3Title': {
-    bn: 'সদস্যপদ কার্যক্রম ও সাংগঠনিক উদ্যোগ',
-    en: 'Membership drive and organisational work',
-  },
-  'activities.a3Text': {
-    bn: 'সদস্যপদ কার্যক্রম নিয়ে আলোচনা এবং সদস্য ফর্ম পূরণ কর্মসূচির মাধ্যমে সংগঠনের সাংগঠনিক কার্যক্রম আরও সুসংগঠিত করার উদ্যোগ নেওয়া হয়।',
-    en: 'Discussion of the membership process, and a programme to fill in member forms, helped to organise the club’s work better.',
-  },
-  'activities.a4Date': { bn: 'জুন', en: 'June' },
-  'activities.a4Title': {
-    bn: 'পরিবেশ ও জনসচেতনতা',
-    en: 'Environment and public awareness',
-  },
-  'activities.a4Text': {
-    bn: 'ঈদুল আজহায় কোরবানির বর্জ্য যথাযথভাবে ব্যবস্থাপনা ও পরিবেশ পরিচ্ছন্ন রাখার বিষয়ে সচেতনতামূলক আহ্বান জানানো হয়।',
-    en: 'An awareness appeal was made about handling Eid al-Adha sacrificial waste properly and keeping the environment clean.',
-  },
-  'activities.a5Date': { bn: 'জুলাই', en: 'July' },
-  'activities.a5Title': {
-    bn: 'তথ্য যাচাই ও ডিজিটাল সচেতনতা',
-    en: 'Fact-checking and digital awareness',
-  },
-  'activities.a5Text': {
-    bn: 'সামাজিক যোগাযোগমাধ্যমে গুজব ও বিভ্রান্তিকর তথ্যের বিস্তার রোধে কোনো তথ্য শেয়ার করার আগে তার সত্যতা যাচাই করার আহ্বান জানানো হয়।',
-    en: 'To stop rumours and misleading information spreading on social media, people were urged to check that something is true before sharing it.',
-  },
-  'activities.a6Date': { bn: '১১ ডিসেম্বর', en: '11 December' },
-  'activities.a6Title': {
-    bn: 'বিনামূল্যে চিকিৎসাসেবা ক্যাম্প',
-    en: 'Free medical camp',
-  },
-  'activities.a6Text': {
-    bn: 'এলাকার সুবিধাবঞ্চিত মানুষের জন্য অভিজ্ঞ চিকিৎসকের মাধ্যমে বিনামূল্যে স্বাস্থ্যসেবা, প্রয়োজনীয় ওষুধ ও স্বাস্থ্যসামগ্রী বিতরণের উদ্যোগ গ্রহণ করা হয়।',
-    en: 'An initiative was taken to give underprivileged people of the area free healthcare from an experienced doctor, along with essential medicine and health supplies.',
+  'activities.seeAll': { bn: 'সব কার্যক্রম দেখুন', en: 'See all activities' },
+  'activities.seeMore': { bn: 'আরও দেখুন', en: 'See more' },
+  'activities.seeLess': { bn: 'কম দেখুন', en: 'See less' },
+  'activities.empty': {
+    bn: 'এখনো কোনো কার্যক্রম যোগ হয়নি। নতুন কার্যক্রম যোগ হলে এখানে দেখা যাবে।',
+    en: 'No activities have been added yet. New ones will appear here.',
   },
 
-  'activities.b1Date': { bn: '১৪ মার্চ', en: '14 March' },
-  'activities.b1Title': {
-    bn: 'ইফতার ও উপহার বিতরণ',
-    en: 'Iftar and gift distribution',
+  // --- activities archive page (/activities) ---
+  'archive.pageTitle': {
+    bn: 'কার্যক্রমের আর্কাইভ — কলমা সোশ্যাল ক্লাব',
+    en: 'Activity archive — Kalma Social Club',
   },
-  'activities.b1Text': {
-    bn: 'ক্লাবের যাকাত ফান্ডের অর্থায়নে মাদ্রাসা ও এতিমখানার শিক্ষার্থীদের জন্য উপহার ও খাবারের ব্যবস্থা করা হয়। পবিত্র রমজানের আনন্দ ভাগাভাগি করাই ছিল এই উদ্যোগের উদ্দেশ্য।',
-    en: 'Funded by the club’s Zakat fund, gifts and food were arranged for students of madrasas and orphanages. The aim was to share the joy of the holy month of Ramadan.',
+  'archive.description': {
+    bn: 'কলমা সোশ্যাল ক্লাবের সব কার্যক্রম, নতুন থেকে পুরনো।',
+    en: 'Every Kalma Social Club activity, newest first.',
   },
-  'activities.b2Date': { bn: '২১ মার্চ', en: '21 March' },
-  'activities.b2Title': { bn: 'ঈদ মিলনমেলা', en: 'Eid gathering' },
-  'activities.b2Text': {
-    bn: 'ক্লাবের সদস্যরা নিজ নিজ উদ্যোগে রান্না করা খাবার নিয়ে একত্রিত হন। ক্লাব কার্যালয়ে আয়োজিত এই মিলনমেলা সদস্যদের মধ্যে আন্তরিকতা, সৌহার্দ্য ও পারস্পরিক বন্ধন আরও দৃঢ় করে।',
-    en: 'Members came together, each bringing food they had cooked. Held at the club office, this gathering deepened warmth, goodwill and bonds between members.',
+  'archive.title': { bn: 'কার্যক্রমের আর্কাইভ', en: 'Activity archive' },
+  'archive.lead': {
+    bn: 'আমাদের সব কার্যক্রম, নতুন থেকে পুরনো ক্রমে।',
+    en: 'All our activities, from newest to oldest.',
   },
-  'activities.b3Date': { bn: '১৩ জুন', en: '13 June' },
-  'activities.b3Title': {
-    bn: 'এইচএসসি পরীক্ষার্থীদের দিকনির্দেশনা ও শুভকামনা',
-    en: 'Guidance and good wishes for HSC examinees',
-  },
-  'activities.b3Text': {
-    bn: 'উচ্চমাধ্যমিক পরীক্ষার্থীদের ভবিষ্যৎ পরিকল্পনা, উচ্চশিক্ষা ও ক্যারিয়ার নিয়ে মতবিনিময় সভার আয়োজন করা হয়। পাশাপাশি প্রত্যেক পরীক্ষার্থীর জন্য শুভকামনা উপহার প্রদান করা হয়।',
-    en: 'A discussion was held with higher secondary examinees about their future plans, higher education and careers. Each examinee was also given a gift with good wishes.',
-  },
+  'archive.year': { bn: '{year} সাল', en: '{year}' },
+  'archive.noDate': { bn: 'তারিখ ছাড়া', en: 'Undated' },
+  'archive.backHome': { bn: 'হোমপেজে ফিরে যান', en: 'Back to the home page' },
 
   'humanitarian.title': {
     bn: 'মানবিক সহায়তা ও জরুরি উদ্যোগ',
@@ -304,24 +250,6 @@ export const homeMessages = {
   'humanitarian.bloodText': {
     bn: 'এলাকায় কারও রক্তের প্রয়োজন হলে ক্লাবের সদস্যরা রক্তদাতা খুঁজে দেওয়া এবং প্রয়োজনে নিজেরা রক্তদানের মাধ্যমে সহযোগিতা করেন। মানবিক এই কার্যক্রমকে আরও সংগঠিত ও কার্যকর করার প্রচেষ্টা অব্যাহত রয়েছে।',
     en: 'When someone in the area needs blood, club members help by finding donors and, if needed, by donating blood themselves. We keep working to make this humane work better organised and more effective.',
-  },
-  'humanitarian.s1Date': { bn: '১৬ সেপ্টেম্বর ২০২৫', en: '16 September 2025' },
-  'humanitarian.s1Title': {
-    bn: 'হারিয়ে যাওয়া শিশুকে পরিবারের কাছে ফিরিয়ে দেওয়া',
-    en: 'Returning a lost child to the family',
-  },
-  'humanitarian.s1Text': {
-    bn: 'একটি শিশুকে অসহায় অবস্থায় একা পাওয়ার পর তার পরিবারের সন্ধানে ক্লাবের সদস্যরা সম্মিলিতভাবে উদ্যোগ নেন। মাইকিং ও সামাজিক যোগাযোগমাধ্যমে প্রচারণার মাধ্যমে পরিবারের খোঁজ চালানো হয়। পরবর্তী সময়ে শিশুটিকে সুস্থ অবস্থায় তার বাবা-মায়ের কাছে ফিরিয়ে দেওয়া হয়।',
-    en: 'After a child was found alone and helpless, club members took a joint initiative to find the family. The search went on through loudspeaker announcements and social media. Later the child was returned, safe and well, to their parents.',
-  },
-  'humanitarian.s2Date': { bn: '১০ ফেব্রুয়ারি ২০২৬', en: '10 February 2026' },
-  'humanitarian.s2Title': {
-    bn: 'নিরাপদ আশ্রয় ও পরিবারের সঙ্গে পুনর্মিলন',
-    en: 'Safe shelter and reunion with the family',
-  },
-  'humanitarian.s2Text': {
-    bn: 'রাত আনুমানিক ৯টার দিকে এলাকায় বিপর্যস্ত অবস্থায় একটি ছেলেকে পাওয়া যায়। ক্লাবের সদস্যরা দ্রুত তাকে নিরাপদ আশ্রয়ে নিয়ে আসেন এবং তার কাছে থাকা মোবাইল নম্বরের সূত্র ধরে পরিবারের সাথে যোগাযোগ করে অবস্থান নিশ্চিত করেন। রাত ১১টা ৪০ মিনিটে স্বজন ক্লাবে পৌঁছালে তাকে সুস্থ ও নিরাপদ অবস্থায় তাদের কাছে হস্তান্তর করা হয়।',
-    en: 'At around 9 pm a boy was found in the area in a distressed state. Club members quickly brought him to a safe place and, using a mobile number he had with him, contacted his family and confirmed where he was. When his relatives reached the club at 11:40 pm, he was handed over to them, safe and well.',
   },
   'humanitarian.beliefTitle': { bn: 'আমাদের বিশ্বাস', en: 'What we believe' },
   'humanitarian.belief1': {

@@ -17,6 +17,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiMembersExportRouteImport } from './routes/api/members-export'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
+import { Route as Char123LocaleChar125ActivitiesRouteImport } from './routes/{-$locale}/activities'
 import { Route as Char123LocaleChar125GalleryRouteImport } from './routes/{-$locale}/gallery'
 import { Route as Char123LocaleChar125JoinRouteImport } from './routes/{-$locale}/join'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
@@ -73,6 +74,12 @@ const Char123LocaleChar125IndexRoute =
   Char123LocaleChar125IndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125ActivitiesRoute =
+  Char123LocaleChar125ActivitiesRouteImport.update({
+    id: '/activities',
+    path: '/activities',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125GalleryRoute =
@@ -160,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
+  '/{-$locale}/activities': typeof Char123LocaleChar125ActivitiesRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
   '/{-$locale}/join': typeof Char123LocaleChar125JoinRoute
   '/admin/': typeof AdminIndexRoute
@@ -183,6 +191,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
+  '/{-$locale}/activities': typeof Char123LocaleChar125ActivitiesRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
   '/{-$locale}/join': typeof Char123LocaleChar125JoinRoute
   '/admin': typeof AdminIndexRoute
@@ -209,6 +218,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
+  '/{-$locale}/activities': typeof Char123LocaleChar125ActivitiesRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
   '/{-$locale}/join': typeof Char123LocaleChar125JoinRoute
   '/admin/': typeof AdminIndexRoute
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/api/images'
     | '/api/members-export'
+    | '/{-$locale}/activities'
     | '/{-$locale}/gallery'
     | '/{-$locale}/join'
     | '/admin/'
@@ -259,6 +270,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/api/images'
     | '/api/members-export'
+    | '/{-$locale}/activities'
     | '/{-$locale}/gallery'
     | '/{-$locale}/join'
     | '/admin'
@@ -284,6 +296,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/api/images'
     | '/api/members-export'
+    | '/{-$locale}/activities'
     | '/{-$locale}/gallery'
     | '/{-$locale}/join'
     | '/admin/'
@@ -370,6 +383,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/{-$locale}/'
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/activities': {
+      id: '/{-$locale}/activities'
+      path: '/activities'
+      fullPath: '/{-$locale}/activities'
+      preLoaderRoute: typeof Char123LocaleChar125ActivitiesRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/gallery': {
@@ -515,6 +535,7 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 )
 
 interface Char123LocaleChar125RouteRouteChildren {
+  Char123LocaleChar125ActivitiesRoute: typeof Char123LocaleChar125ActivitiesRoute
   Char123LocaleChar125GalleryRoute: typeof Char123LocaleChar125GalleryRoute
   Char123LocaleChar125JoinRoute: typeof Char123LocaleChar125JoinRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
@@ -522,6 +543,7 @@ interface Char123LocaleChar125RouteRouteChildren {
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
   {
+    Char123LocaleChar125ActivitiesRoute: Char123LocaleChar125ActivitiesRoute,
     Char123LocaleChar125GalleryRoute: Char123LocaleChar125GalleryRoute,
     Char123LocaleChar125JoinRoute: Char123LocaleChar125JoinRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,

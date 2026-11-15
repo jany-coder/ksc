@@ -7,6 +7,7 @@ import {
   deleteActivity,
   getActivity,
   listActivities,
+  listPastPublic,
   listUpcomingPublic,
   updateActivity,
 } from './activities.server.ts'
@@ -53,3 +54,15 @@ export const listActivitiesFn = createServerFn({ method: 'GET' }).handler(
 export const listUpcomingActivitiesFn = createServerFn({
   method: 'GET',
 }).handler(() => listUpcomingPublic(3))
+
+// Public, like the one above: published activities that have already
+// happened, newest first. The home page shows a few, the archive page all.
+export const HOME_ACTIVITY_LIMIT = 9
+
+export const listRecentActivitiesFn = createServerFn({
+  method: 'GET',
+}).handler(() => listPastPublic(HOME_ACTIVITY_LIMIT))
+
+export const listArchiveActivitiesFn = createServerFn({
+  method: 'GET',
+}).handler(() => listPastPublic(300))

@@ -168,7 +168,7 @@ export type ActivityRow = {
   featured: boolean
 }
 
-/** Every activity, drafts included, newest first. For the admin list. */
+/** Every activity, drafts included, latest date first (like the site). For the admin list. */
 export async function listActivities(): Promise<ActivityRow[]> {
   return db
     .select({
@@ -180,8 +180,11 @@ export async function listActivities(): Promise<ActivityRow[]> {
       featured: activities.featured,
     })
     .from(activities)
-    .orderBy(desc(activities.createdAt))
-    .limit(100)
+    .orderBy(
+      sql`${activities.eventDate} desc nulls last`,
+      desc(activities.createdAt),
+    )
+    .limit(300)
 }
 
 // --- Public side: anyone can call this, so it returns the bare minimum ---
@@ -244,5 +247,61 @@ export async function listUpcomingPublic(limit = 3): Promise<PublicActivity[]> {
     eventTime: r.eventTime,
     location: r.location ?? '',
     ...(r.coverImageId ? { imageUrl: imageUrl(r.coverImageId, 'thumb') } : {}),
+  }))
+}
+
+export type PastActivity = {
+  id: string
+  title: string
+  // The full text: long ones are folded on the card with "see more".
+  description: string
+  eventDate: string | null
+  location: string
+  // The cover photo, small and large, only when the activity has one.
+  thumbUrl?: string
+  fullUrl?: string
+}
+
+/**
+ * Published activities that have already happened (before today, Dhaka time),
+ * newest first: the club's record of its work. The home page shows the first
+ * few, the archive page shows them all. Activities without a date come last.
+ * Public: never returns drafts or who created an activity.
+ */
+export async function listPastPublic(limit: number): Promise<PastActivity[]> {
+  const rows = await db
+    .select({
+      id: activities.id,
+      title: activities.title,
+      description: activities.description,
+      eventDate: activities.eventDate,
+      location: activities.location,
+      coverImageId: activities.coverImageId,
+    })
+    .from(activities)
+    .where(
+      and(
+        eq(activities.status, 'published'),
+        sql`(${activities.eventDate} is null or ${activities.eventDate} < (now() at time zone 'Asia/Dhaka')::date)`,
+      ),
+    )
+    .orderBy(
+      sql`${activities.eventDate} desc nulls last`,
+      desc(activities.createdAt),
+    )
+    .limit(limit)
+
+  return rows.map((r) => ({
+    id: r.id,
+    title: r.title,
+    description: r.description ?? '',
+    eventDate: r.eventDate,
+    location: r.location ?? '',
+    ...(r.coverImageId
+      ? {
+          thumbUrl: imageUrl(r.coverImageId, 'thumb'),
+          fullUrl: imageUrl(r.coverImageId, 'full'),
+        }
+      : {}),
   }))
 }
