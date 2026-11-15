@@ -459,15 +459,6 @@ export const homeMessages = {
     bn: 'মানবিক ও সামাজিক কার্যক্রমে অংশগ্রহণের মানসিকতা থাকতে হবে।',
     en: 'They must be willing to take part in humanitarian and social work.',
   },
-  'joinSection.feesTitle': { bn: 'সদস্যপদ ফি', en: 'Membership fees' },
-  'joinSection.fee1': {
-    bn: 'এককালীন আবেদন ফি: ৩০০ টাকা।',
-    en: 'One-time application fee: 300 taka.',
-  },
-  'joinSection.fee2': {
-    bn: 'মাসিক সদস্যপদ ফি: ২০০ অথবা ৩০০ টাকা (সামর্থ্য ও নির্ধারিত সদস্যপদ শ্রেণি অনুযায়ী)।',
-    en: 'Monthly membership fee: 200 or 300 taka (depending on ability and the membership class set).',
-  },
   'joinSection.rightsTitle': {
     bn: 'সদস্যদের সুযোগ ও অধিকার',
     en: 'Members’ opportunities and rights',
@@ -512,7 +503,6 @@ export const homeMessages = {
     bn: 'সাংগঠনিক যাচাই ও অনুমোদন সম্পন্ন হলে সদস্যপদ গ্রহণ করুন।',
     en: 'Once the club’s checks and approval are done, accept your membership.',
   },
-  'joinSection.stepLabel': { bn: 'ধাপ {n}', en: 'Step {n}' },
   'joinSection.bloodNote': {
     bn: 'জরুরি প্রয়োজনে রক্তদাতা শনাক্তকরণ ও যোগাযোগ সহজ করার উদ্দেশ্যে সদস্যপদ ফর্মে রক্তের গ্রুপের তথ্য চাওয়া হয়।',
     en: 'The membership form asks for your blood group, so that donors can be identified and contacted easily in an emergency.',
@@ -534,7 +524,6 @@ export const homeMessages = {
     en: 'Address: Vill-Kalma 1 (Amtola), Post: Dairy Farm, P.S.: Savar, Dhaka.',
   },
   'joinSection.emailLabel': { bn: 'ইমেইল:', en: 'Email:' },
-  'joinSection.facebookLabel': { bn: 'ফেসবুক পেজ:', en: 'Facebook page:' },
   'joinSection.facebookCta': {
     bn: 'আমাদের ফেসবুক পেজ ভিজিট করুন',
     en: 'Visit our Facebook page',
