@@ -9,6 +9,7 @@ import type { MessageKey } from '../../../lib/i18n/messages.ts'
 export type GalleryPhoto = {
   id: string
   thumbUrl: string
+  srcSet?: string | undefined
 }
 
 const PLACEHOLDERS: MessageKey[] = [
@@ -45,6 +46,8 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
                 <div key={photo.id} className="zoom overflow-hidden rounded-lg">
                   <img
                     src={photo.thumbUrl}
+                    srcSet={photo.srcSet}
+                    sizes="(min-width: 768px) 300px, 100vw"
                     alt={t('teaser.photoAlt')}
                     loading="lazy"
                     className="h-[230px] w-full object-cover"

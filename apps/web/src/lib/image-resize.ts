@@ -82,7 +82,11 @@ export async function resizeForUpload(file: File): Promise<ResizedImage> {
     const thumb = drawScaled(bitmap, THUMB_WIDTH)
     return {
       full: await encodeUnder(full.canvas, [0.82, 0.72, 0.62], MAX_FULL_BYTES),
-      thumb: await encodeUnder(thumb.canvas, [0.75, 0.6, 0.5], MAX_THUMB_BYTES),
+      thumb: await encodeUnder(
+        thumb.canvas,
+        [0.82, 0.72, 0.6],
+        MAX_THUMB_BYTES,
+      ),
       width: full.width,
       height: full.height,
     }

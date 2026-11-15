@@ -9,14 +9,18 @@ export const STORAGE_FREE_BYTES = 10 * GB
 export const STORAGE_WARN_BYTES = 6 * GB
 export const STORAGE_STOP_BYTES = 8 * GB
 
-// Per-file ceilings. A 1600px WebP is about 250 KB and a 400px one about 30 KB,
+// Per-file ceilings. A 1600px WebP is about 250 KB and an 800px one about 100 KB,
 // so these leave room but still refuse anything that skipped the resizing.
 export const MAX_FULL_BYTES = 1_000_000
 export const MAX_THUMB_BYTES = 200_000
 export const MAX_DIMENSION = 8000
 
 export const FULL_WIDTH = 1600
-export const THUMB_WIDTH = 400
+// Thumbnails were 400px until November 2026; new uploads are 800px so grids
+// stay sharp. Older ones are still 400px, which is why imageSrcSet() below
+// describes every thumbnail as 400px wide (the safe guess).
+export const THUMB_WIDTH = 800
+const OLDEST_THUMB_WIDTH = 400
 
 export type StorageState = 'ok' | 'warn' | 'full'
 
@@ -51,4 +55,19 @@ export function formatBytes(bytes: number, lang: 'bn' | 'en' = 'bn'): string {
 /** The URL of a stored photo. One place, so it can later point at a public bucket. */
 export function imageUrl(id: string, size: 'thumb' | 'full'): string {
   return `/api/media/${id}/${size}`
+}
+
+/**
+ * The srcset for a photo in a grid: the thumbnail, plus the large version for
+ * screens that need more pixels than the thumbnail has (sharp phone and laptop
+ * screens). The browser picks, using the `sizes` given next to it.
+ * `fullWidth` is the large version's real width; a photo smaller than a
+ * thumbnail needs no srcset at all.
+ */
+export function imageSrcSet(
+  id: string,
+  fullWidth: number = FULL_WIDTH,
+): string | undefined {
+  if (fullWidth <= OLDEST_THUMB_WIDTH) return undefined
+  return `${imageUrl(id, 'thumb')} ${OLDEST_THUMB_WIDTH}w, ${imageUrl(id, 'full')} ${fullWidth}w`
 }

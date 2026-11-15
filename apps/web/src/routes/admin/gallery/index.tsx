@@ -20,6 +20,7 @@ import {
   STORAGE_STOP_BYTES,
   STORAGE_WARN_BYTES,
   formatBytes,
+  imageSrcSet,
   imageUrl,
 } from '../../../lib/image-limits.ts'
 import {
@@ -277,6 +278,8 @@ function GalleryPage() {
             >
               <img
                 src={imageUrl(image.id, 'thumb')}
+                srcSet={imageSrcSet(image.id, image.width)}
+                sizes="200px"
                 width={image.width}
                 height={image.height}
                 loading="lazy"

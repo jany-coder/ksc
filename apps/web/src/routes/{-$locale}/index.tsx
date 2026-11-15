@@ -5,7 +5,7 @@ import {
   listUpcomingActivitiesFn,
 } from '../../lib/activities.functions.ts'
 import { listPublicImagesFn } from '../../lib/images.functions.ts'
-import { imageUrl } from '../../lib/image-limits.ts'
+import { imageSrcSet, imageUrl } from '../../lib/image-limits.ts'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
 import { listPublicNoticesFn } from '../../lib/notices.functions.ts'
@@ -60,6 +60,7 @@ function Home() {
         photos={images.map((image) => ({
           id: image.id,
           thumbUrl: imageUrl(image.id, 'thumb'),
+          srcSet: imageSrcSet(image.id, image.width),
         }))}
       />
       <Future />

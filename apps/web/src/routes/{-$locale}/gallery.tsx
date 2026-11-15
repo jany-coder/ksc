@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 import { listPublicImagesFn } from '../../lib/images.functions.ts'
-import { imageUrl } from '../../lib/image-limits.ts'
+import { imageSrcSet, imageUrl } from '../../lib/image-limits.ts'
 import { useNumber, useT } from '../../lib/i18n/index.tsx'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
@@ -55,6 +55,8 @@ function GalleryPage() {
               >
                 <img
                   src={imageUrl(image.id, 'thumb')}
+                  srcSet={imageSrcSet(image.id, image.width)}
+                  sizes="(min-width: 768px) 300px, 100vw"
                   width={image.width}
                   height={image.height}
                   loading="lazy"
