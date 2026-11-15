@@ -42,18 +42,21 @@ const STEPS: MessageKey[] = [
 function Card({
   icon: Icon,
   title,
+  id,
   className = '',
   children,
 }: {
   icon: LucideIcon
   title: MessageKey
+  id?: string
   className?: string
   children: ReactNode
 }) {
   const t = useT()
   return (
     <div
-      className={`flex h-full flex-col rounded-[12px] bg-card p-7 text-copy shadow-[0_1px_2px_rgba(0,0,0,0.06)] md:p-8 ${className}`}
+      id={id}
+      className={`flex h-full scroll-mt-4 flex-col rounded-[12px] md:scroll-mt-16 bg-card p-7 text-copy shadow-[0_1px_2px_rgba(0,0,0,0.06)] md:p-8 ${className}`}
     >
       <div className="mb-5 flex items-center gap-3">
         <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-accent">
@@ -168,7 +171,8 @@ export function Join() {
             </p>
           </Card>
 
-          <Card icon={Mail} title="joinSection.contactTitle">
+          {/* id="contact": the phone "Need blood?" shortcut jumps straight here. */}
+          <Card icon={Mail} title="joinSection.contactTitle" id="contact">
             <p className="mb-1 font-semibold text-ink">{t('site.name')}</p>
             <p className="mb-4 text-base leading-[1.7]">
               {t('joinSection.address')}

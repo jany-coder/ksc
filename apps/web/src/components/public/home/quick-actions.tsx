@@ -4,8 +4,8 @@ import { Droplet, Image } from 'lucide-react'
 import { useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
 
 // Phone-only shortcuts straight under the hero, as in the mobile design.
-// Someone who needs blood is sent to the notice board, where the club's phone
-// number will be shown: the club connects them with a donor (CLAUDE.md
+// Someone who needs blood is sent straight to the club's contact details
+// (the "Contact us" card): the club connects them with a donor (CLAUDE.md
 // section 3), the site never lists donors.
 export function QuickActions() {
   const t = useT()
@@ -15,7 +15,7 @@ export function QuickActions() {
       <Link
         to="/{-$locale}"
         params={localeParams}
-        hash="notice"
+        hash="contact"
         className="flex min-h-11 flex-col gap-1.5 rounded-[9px] border border-line bg-card p-3.5"
       >
         <Droplet
