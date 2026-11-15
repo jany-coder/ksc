@@ -13,7 +13,7 @@ export const publicMessages = {
   },
   'site.tagline': {
     bn: 'একসাথে, সুন্দর আগামীর পথে।',
-    en: 'Together, on the path to a beautiful tomorrow.',
+    en: 'Together for a better tomorrow.',
   },
   'site.locationShort': {
     bn: 'সাভার, ঢাকা · প্রতিষ্ঠা ২০২৪',
@@ -142,7 +142,7 @@ export const publicMessages = {
   },
   'home.description': {
     bn: 'সাভারের কলমা এলাকার মানুষের একটি অরাজনৈতিক ও অসাম্প্রদায়িক সামাজিক প্ল্যাটফর্ম। একসাথে, সুন্দর আগামীর পথে।',
-    en: 'A non-political and non-communal social platform for the people of Kalma, Savar. Together, on the path to a beautiful tomorrow.',
+    en: 'A non-political and non-communal social platform for the people of Kalma, Savar. Together for a better tomorrow.',
   },
 
   // --- gallery page ---

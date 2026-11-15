@@ -9,7 +9,7 @@ export const homeMessages = {
   'hero.title': { bn: 'কলমা সোশ্যাল ক্লাব', en: 'Kalma Social Club' },
   'hero.tagline': {
     bn: 'একসাথে, সুন্দর আগামীর পথে',
-    en: 'Together, on the path to a beautiful tomorrow',
+    en: 'Together for a better tomorrow',
   },
   'hero.leadShort': {
     bn: 'একটি সচেতন, মানবিক ও আত্মনির্ভর সমাজ গড়ার সম্মিলিত উদ্যোগ।',
@@ -89,7 +89,7 @@ export const homeMessages = {
   'about.title': { bn: 'আমাদের সম্পর্কে', en: 'About us' },
   'about.tagline': {
     bn: 'একসাথে, সুন্দর আগামীর পথে',
-    en: 'Together, on the path to a beautiful tomorrow',
+    en: 'Together for a better tomorrow',
   },
   'about.p1': {
     bn: 'কলমা সোশ্যাল ক্লাব সাভারের কলমা এলাকার মানুষের সম্মিলিত উদ্যোগে গড়ে ওঠা একটি অরাজনৈতিক ও অসাম্প্রদায়িক সামাজিক প্ল্যাটফর্ম।',
@@ -192,7 +192,7 @@ export const homeMessages = {
   },
   'about.slogan': {
     bn: 'আমাদের স্লোগান: একসাথে, সুন্দর আগামীর পথে।',
-    en: 'Our slogan: Together, on the path to a beautiful tomorrow.',
+    en: 'Our slogan: Together for a better tomorrow.',
   },
 
   // --- our activities ---
