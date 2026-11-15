@@ -6,6 +6,7 @@
  *             Siliguri draws ১ too small to read; the text= part below asks
  *             Google for just those ten glyphs (about 2 KB), and the browser
  *             uses them for digits only, leaving every letter in Hind/Anek.
+ *             Used in body text AND headings, on the site and in the admin.
  * To switch a font: change its URL here and its name in the --font-* lines
  * further down; every page, heading and button follows.
  */
@@ -85,11 +86,13 @@
 
 @theme inline {
   /* Fonts are loaded at the top of this file. 'Noto Sans Bengali' comes first
-     but only holds the digits, so it changes the numbers and nothing else. */
+     but only holds the digits, so it changes the numbers and nothing else,
+     in body text and headings alike (public site and admin panel). */
   --font-sans:
     'Noto Sans Bengali', 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
   --font-heading:
-    'Anek Bangla', 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
+    'Noto Sans Bengali', 'Anek Bangla', 'Hind Siliguri', ui-sans-serif,
+    system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
