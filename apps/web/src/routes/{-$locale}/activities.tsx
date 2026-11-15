@@ -63,7 +63,7 @@ function ArchivePage() {
                 ? t('archive.noDate')
                 : t('archive.year', { year: number(group.year) })}
             </h2>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] items-start gap-6">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-6">
               {group.items.map((item) => (
                 <ActivityCard key={item.id} item={item} />
               ))}

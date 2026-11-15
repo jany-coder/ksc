@@ -37,7 +37,7 @@ export function Activities({ items }: { items: ActivityCardData[] }) {
           </p>
         ) : (
           <>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] items-start gap-6">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-6">
               {items.map((item) => (
                 <ActivityCard key={item.id} item={item} />
               ))}

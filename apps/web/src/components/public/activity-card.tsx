@@ -30,7 +30,8 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
   const textId = `activity-${item.id}-text`
 
   return (
-    <article className="lift flex flex-col overflow-hidden rounded-[10px] border border-line bg-card">
+    // h-full: the grid stretches every card in a row to the same height.
+    <article className="lift flex h-full flex-col overflow-hidden rounded-[10px] border border-line bg-card">
       {item.thumbUrl ? (
         <img
           src={item.thumbUrl}
@@ -90,7 +91,7 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
                 aria-expanded={open}
                 aria-controls={textId}
                 onClick={() => setOpen((v) => !v)}
-                className="self-start text-[15px] font-semibold text-primary underline-offset-2 hover:underline"
+                className="mt-auto self-start pt-1 text-[15px] font-semibold text-primary underline-offset-2 hover:underline"
               >
                 {open ? t('activities.seeLess') : t('activities.seeMore')}
               </button>
