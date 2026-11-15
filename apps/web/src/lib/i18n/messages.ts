@@ -2,6 +2,7 @@ import { makeT } from './core.ts'
 import type { Lang } from './core.ts'
 import { adminMessages } from './messages.admin.ts'
 import { authMessages } from './messages.auth.ts'
+import { homeMessages } from './messages.home.ts'
 import { publicMessages } from './messages.public.ts'
 import { validationMessages } from './messages.validation.ts'
 
@@ -9,6 +10,7 @@ import { validationMessages } from './messages.validation.ts'
 // but missing here is a type error, and so is a missing language.
 export const messages = {
   ...publicMessages,
+  ...homeMessages,
   ...validationMessages,
   ...authMessages,
   ...adminMessages,

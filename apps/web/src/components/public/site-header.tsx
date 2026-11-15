@@ -10,10 +10,11 @@ import { LangSwitch } from './lang-switch.tsx'
 // also work from other public pages (/gallery -> /#what-we-do).
 const NAV = [
   { key: 'nav.whatWeDo', hash: 'what-we-do' },
-  { key: 'nav.upcoming', hash: 'upcoming' },
+  { key: 'nav.about', hash: 'about' },
+  { key: 'nav.activities', hash: 'activities' },
+  { key: 'nav.future', hash: 'future' },
   { key: 'nav.gallery', hash: 'gallery' },
   { key: 'nav.notice', hash: 'notice' },
-  { key: 'nav.about', hash: 'about' },
 ] as const satisfies readonly { key: MessageKey; hash: string }[]
 
 export function SiteHeader() {

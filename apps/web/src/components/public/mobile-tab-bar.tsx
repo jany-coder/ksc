@@ -9,7 +9,7 @@ import type { MessageKey } from '../../lib/i18n/messages.ts'
 // the header carries the links.
 const TABS: { label: MessageKey; icon: LucideIcon; hash?: string }[] = [
   { label: 'nav.home', icon: House },
-  { label: 'nav.activities', icon: CalendarDays, hash: 'upcoming' },
+  { label: 'nav.activities', icon: CalendarDays, hash: 'activities' },
   { label: 'nav.gallery', icon: Image, hash: 'gallery' },
   { label: 'nav.notice', icon: Bookmark, hash: 'notice' },
 ]

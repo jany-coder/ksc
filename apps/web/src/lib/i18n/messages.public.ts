@@ -12,8 +12,8 @@ export const publicMessages = {
     en: 'Kalma Social Club logo',
   },
   'site.tagline': {
-    bn: 'একসাথে, এক সুন্দর আগামীর জন্য।',
-    en: 'Together for a better tomorrow.',
+    bn: 'একসাথে, সুন্দর আগামীর পথে।',
+    en: 'Together, on the path to a beautiful tomorrow.',
   },
   'site.locationShort': {
     bn: 'সাভার, ঢাকা · প্রতিষ্ঠা ২০২৪',
@@ -31,10 +31,10 @@ export const publicMessages = {
   'nav.sections': { bn: 'পাতার অংশ', en: 'Sections of the page' },
   'nav.quick': { bn: 'দ্রুত মেনু', en: 'Quick menu' },
   'nav.whatWeDo': { bn: 'আমাদের কাজ', en: 'What we do' },
-  'nav.upcoming': { bn: 'আসন্ন কার্যক্রম', en: 'Upcoming activities' },
+  'nav.future': { bn: 'আগামী মিশন', en: 'Future mission' },
   'nav.gallery': { bn: 'গ্যালারি', en: 'Gallery' },
   'nav.notice': { bn: 'নোটিশ', en: 'Notices' },
-  'nav.about': { bn: 'পরিচিতি', en: 'About' },
+  'nav.about': { bn: 'আমাদের সম্পর্কে', en: 'About us' },
   'nav.join': { bn: 'সদস্য হোন', en: 'Become a member' },
   'nav.home': { bn: 'হোম', en: 'Home' },
   'nav.activities': { bn: 'কার্যক্রম', en: 'Activities' },
@@ -67,19 +67,6 @@ export const publicMessages = {
     bn: 'কলমা ১ (আমতলা), ডেইরি ফার্ম, সাভার, ঢাকা',
     en: 'Kalma 1 (Amtola), Dairy Farm, Savar, Dhaka',
   },
-  'hero.title': {
-    bn: 'এলাকার মানুষের পাশে থাকা একটি অরাজনৈতিক সামাজিক সংগঠন',
-    en: 'A non-political community organisation standing with the people of our area',
-  },
-  'hero.leadShort': {
-    bn: 'রক্তদান, শিক্ষা সহায়তা, ত্রাণ ও যুব উন্নয়ন নিয়ে আমাদের কাজ।',
-    en: 'Our work: blood donation, education support, relief and youth development.',
-  },
-  'hero.leadLong': {
-    bn: 'আমরা রক্তদান, শিক্ষা সহায়তা, ত্রাণ ও যুব উন্নয়ন নিয়ে কাজ করি। তরুণ আর প্রবীণ — সবাই এখানে সমান অংশীদার।',
-    en: 'We work on blood donation, education support, relief and youth development. Young and old, everyone here is an equal partner.',
-  },
-  'hero.ctaWork': { bn: 'আমাদের কাজ দেখুন', en: 'See our work' },
   'hero.statYearValue': { bn: '২০২৪', en: '2024' },
   'hero.statYearLabel': { bn: 'প্রতিষ্ঠার বছর', en: 'Year founded' },
 
@@ -93,36 +80,6 @@ export const publicMessages = {
   'quick.photosText': {
     bn: 'পুরো গ্যালারি দেখুন',
     en: 'See the whole gallery',
-  },
-
-  // --- home: what we do ---
-  'whatWeDo.title': { bn: 'আমরা কী করি', en: 'What we do' },
-  'whatWeDo.lead': {
-    bn: 'চারটি কাজে আমরা নিয়মিত সময় দিই। প্রতিটি কার্যক্রম এলাকার মানুষের সরাসরি প্রয়োজন থেকে এসেছে।',
-    en: 'We give regular time to four kinds of work. Each one comes from a direct need of the people around us.',
-  },
-  'whatWeDo.bloodTitle': { bn: 'রক্তদান', en: 'Blood donation' },
-  'whatWeDo.bloodText': {
-    bn: 'সদস্যদের রক্তের গ্রুপ আমাদের ডেটাবেজে রাখা থাকে, যাতে জরুরি মুহূর্তে দ্রুত দাতা পাওয়া যায়।',
-    en: "Members' blood groups are kept in our records, so a donor can be found quickly in an emergency.",
-  },
-  'whatWeDo.educationTitle': {
-    bn: 'শিক্ষা সহায়তা',
-    en: 'Education support',
-  },
-  'whatWeDo.educationText': {
-    bn: 'এলাকার শিক্ষার্থীদের বইপত্র, শিক্ষা উপকরণ ও পরীক্ষার প্রস্তুতিতে সহায়তা করা।',
-    en: 'Helping local students with books, learning materials and exam preparation.',
-  },
-  'whatWeDo.youthTitle': { bn: 'যুব উন্নয়ন', en: 'Youth development' },
-  'whatWeDo.youthText': {
-    bn: 'তরুণদের খেলাধুলা, দক্ষতা প্রশিক্ষণ ও নেতৃত্বের সুযোগ তৈরি করে সঠিক পথে রাখা।',
-    en: 'Creating chances for young people in sport, skills training and leadership, to keep them on the right path.',
-  },
-  'whatWeDo.socialTitle': { bn: 'সমাজসেবা', en: 'Social service' },
-  'whatWeDo.socialText': {
-    bn: 'শীতবস্ত্র ও ত্রাণ বিতরণ, পরিচ্ছন্নতা অভিযান এবং অসহায় পরিবারের পাশে দাঁড়ানো।',
-    en: 'Distributing winter clothes and relief, cleaning drives, and standing by families in need.',
   },
 
   // --- home: upcoming activities ---
@@ -178,61 +135,14 @@ export const publicMessages = {
     en: 'Photo {n} — [{label}]',
   },
 
-  // --- home: about ---
-  'about.title': { bn: 'আমাদের পরিচিতি', en: 'About us' },
-  'about.p1': {
-    bn: '২০২৪ সালে এলাকার একদল উদ্যমী তরুণের হাত ধরে কলমা সোশ্যাল ক্লাবের পথচলা শুরু। শুরু থেকেই আমরা ক্লাবটিকে কেবল নির্দিষ্ট কিছু মানুষের মিলনকেন্দ্র হিসেবে রাখিনি।',
-    en: 'Kalma Social Club began in 2024, led by a group of energetic young people from the area. From the start we did not want the club to be a meeting place for only a few.',
-  },
-  'about.p2': {
-    bn: 'প্রবীণদের অভিজ্ঞতা আর যুবসমাজের প্রাণশক্তি — দুটোকে একসাথে কাজে লাগিয়ে আমরা এমন এক সমাজ গড়তে চাই, যেখানে প্রতিটি মানুষ একে অপরের পরিপূরক।',
-    en: 'By bringing together the experience of elders and the energy of the young, we want to build a society where everyone complements one another.',
-  },
-  'about.p3': {
-    bn: 'ক্লাবের প্রতিটি সদস্য কেবল সদস্য নন — তাঁরা প্রত্যেকে পরিবর্তনের একজন সক্রিয় কারিগর।',
-    en: 'Every member of the club is more than a member: each one is an active maker of change.',
-  },
-  'about.v1Title': { bn: 'অরাজনৈতিক', en: 'Non-political' },
-  'about.v1Text': {
-    bn: 'ক্লাব কোনো রাজনৈতিক দলের সাথে যুক্ত নয়।',
-    en: 'The club is not tied to any political party.',
-  },
-  'about.v2Title': { bn: 'অসাম্প্রদায়িক', en: 'Non-communal' },
-  'about.v2Text': {
-    bn: 'ধর্ম-বর্ণ নির্বিশেষে সবার জন্য উন্মুক্ত।',
-    en: 'Open to everyone, whatever their religion or background.',
-  },
-  'about.v3Title': { bn: 'সমান অংশীদারিত্ব', en: 'Equal partnership' },
-  'about.v3Text': {
-    bn: 'নবীন-প্রবীণ সব সদস্যের মত সমান গুরুত্ব পায়।',
-    en: 'The views of young and old members count equally.',
-  },
-  'about.v4Title': { bn: 'জ্ঞানভিত্তিক', en: 'Knowledge-driven' },
-  'about.v4Text': {
-    bn: 'ঐতিহ্য রক্ষা করে শিক্ষা ও সচেতনতার পথে এগোনো।',
-    en: 'Moving forward through education and awareness, while keeping our heritage.',
-  },
-
-  // --- home: join section ---
-  'joinSection.title': { bn: 'সদস্য হতে চান?', en: 'Want to become a member?' },
-  'joinSection.lead': {
-    bn: 'আমাদের কমিটি যাচাই করে আপনার সাথে যোগাযোগ করবে। সদস্যদের তথ্য শুধু ক্লাবের কাজে ব্যবহৃত হয় এবং ওয়েবসাইটে প্রকাশ করা হয় না।',
-    en: "Our committee will review your application and contact you. Members' details are used only for the club's work and are never published on the website.",
-  },
-  'joinSection.apply': { bn: 'আবেদন করুন', en: 'Apply now' },
-  'joinSection.orEmail': {
-    bn: 'অথবা ইমেইলে যোগাযোগ করুন:',
-    en: 'Or contact us by email:',
-  },
-
   // --- home: page head ---
   'home.title': {
     bn: 'কলমা সোশ্যাল ক্লাব — সাভার, ঢাকা',
     en: 'Kalma Social Club — Savar, Dhaka',
   },
   'home.description': {
-    bn: 'এলাকার মানুষের পাশে থাকা একটি অরাজনৈতিক সামাজিক সংগঠন। রক্তদান, শিক্ষা সহায়তা, ত্রাণ ও যুব উন্নয়ন।',
-    en: 'A non-political community organisation standing with the people of our area. Blood donation, education support, relief and youth development.',
+    bn: 'সাভারের কলমা এলাকার মানুষের একটি অরাজনৈতিক ও অসাম্প্রদায়িক সামাজিক প্ল্যাটফর্ম। একসাথে, সুন্দর আগামীর পথে।',
+    en: 'A non-political and non-communal social platform for the people of Kalma, Savar. Together, on the path to a beautiful tomorrow.',
   },
 
   // --- gallery page ---

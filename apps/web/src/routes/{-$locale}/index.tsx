@@ -6,7 +6,9 @@ import { imageUrl } from '../../lib/image-limits.ts'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
 import { listPublicNoticesFn } from '../../lib/notices.functions.ts'
+import { Activities } from '../../components/public/home/activities.tsx'
 import { About } from '../../components/public/home/about.tsx'
+import { Future } from '../../components/public/home/future.tsx'
 import { GalleryTeaser } from '../../components/public/home/gallery-teaser.tsx'
 import { Hero } from '../../components/public/home/hero.tsx'
 import { QuickActions } from '../../components/public/home/quick-actions.tsx'
@@ -46,6 +48,8 @@ function Home() {
       <Hero />
       <QuickActions />
       <WhatWeDo />
+      <About />
+      <Activities />
       <UpcomingActivities items={upcoming} />
       <NoticeBoard items={notices} />
       <GalleryTeaser
@@ -54,7 +58,7 @@ function Home() {
           thumbUrl: imageUrl(image.id, 'thumb'),
         }))}
       />
-      <About />
+      <Future />
       <Join />
     </main>
   )

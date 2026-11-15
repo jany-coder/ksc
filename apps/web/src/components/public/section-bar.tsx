@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useRouterState } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 
 import { useLocaleParams, useT } from '../../lib/i18n/index.tsx'
@@ -9,15 +9,22 @@ import { cn } from '../../lib/utils.ts'
 // bar is the slim version, only the sections and nothing else.
 const SECTIONS = [
   { key: 'nav.whatWeDo', hash: 'what-we-do' },
-  { key: 'nav.upcoming', hash: 'upcoming' },
+  { key: 'nav.about', hash: 'about' },
+  { key: 'nav.activities', hash: 'activities' },
+  { key: 'nav.future', hash: 'future' },
   { key: 'nav.gallery', hash: 'gallery' },
   { key: 'nav.notice', hash: 'notice' },
-  { key: 'nav.about', hash: 'about' },
 ] as const satisfies readonly { key: MessageKey; hash: string }[]
 
 // How far down the page before the bar slides in: past the header and into the
 // hero, so it never shows next to the real header.
 const SHOW_AFTER_PX = 320
+
+// A section counts as the current one once its top is above this line (just
+// below the 44px bar, with room for the heading).
+const ACTIVE_LINE_PX = 120
+
+const TRACKED: string[] = [...SECTIONS.map((s) => s.hash), 'upcoming', 'join']
 
 /**
  * A thin bar of section links that slides down from the top once you have
@@ -31,41 +38,49 @@ export function SectionBar() {
   const [visible, setVisible] = useState(false)
   const [active, setActive] = useState<string | null>(null)
 
+  // The current section is MEASURED on every scroll: the last section whose top
+  // has passed the line just under the bar. (An IntersectionObserver only fires
+  // when something changes, so after a long jump from a link it could keep
+  // showing the old section.) It also re-measures when the address changes,
+  // because the sections may mount after this bar does.
+  const href = useRouterState({ select: (s) => s.location.href })
   useEffect(() => {
     let frame = 0
-    const update = () => {
+    const measure = () => {
       frame = 0
       setVisible(window.scrollY > SHOW_AFTER_PX)
+      // The section whose top is closest to the line, among those that have
+      // passed it. Judged by position on the page, not by the order of the
+      // links in the bar (the bar lists the gallery before the notices, the
+      // page has them the other way round).
+      let current: string | null = null
+      let closest = -Infinity
+      for (const id of TRACKED) {
+        const top = document.getElementById(id)?.getBoundingClientRect().top
+        if (top !== undefined && top <= ACTIVE_LINE_PX && top > closest) {
+          closest = top
+          current = id
+        }
+      }
+      // The "join" section is tracked only so the section above stops being
+      // highlighted once you have left it; it has no link in the bar.
+      setActive(current === 'join' ? null : current)
     }
-    const onScroll = () => {
-      if (frame === 0) frame = requestAnimationFrame(update)
+    const schedule = () => {
+      if (frame === 0) frame = requestAnimationFrame(measure)
     }
-    update()
-    window.addEventListener('scroll', onScroll, { passive: true })
+    measure()
+    // The page may still be settling (images, fonts, a smooth scroll in progress).
+    const late = window.setTimeout(measure, 400)
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
     return () => {
-      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('scroll', schedule)
+      window.removeEventListener('resize', schedule)
+      window.clearTimeout(late)
       if (frame !== 0) cancelAnimationFrame(frame)
     }
-  }, [])
-
-  // Which section is on screen. Pages without these sections (the gallery
-  // page) simply highlight nothing.
-  useEffect(() => {
-    const targets = SECTIONS.map((s) => document.getElementById(s.hash)).filter(
-      (el): el is HTMLElement => el !== null,
-    )
-    if (targets.length === 0) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries)
-          if (entry.isIntersecting) setActive(entry.target.id)
-      },
-      // A band across the upper-middle of the screen.
-      { rootMargin: '-20% 0px -70% 0px' },
-    )
-    for (const el of targets) observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
+  }, [href])
 
   return (
     <div

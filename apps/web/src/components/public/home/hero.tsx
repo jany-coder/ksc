@@ -17,13 +17,19 @@ export function Hero() {
             <span className="md:hidden">{t('site.locationShort')}</span>
             <span className="hidden md:inline">{t('hero.addressLong')}</span>
           </p>
-          <h1 className="mb-3 text-[29px] leading-[1.4] font-bold text-balance md:mb-6 md:text-[60px] md:leading-[1.3]">
+          <h1 className="mb-2 text-[32px] leading-[1.4] font-bold text-balance md:mb-3 md:text-[60px] md:leading-[1.3]">
             {t('hero.title')}
           </h1>
-          <p className="mb-[18px] max-w-[60ch] text-base leading-relaxed text-mint-soft md:mb-9 md:text-[21px] md:leading-[1.7]">
-            <span className="md:hidden">{t('hero.leadShort')}</span>
-            <span className="hidden md:inline">{t('hero.leadLong')}</span>
+          <p className="mb-3 font-heading text-xl font-semibold text-mint md:mb-6 md:text-[28px]">
+            {t('hero.tagline')}
           </p>
+          <p className="mb-[18px] max-w-[60ch] text-base leading-relaxed text-mint-soft md:mb-5 md:text-[21px] md:leading-[1.7]">
+            {t('hero.leadShort')}
+          </p>
+          <div className="mb-9 hidden max-w-[62ch] flex-col gap-4 text-[17px] leading-[1.75] text-mint-soft md:flex">
+            <p>{t('hero.body1')}</p>
+            <p>{t('hero.body2')}</p>
+          </div>
           <div className="flex flex-wrap gap-3.5">
             <Link
               to="/{-$locale}"
@@ -39,7 +45,7 @@ export function Hero() {
             <Link
               to="/{-$locale}"
               params={localeParams}
-              hash="what-we-do"
+              hash="activities"
               className="hidden min-h-12 items-center justify-center rounded-lg border-[1.5px] border-[#4a6e5c] px-[26px] text-[17px] font-semibold text-background hover:border-mint md:inline-flex"
             >
               {t('hero.ctaWork')}
