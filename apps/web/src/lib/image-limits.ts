@@ -9,13 +9,14 @@ export const STORAGE_FREE_BYTES = 10 * GB
 export const STORAGE_WARN_BYTES = 6 * GB
 export const STORAGE_STOP_BYTES = 8 * GB
 
-// Per-file ceilings. A 1600px WebP is about 250 KB and an 800px one about 100 KB,
-// so these leave room but still refuse anything that skipped the resizing.
 // How many photos the homepage shows, and so how many an admin can pick.
 export const HOME_PHOTO_COUNT = 6
 // How many photos the hero's photo frame takes turns showing.
 export const HERO_SLIDE_COUNT = 6
 
+// Per-file ceilings. A 1600px WebP is about 300-500 KB and an 800px one about
+// 100-150 KB, so these leave room but still refuse anything that skipped the
+// resizing.
 export const MAX_FULL_BYTES = 1_000_000
 export const MAX_THUMB_BYTES = 200_000
 export const MAX_DIMENSION = 8000

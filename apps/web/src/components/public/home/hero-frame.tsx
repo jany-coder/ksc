@@ -22,8 +22,9 @@ const SLIDE_MS = 6000
  * (every photo is in the gallery too), so it has no arrows or dots to click.
  *
  * Light on the network: only the first photo loads with the page. Each next
- * one is asked for while the one before is on screen, as an 800px copy, so a
- * visitor who leaves early downloads nothing more. It stands still, on its
+ * one is asked for while the one before is on screen (the 800px copy on a
+ * phone, the 1600px one on a wide screen), so a visitor who leaves early
+ * downloads nothing more. It stands still, on its
  * first photo, for anyone whose device asks for reduced motion or data saving,
  * and stops on hover, on keyboard focus, or with its pause button (WCAG 2.2.2).
  */
@@ -97,21 +98,30 @@ export function HeroFrame({
     >
       {slides.map((slide, i) =>
         wanted.has(i) ? (
-          <img
-            key={slide.id}
-            src={imageUrl(slide.id, 'thumb')}
-            alt={i === index ? (slide.caption ?? t('hero.photoAlt')) : ''}
-            aria-hidden={i === index ? undefined : true}
-            width={slide.width}
-            height={slide.height}
-            decoding="async"
-            onLoad={() => setReady((r) => (r.has(i) ? r : new Set(r).add(i)))}
-            className={cn(
-              'absolute inset-0 size-full object-cover transition-opacity duration-[1400ms] ease-in-out',
-              i === index ? 'opacity-100' : 'opacity-0',
-              (i === index || i === previous) && 'hero-slide',
-            )}
-          />
+          // A wide screen gets the large copy: the frame is ~760 CSS pixels
+          // across a landscape photo, so the 800px copy would be stretched
+          // to twice its size on a sharp screen and look soft. A phone shows
+          // it at half that, so the small copy stays sharp and light there.
+          <picture key={slide.id}>
+            <source
+              media="(min-width: 768px)"
+              srcSet={imageUrl(slide.id, 'full')}
+            />
+            <img
+              src={imageUrl(slide.id, 'thumb')}
+              alt={i === index ? (slide.caption ?? t('hero.photoAlt')) : ''}
+              aria-hidden={i === index ? undefined : true}
+              width={slide.width}
+              height={slide.height}
+              decoding="async"
+              onLoad={() => setReady((r) => (r.has(i) ? r : new Set(r).add(i)))}
+              className={cn(
+                'absolute inset-0 size-full object-cover transition-opacity duration-[1400ms] ease-in-out',
+                i === index ? 'opacity-100' : 'opacity-0',
+                (i === index || i === previous) && 'hero-slide',
+              )}
+            />
+          </picture>
         ) : null,
       )}
 
