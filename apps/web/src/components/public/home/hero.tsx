@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowRight, MapPin } from 'lucide-react'
+import { ArrowRight, Images, MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { imageUrl } from '../../../lib/image-limits.ts'
@@ -132,19 +132,37 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
           )}
         >
           {slides.length > 0 ? <HeroFrame slides={slides} /> : <WorkAreas />}
-          <dl
+          <div
             className={cn(
-              'm-0 flex items-baseline gap-3 px-3 pt-3 pb-1.5',
+              'flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 pt-3 pb-1.5',
               slides.length === 0 && 'mx-2 border-t border-white/15',
             )}
           >
-            <dd className="m-0 font-heading text-[30px] leading-none font-bold md:text-[34px]">
-              {t('hero.statYearValue')}
-            </dd>
-            <dt className="text-[15px] text-mint-soft">
-              {t('hero.statYearLabel')}
-            </dt>
-          </dl>
+            <dl className="m-0 flex items-baseline gap-3">
+              <dd className="m-0 font-heading text-[30px] leading-none font-bold md:text-[34px]">
+                {t('hero.statYearValue')}
+              </dd>
+              <dt className="text-[15px] text-mint-soft">
+                {t('hero.statYearLabel')}
+              </dt>
+            </dl>
+            {/* With photos in the frame: the way to all of them. Kept out of
+                the frame so it never covers a photo. */}
+            {slides.length > 0 && (
+              <Link
+                to="/{-$locale}/gallery"
+                params={localeParams}
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-full px-2 text-sm font-semibold text-mint hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <Images aria-hidden="true" className="size-4" />
+                {t('gallery.title')}
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-3.5 rtl:rotate-180"
+                />
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </section>
