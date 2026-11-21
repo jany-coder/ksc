@@ -15,6 +15,7 @@ import {
   setMemberStatus,
   updateMember,
 } from './members.server.ts'
+import { memberHistory } from './member-history.server.ts'
 import { requirePermission } from './session.server.ts'
 
 // The permission check is the FIRST line, inside the server function: a route
@@ -83,4 +84,12 @@ export const restoreMemberFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const actor = await requirePermission('members.delete')
     return restoreMember(actor.id, data.id)
+  })
+
+// Who did what to this member, and when (no personal data: see the server file).
+export const memberHistoryFn = createServerFn({ method: 'GET' })
+  .validator(z.object({ id: z.uuid() }))
+  .handler(async ({ data }) => {
+    await requirePermission('members.read')
+    return memberHistory(data.id)
   })

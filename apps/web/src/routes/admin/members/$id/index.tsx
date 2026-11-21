@@ -12,6 +12,7 @@ import {
   ActionMessages,
   BloodSection,
   ContactSection,
+  HistorySection,
   ManageSection,
   MembershipSection,
   PendingBanner,
@@ -144,6 +145,7 @@ function ProfilePage() {
             member={member}
             canEdit={can(actor.role, 'members.write')}
           />
+          <HistorySection memberId={id} />
         </div>
         <div className="flex min-w-0 flex-col gap-5">
           <BloodSection member={member} />

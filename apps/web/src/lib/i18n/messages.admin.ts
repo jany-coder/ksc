@@ -172,6 +172,66 @@ export const adminMessages = {
     bn: 'এই সদস্যকে পাওয়া যায়নি। হয়তো মুছে ফেলা হয়েছে।',
     en: 'This member was not found. They may have been deleted.',
   },
+  'history.title': { bn: 'ইতিহাস', en: 'History' },
+  'history.empty': { bn: 'এখনো কিছু লেখা হয়নি।', en: 'Nothing recorded yet.' },
+  'history.loadError': {
+    bn: 'ইতিহাস আনা গেল না।',
+    en: 'Could not load the history.',
+  },
+  'history.unknownAdmin': { bn: 'একজন অ্যাডমিন', en: 'An admin' },
+  'history.apply': {
+    bn: 'ওয়েবসাইট থেকে সদস্য হওয়ার আবেদন এসেছে',
+    en: 'Applied to join through the website',
+  },
+  'history.create': {
+    bn: '{actor} সদস্য হিসেবে যোগ করেছেন',
+    en: '{actor} added this member',
+  },
+  'history.update': {
+    bn: '{actor} তথ্য বদলেছেন',
+    en: '{actor} changed the details',
+  },
+  'history.phoneChange': {
+    bn: '{actor} মোবাইল নম্বর বদলেছেন',
+    en: '{actor} changed the mobile number',
+  },
+  'history.photo': { bn: '{actor} ছবি দিয়েছেন', en: '{actor} added a photo' },
+  'history.photoRemove': {
+    bn: '{actor} ছবি সরিয়েছেন',
+    en: '{actor} removed the photo',
+  },
+  'history.statusChange': {
+    bn: '{actor} অবস্থা বদলেছেন: {from} থেকে {to}',
+    en: '{actor} changed the status from {from} to {to}',
+  },
+  'history.passwordReset': {
+    bn: '{actor} পাসওয়ার্ড রিসেট করেছেন',
+    en: '{actor} reset the password',
+  },
+  'history.adminCreate': {
+    bn: '{actor} অ্যাডমিন বানিয়েছেন',
+    en: '{actor} made them an admin',
+  },
+  'history.superCreate': {
+    bn: '{actor} সুপার অ্যাডমিন বানিয়েছেন',
+    en: '{actor} made them a super admin',
+  },
+  'history.adminRemove': {
+    bn: '{actor} অ্যাডমিন পদ সরিয়েছেন',
+    en: '{actor} removed admin rights',
+  },
+  'history.delete': {
+    bn: '{actor} মুছে ফেলেছেন (৩০ দিনের আর্কাইভে)',
+    en: '{actor} deleted them (30-day archive)',
+  },
+  'history.restore': {
+    bn: '{actor} আর্কাইভ থেকে ফিরিয়ে এনেছেন',
+    en: '{actor} restored them from the archive',
+  },
+  'history.other': {
+    bn: '{actor} একটি পরিবর্তন করেছেন',
+    en: '{actor} made a change',
+  },
   'drawer.call': { bn: 'কল করুন', en: 'Call' },
   'drawer.copy': { bn: 'কপি', en: 'Copy' },
   'drawer.copied': { bn: 'কপি হয়েছে', en: 'Copied' },

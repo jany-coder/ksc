@@ -1,4 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import {
   Check,
@@ -25,11 +30,12 @@ import {
   ageOn,
   daysBetween,
   formatDate,
+  formatTime,
   todayInDhaka,
 } from '../../lib/datetime.ts'
 import { useLang, useNumber, useT } from '../../lib/i18n/index.tsx'
 import type { MessageKey } from '../../lib/i18n/messages.ts'
-import { bloodLabel } from '../../lib/member-options.ts'
+import { STATUS_LABEL_KEY, bloodLabel } from '../../lib/member-options.ts'
 import {
   GENDER_LABEL_KEY,
   MARITAL_LABEL_KEY,
@@ -37,6 +43,7 @@ import {
 } from '../../lib/member-profile.ts'
 import {
   archiveMemberFn,
+  memberHistoryFn,
   setMemberStatusFn,
 } from '../../lib/members.functions.ts'
 import type { MemberDetail } from '../../lib/members.server.ts'
@@ -630,6 +637,96 @@ export function ManageSection({
             {t('drawer.delete')}
           </Button>
         ))}
+    </section>
+  )
+}
+
+// Each logged action, as a sentence. {actor} is the admin's name.
+const HISTORY_KEY: Record<string, MessageKey> = {
+  'member.apply': 'history.apply',
+  'member.create': 'history.create',
+  'member.update': 'history.update',
+  'member.phone_change': 'history.phoneChange',
+  'member.photo': 'history.photo',
+  'member.photoRemove': 'history.photoRemove',
+  'member.status_change': 'history.statusChange',
+  'member.password_reset': 'history.passwordReset',
+  'admin.create': 'history.adminCreate',
+  'superadmin.create': 'history.superCreate',
+  'admin.remove': 'history.adminRemove',
+  'member.delete': 'history.delete',
+  'member.restore': 'history.restore',
+}
+
+export const memberHistoryQuery = (id: string) =>
+  queryOptions({
+    queryKey: ['members', 'history', id],
+    queryFn: () => memberHistoryFn({ data: { id } }),
+  })
+
+/** Who did what to this member, and when: newest first, a timeline. */
+export function HistorySection({ memberId }: { memberId: string }) {
+  const t = useT()
+  const lang = useLang()
+  const { data, isPending, isError } = useQuery(memberHistoryQuery(memberId))
+
+  return (
+    <section aria-labelledby="member-history">
+      <h3 id="member-history" className={cn(sectionTitle, 'mb-2')}>
+        {t('history.title')}
+      </h3>
+      <div className="rounded-lg border border-border bg-card p-3">
+        {isPending && (
+          <p className="m-0 text-sm text-muted-foreground">{t('a.loading')}</p>
+        )}
+        {isError && (
+          <p role="alert" className="m-0 text-sm text-red-700">
+            {t('history.loadError')}
+          </p>
+        )}
+        {data && data.length === 0 && (
+          <p className="m-0 text-sm text-muted-foreground">
+            {t('history.empty')}
+          </p>
+        )}
+        {data && data.length > 0 && (
+          <ol className="m-0 list-none p-0">
+            {data.map((entry, i) => {
+              const actor = entry.actorName ?? t('history.unknownAdmin')
+              const key = HISTORY_KEY[entry.action] ?? 'history.other'
+              const text =
+                entry.from && entry.to
+                  ? t('history.statusChange', {
+                      actor,
+                      from: t(STATUS_LABEL_KEY[entry.from]),
+                      to: t(STATUS_LABEL_KEY[entry.to]),
+                    })
+                  : t(key, { actor })
+              return (
+                <li
+                  key={entry.id}
+                  className={cn(
+                    // A dot on a line down the left: a simple timeline.
+                    'relative ps-5 pb-3 last:pb-0',
+                    i < data.length - 1 &&
+                      'before:absolute before:start-[5px] before:top-3 before:bottom-0 before:w-px before:bg-border',
+                  )}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="absolute start-0 top-1.5 size-[11px] rounded-full border-2 border-card bg-zinc-300 ring-1 ring-border"
+                  />
+                  <p className="m-0 text-sm">{text}</p>
+                  <p className="m-0 text-xs text-muted-foreground tabular-nums">
+                    {formatDate(entry.date, lang)},{' '}
+                    {formatTime(entry.time, lang)}
+                  </p>
+                </li>
+              )
+            })}
+          </ol>
+        )}
+      </div>
     </section>
   )
 }
