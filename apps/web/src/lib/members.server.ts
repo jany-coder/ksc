@@ -34,6 +34,7 @@ import type { ProfileRow } from './member-profile.ts'
 import { canManageMember } from './permissions.ts'
 import type { Role } from './permissions.ts'
 import { normalizePhone, toAsciiDigits } from './phone.ts'
+import { imagesBucket } from './r2.server.ts'
 
 // Read access to member data. Every caller must have checked
 // requirePermission('members.read') FIRST: this file does not check who is
@@ -227,6 +228,16 @@ export type MemberDetail = ProfileRow & {
   // True if this member has a login account. The account id itself never leaves
   // the server.
   hasLogin: boolean
+  // The admin-only photo URL, with a version so a new photo shows at once.
+  // Null without a photo. The R2 key itself never leaves the server.
+  photoUrl: string | null
+}
+
+/** "/api/member-photo/<id>?v=<file name>", or null without a photo. */
+function photoUrlFor(id: string, key: string | null): string | null {
+  if (!key) return null
+  const version = key.slice(key.lastIndexOf('/') + 1, -'.webp'.length)
+  return `/api/member-photo/${id}?v=${version}`
 }
 
 const dhakaDay = (column: AnyPgColumn) =>
@@ -249,11 +260,14 @@ export async function getMember(id: string): Promise<MemberDetail | null> {
       consentDate: dhakaDay(members.consentGivenAt),
       joinedDate: dhakaDay(members.joinedAt),
       hasLogin: sql<boolean>`${members.userId} is not null`,
+      photoR2Key: members.photoR2Key,
     })
     .from(members)
     .where(and(eq(members.id, id), isNull(members.archivedAt)))
     .limit(1)
-  return row ?? null
+  if (!row) return null
+  const { photoR2Key, ...rest } = row
+  return { ...rest, photoUrl: photoUrlFor(row.id, photoR2Key) }
 }
 
 export type SetStatusResult =
@@ -352,7 +366,11 @@ export async function archiveMember(
 export async function purgeArchivedMembers(): Promise<number> {
   const cutoff = sql`now() - make_interval(days => ${ARCHIVE_DAYS})`
   const expired = await db
-    .select({ id: members.id, userId: members.userId })
+    .select({
+      id: members.id,
+      userId: members.userId,
+      photoR2Key: members.photoR2Key,
+    })
     .from(members)
     .where(and(isNotNull(members.archivedAt), lt(members.archivedAt, cutoff)))
   if (expired.length === 0) return 0
@@ -374,6 +392,9 @@ export async function purgeArchivedMembers(): Promise<number> {
       db.delete(user).where(inArray(user.id, userIds)),
     ])
   }
+  // Their photos go too: personal data is not kept past the 30 days.
+  const photoKeys = expired.flatMap((m) => (m.photoR2Key ? [m.photoR2Key] : []))
+  if (photoKeys.length > 0) await imagesBucket.delete(photoKeys)
   return expired.length
 }
 

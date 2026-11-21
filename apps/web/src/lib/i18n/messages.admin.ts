@@ -637,6 +637,23 @@ export const adminMessages = {
     bn: 'গ্যালারিতে সাজান',
     en: 'Sort them in the gallery',
   },
+  'memberPhoto.title': { bn: 'ছবি', en: 'Photo' },
+  'memberPhoto.note': {
+    bn: 'শুধু অ্যাডমিনরা দেখতে পান। ছবি সঙ্গে সঙ্গে সংরক্ষণ হয়।',
+    en: 'Only admins can see it. The photo saves at once.',
+  },
+  'memberPhoto.add': { bn: 'ছবি দিন', en: 'Add photo' },
+  'memberPhoto.replace': { bn: 'ছবি বদলান', en: 'Replace photo' },
+  'memberPhoto.remove': { bn: 'ছবি সরান', en: 'Remove photo' },
+  'memberPhoto.removeConfirm': {
+    bn: 'সদস্যের ছবিটি স্থায়ীভাবে মুছে ফেলবেন?',
+    en: "Delete this member's photo permanently?",
+  },
+  'memberPhoto.error': {
+    bn: 'ছবি সংরক্ষণ করা গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not save the photo. Please try again.',
+  },
+  'memberPhoto.alt': { bn: '{name}-এর ছবি', en: 'Photo of {name}' },
   'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
   'gal.homeCount': {
     bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',

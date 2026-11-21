@@ -18,6 +18,10 @@ export const MAX_FULL_BYTES = 1_000_000
 export const MAX_THUMB_BYTES = 200_000
 export const MAX_DIMENSION = 8000
 
+// A member's photo: one size, enough for an ID-style picture in the drawer.
+export const MEMBER_PHOTO_WIDTH = 600
+export const MAX_MEMBER_PHOTO_BYTES = 200_000
+
 export const FULL_WIDTH = 1600
 export const THUMB_WIDTH = 400
 

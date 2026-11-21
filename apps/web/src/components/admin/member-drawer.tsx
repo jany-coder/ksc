@@ -32,6 +32,7 @@ import { resetMemberPasswordFn } from '../../lib/password.functions.ts'
 import { can, canManageMember } from '../../lib/permissions.ts'
 import type { Role } from '../../lib/permissions.ts'
 import { Button, buttonVariants } from '../ui/button.tsx'
+import { MemberAvatar } from './member-photo.tsx'
 
 export const memberDetailQuery = (id: string) =>
   queryOptions({
@@ -195,7 +196,14 @@ export function MemberDrawer({
     >
       <div className="flex h-full flex-col">
         <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
-          <div className="min-w-0">
+          {member && (
+            <MemberAvatar
+              photoUrl={member.photoUrl}
+              name={member.name}
+              className="size-14 text-xl"
+            />
+          )}
+          <div className="min-w-0 grow">
             <h2
               id="member-drawer-title"
               className="text-lg font-semibold break-words"

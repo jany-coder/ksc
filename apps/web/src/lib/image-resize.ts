@@ -1,6 +1,8 @@
 import {
   FULL_WIDTH,
   MAX_FULL_BYTES,
+  MAX_MEMBER_PHOTO_BYTES,
+  MEMBER_PHOTO_WIDTH,
   MAX_THUMB_BYTES,
   THUMB_WIDTH,
 } from './image-limits.ts'
@@ -113,4 +115,30 @@ export async function uploadResized(
   return response.ok && body?.ok
     ? { ok: true }
     : { ok: false, code: body?.code ?? 'FAILED' }
+}
+
+/** A member's photo: one WebP, at most 600px wide, under 200 KB. */
+export async function resizeMemberPhoto(
+  file: File,
+): Promise<{ blob: Blob; width: number; height: number }> {
+  let bitmap: ImageBitmap
+  try {
+    bitmap = await createImageBitmap(file)
+  } catch {
+    throw new ResizeError('UNREADABLE')
+  }
+  try {
+    const scaled = drawScaled(bitmap, MEMBER_PHOTO_WIDTH)
+    return {
+      blob: await encodeUnder(
+        scaled.canvas,
+        [0.82, 0.72, 0.62],
+        MAX_MEMBER_PHOTO_BYTES,
+      ),
+      width: scaled.width,
+      height: scaled.height,
+    }
+  } finally {
+    bitmap.close()
+  }
 }

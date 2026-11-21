@@ -31,6 +31,7 @@ import { Route as AdminNoticesIndexRouteImport } from './routes/admin/notices/in
 import { Route as AdminNoticesIdRouteImport } from './routes/admin/notices/$id'
 import { Route as AdminNoticesNewRouteImport } from './routes/admin/notices/new'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiMemberPhotoIdRouteImport } from './routes/api/member-photo/$id'
 import { Route as Char123LocaleChar125ActivitiesIndexRouteImport } from './routes/{-$locale}/activities/index'
 import { Route as Char123LocaleChar125ActivitiesSlugRouteImport } from './routes/{-$locale}/activities/$slug'
 import { Route as ApiMediaIdSizeRouteImport } from './routes/api/media/$id.$size'
@@ -149,6 +150,11 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMemberPhotoIdRoute = ApiMemberPhotoIdRouteImport.update({
+  id: '/api/member-photo/$id',
+  path: '/api/member-photo/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char123LocaleChar125ActivitiesIndexRoute =
   Char123LocaleChar125ActivitiesIndexRouteImport.update({
     id: '/activities/',
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/member-photo/$id': typeof ApiMemberPhotoIdRoute
   '/{-$locale}/activities/$slug': typeof Char123LocaleChar125ActivitiesSlugRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/gallery/': typeof AdminGalleryIndexRoute
@@ -211,6 +218,7 @@ export interface FileRoutesByTo {
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/member-photo/$id': typeof ApiMemberPhotoIdRoute
   '/{-$locale}/activities/$slug': typeof Char123LocaleChar125ActivitiesSlugRoute
   '/admin/activities': typeof AdminActivitiesIndexRoute
   '/admin/gallery': typeof AdminGalleryIndexRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/member-photo/$id': typeof ApiMemberPhotoIdRoute
   '/{-$locale}/activities/$slug': typeof Char123LocaleChar125ActivitiesSlugRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/gallery/': typeof AdminGalleryIndexRoute
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
+    | '/api/member-photo/$id'
     | '/{-$locale}/activities/$slug'
     | '/admin/activities/'
     | '/admin/gallery/'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
+    | '/api/member-photo/$id'
     | '/{-$locale}/activities/$slug'
     | '/admin/activities'
     | '/admin/gallery'
@@ -320,6 +331,7 @@ export interface FileRouteTypes {
     | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
+    | '/api/member-photo/$id'
     | '/{-$locale}/activities/$slug'
     | '/admin/activities/'
     | '/admin/gallery/'
@@ -337,6 +349,7 @@ export interface RootRouteChildren {
   ApiImagesRoute: typeof ApiImagesRoute
   ApiMembersExportRoute: typeof ApiMembersExportRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiMemberPhotoIdRoute: typeof ApiMemberPhotoIdRoute
   ApiMediaIdSizeRoute: typeof ApiMediaIdSizeRoute
 }
 
@@ -496,6 +509,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/member-photo/$id': {
+      id: '/api/member-photo/$id'
+      path: '/api/member-photo/$id'
+      fullPath: '/api/member-photo/$id'
+      preLoaderRoute: typeof ApiMemberPhotoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/{-$locale}/activities/': {
       id: '/{-$locale}/activities/'
       path: '/activities'
@@ -586,6 +606,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiImagesRoute: ApiImagesRoute,
   ApiMembersExportRoute: ApiMembersExportRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiMemberPhotoIdRoute: ApiMemberPhotoIdRoute,
   ApiMediaIdSizeRoute: ApiMediaIdSizeRoute,
 }
 export const routeTree = rootRouteImport

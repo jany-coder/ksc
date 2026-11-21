@@ -11,6 +11,7 @@ import { ArrowLeft } from 'lucide-react'
 
 import { ChangePhoneForm } from '../../../components/admin/change-phone-form.tsx'
 import { MemberEditForm } from '../../../components/admin/member-edit-form.tsx'
+import { MemberPhotoEditor } from '../../../components/admin/member-photo.tsx'
 import { langOfMatches } from '../../../lib/i18n/core.ts'
 import type { HeadArgs } from '../../../lib/i18n/core.ts'
 import { useT } from '../../../lib/i18n/index.tsx'
@@ -78,6 +79,16 @@ function EditMemberPage() {
       </p>
 
       <>
+        <MemberPhotoEditor
+          memberId={id}
+          name={member.name}
+          photoUrl={member.photoUrl}
+          onChanged={async () => {
+            // Reload this page's member (new photo URL) and the drawer's copy.
+            await router.invalidate()
+            await queryClient.invalidateQueries({ queryKey: ['members'] })
+          }}
+        />
         <MemberEditForm
           initial={memberToEditValues(member)}
           phone={member.phone}

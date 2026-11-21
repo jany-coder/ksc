@@ -44,16 +44,23 @@ export const members = pgTable(
     occupation: text(),
     organization: text(),
     // The address in Bangladeshi form. Replaces the old free-text address and
-    // area columns: migration 0006 copied their text into house_village. The
-    // old columns are still in the database until the new code is deployed
-    // (the live site still writes them); a later migration copies once more
-    // and drops them. Nothing here reads them any more.
+    // area columns below: migration 0006 copied their text into house_village.
     houseVillage: text('house_village'),
     roadWard: text('road_ward'),
     postOffice: text('post_office'),
     postCode: text('post_code'),
     upazila: text(),
     district: text(),
+    // DEPRECATED: do not read or write. The old free-text address and area.
+    // Kept only until the new code is deployed, because the live site still
+    // writes them; then a migration copies them into house_village once more
+    // and drops both, and these two lines go.
+    address: text(),
+    area: text(),
+    // The member's photo in R2 (members/<id>/<random>.webp), or none. Served
+    // only to admins through /api/member-photo/<id>, never through the public
+    // gallery route.
+    photoR2Key: text('photo_r2_key'),
 
     // The login account for this member, if they have one. Most members will
     // not in v1, so this is nullable. Unique: one login, one member profile.
