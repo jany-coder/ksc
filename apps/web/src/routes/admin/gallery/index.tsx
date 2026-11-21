@@ -20,6 +20,10 @@ import {
   HomeToggle,
 } from '../../../components/admin/photo-controls.tsx'
 import {
+  HeroPanel,
+  HeroToggles,
+} from '../../../components/admin/hero-picker.tsx'
+import {
   PhotoDropZone,
   UploadList,
   usePhotoUpload,
@@ -239,6 +243,8 @@ function GalleryPage() {
 
       <UploadList items={items} busy={busy} onRetry={retry} />
 
+      <HeroPanel hero={data.hero} onError={setDeleteError} />
+
       {deleteError && (
         <p role="alert" className="text-sm text-red-700">
           {deleteError}
@@ -407,6 +413,11 @@ function GalleryPage() {
                   id={image.id}
                   onHome={image.onHome}
                   homeFull={homeFull}
+                  onError={setDeleteError}
+                />
+                <HeroToggles
+                  id={image.id}
+                  hero={data.hero}
                   onError={setDeleteError}
                 />
                 <DeletePhotoButton

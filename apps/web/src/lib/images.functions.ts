@@ -5,16 +5,19 @@ import {
   MAX_CAPTION_LENGTH,
   deleteImage,
   galleryAdminData,
+  heroPhotos,
   listHomeImages,
   listImages,
   listPublicGallery,
   publicGalleryYears,
   setImageCaption,
+  setHeroPhotos,
   setImageOnHome,
   setImagesActivity,
   activityPhotos,
   setActivityCover,
 } from './images.server.ts'
+import { HERO_SLIDE_COUNT } from './image-limits.ts'
 import {
   galleryFilterSchema,
   publicGallerySearchSchema,
@@ -49,6 +52,18 @@ export const setImageOnHomeFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     await requirePermission('content.write')
     return setImageOnHome(data.id, data.onHome)
+  })
+
+export const setHeroPhotosFn = createServerFn({ method: 'POST' })
+  .validator(
+    z.object({
+      backgroundId: z.uuid().nullable(),
+      slideIds: z.array(z.uuid()).max(HERO_SLIDE_COUNT),
+    }),
+  )
+  .handler(async ({ data }) => {
+    await requirePermission('content.write')
+    return setHeroPhotos(data)
   })
 
 export const activityPhotosFn = createServerFn({ method: 'GET' })
@@ -88,6 +103,11 @@ export const listPublicImagesFn = createServerFn({ method: 'GET' })
 // Public, for the same reason as listPublicImagesFn: photos and their sizes only.
 export const listHomeImagesFn = createServerFn({ method: 'GET' }).handler(() =>
   listHomeImages(),
+)
+
+// Public, for the same reason: photos, their sizes and captions only.
+export const heroPhotosFn = createServerFn({ method: 'GET' }).handler(() =>
+  heroPhotos(),
 )
 
 export const PUBLIC_GALLERY_PAGE = 60

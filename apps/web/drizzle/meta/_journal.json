@@ -64,6 +64,13 @@
       "when": 1795290925035,
       "tag": "0008_activity_categories",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795298082318,
+      "tag": "0009_hero_photos",
+      "breakpoints": true
     }
   ]
 }

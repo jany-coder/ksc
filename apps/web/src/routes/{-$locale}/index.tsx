@@ -4,7 +4,7 @@ import {
   listRecentActivitiesFn,
   listUpcomingActivitiesFn,
 } from '../../lib/activities.functions.ts'
-import { listHomeImagesFn } from '../../lib/images.functions.ts'
+import { heroPhotosFn, listHomeImagesFn } from '../../lib/images.functions.ts'
 import { imageSrcSet, imageUrl } from '../../lib/image-limits.ts'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
@@ -34,23 +34,24 @@ export const Route = createFileRoute('/{-$locale}/')({
   // Public data for every visitor: the newest past activities, published
   // activities happening today or later, notices and photos.
   loader: async () => {
-    const [recent, upcoming, notices, images] = await Promise.all([
+    const [recent, upcoming, notices, images, hero] = await Promise.all([
       listRecentActivitiesFn(),
       listUpcomingActivitiesFn(),
       listPublicNoticesFn(),
       listHomeImagesFn(),
+      heroPhotosFn(),
     ])
-    return { recent, upcoming, notices, images }
+    return { recent, upcoming, notices, images, hero }
   },
   component: Home,
 })
 
 function Home() {
-  const { recent, upcoming, notices, images } = Route.useLoaderData()
+  const { recent, upcoming, notices, images, hero } = Route.useLoaderData()
   return (
     <main>
-      {/* The first photo picked for the homepage, behind the hero. */}
-      <Hero photo={images[0] ?? null} />
+      {/* Its own photos, picked in the admin gallery apart from these. */}
+      <Hero photos={hero} />
       <QuickActions />
       <WhatWeDo />
       <About />

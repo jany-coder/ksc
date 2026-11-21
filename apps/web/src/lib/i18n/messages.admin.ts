@@ -937,7 +937,10 @@ export const adminMessages = {
   },
   'memberPhoto.zoom': { bn: 'জুম', en: 'Zoom' },
   'memberPhoto.cropSave': { bn: 'ছবি সংরক্ষণ করুন', en: 'Save photo' },
-  'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
+  'gal.onHome': {
+    bn: 'হোমপেজের গ্যালারিতে দেখান',
+    en: 'Show in the homepage gallery',
+  },
   'gal.homeCount': {
     bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',
     en: 'Picked for the homepage: {n}/{max}. Empty slots show the newest photos.',
@@ -949,6 +952,55 @@ export const adminMessages = {
   'gal.homeError': {
     bn: 'হোমপেজের বাছাই সংরক্ষণ করা গেল না।',
     en: 'Could not save the homepage choice.',
+  },
+  'heroPick.pickerTitle': {
+    bn: 'হোমপেজের হিরো সেকশনের ছবি',
+    en: 'Photos for the homepage hero',
+  },
+  'heroPick.pickerLead': {
+    bn: 'নিচের যেকোনো ছবিতে "হিরোর ফ্রেমে দেখান" বা "হিরোর পেছনে রাখুন" চিহ্ন দিন। এই বাছাই হোমপেজের গ্যালারির বাছাই থেকে আলাদা।',
+    en: 'Tick "Show in the hero frame" or "Put behind the hero" on any photo below. This is separate from the homepage gallery picks.',
+  },
+  'heroPick.backgroundTitle': { bn: 'পেছনের ছবি', en: 'Background photo' },
+  'heroPick.backgroundAlt': {
+    bn: 'হিরোর পেছনের ছবি',
+    en: 'The photo behind the hero',
+  },
+  'heroPick.backgroundRemove': {
+    bn: 'পেছনের ছবি বাদ দিন',
+    en: 'Remove the background photo',
+  },
+  'heroPick.backgroundEmpty': {
+    bn: 'বাছাই করা হয়নি। এখন হোমপেজের গ্যালারির প্রথম ছবিটা দেখাচ্ছে।',
+    en: 'None picked. The first homepage gallery photo shows for now.',
+  },
+  'heroPick.slidesTitle': {
+    bn: 'ফ্রেমে পালা করে দেখানো ছবি ({n}/{max})',
+    en: 'Photos taking turns in the frame ({n}/{max})',
+  },
+  'heroPick.slidesEmpty': {
+    bn: 'বাছাই করা হয়নি। এখন হোমপেজের গ্যালারির ছবিগুলোই পালা করে দেখাচ্ছে।',
+    en: 'None picked. The homepage gallery photos take turns for now.',
+  },
+  'heroPick.slideAlt': { bn: 'ফ্রেমের {n} নম্বর ছবি', en: 'Frame photo {n}' },
+  'heroPick.moveEarlier': { bn: 'আগে দেখান', en: 'Show earlier' },
+  'heroPick.moveLater': { bn: 'পরে দেখান', en: 'Show later' },
+  'heroPick.slideRemove': {
+    bn: 'ফ্রেম থেকে বাদ দিন',
+    en: 'Remove from the frame',
+  },
+  'heroPick.inFrame': { bn: 'হিরোর ফ্রেমে দেখান', en: 'Show in the hero frame' },
+  'heroPick.frameFull': {
+    bn: 'ফ্রেমে {max}টা ছবি হয়ে গেছে।',
+    en: 'The frame already has {max} photos.',
+  },
+  'heroPick.asBackground': {
+    bn: 'হিরোর পেছনে রাখুন',
+    en: 'Put behind the hero',
+  },
+  'heroPick.saveError': {
+    bn: 'হিরোর ছবির বাছাই সংরক্ষণ করা গেল না।',
+    en: 'Could not save the hero photos.',
   },
   'gal.deleteAria': { bn: 'ছবিটি মুছুন', en: 'Delete this photo' },
   'gal.deleteConfirm': {

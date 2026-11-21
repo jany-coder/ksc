@@ -338,6 +338,23 @@
     animation: fade 1s ease 0.35s both;
   }
 
+  /* The hero frame: each photo zooms in very slowly while it is on screen,
+     and holds still whenever the frame is paused. */
+  @keyframes slow-zoom {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.08);
+    }
+  }
+  .hero-slide {
+    animation: slow-zoom 9s ease-out both;
+  }
+  .hero-frame[data-paused] .hero-slide {
+    animation-play-state: paused;
+  }
+
   /* Every later section eases in as it scrolls into view (CSS only, no JS). */
   @supports (animation-timeline: view()) {
     .theme-public main > section:not(:first-of-type) > div {

@@ -17,6 +17,7 @@ import type { SQL } from 'drizzle-orm'
 import { db } from '../db/index.ts'
 import { activities, images } from '../db/schema/index.ts'
 import {
+  HERO_SLIDE_COUNT,
   HOME_PHOTO_COUNT,
   MAX_FULL_BYTES,
   MAX_THUMB_BYTES,
@@ -162,6 +163,8 @@ export type GalleryAdminData = {
   activities: ActivityOption[]
   // Counted over every photo, not just the filtered ones on screen.
   homeCount: number
+  // What is picked for the hero, without the fallbacks the homepage adds.
+  hero: HeroPhotos
   usedBytes: number
   state: StorageState
 }
@@ -298,7 +301,7 @@ export async function galleryAdminData(
   filter: GalleryFilter,
   offset: number,
 ): Promise<GalleryAdminData> {
-  const [list, total, unfiledCount, activityRows, homeCount, used] =
+  const [list, total, unfiledCount, activityRows, homeCount, hero, used] =
     await Promise.all([
       // One extra row tells whether another page exists.
       listAdminImages(filter, ADMIN_GALLERY_PAGE + 1, offset),
@@ -306,6 +309,7 @@ export async function galleryAdminData(
       countAdminImages({ activity: 'none' }),
       activityChoices(),
       countHomeImages(),
+      pickedHeroPhotos(),
       usedBytes(),
     ])
   return {
@@ -315,9 +319,111 @@ export async function galleryAdminData(
     unfiledCount,
     activities: activityRows,
     homeCount,
+    hero,
     usedBytes: used,
     state: storageState(used),
   }
+}
+
+// --- the hero at the top of the homepage ---
+
+export type HeroPhotos = {
+  background: GalleryImage | null
+  slides: GalleryImage[]
+}
+
+/** The photos an admin picked for the hero, slides in their order. */
+async function pickedHeroPhotos(): Promise<HeroPhotos> {
+  const rows = await db
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+      onHome: images.onHome,
+      heroOrder: images.heroOrder,
+      heroBackground: images.heroBackground,
+    })
+    .from(images)
+    .where(sql`${images.heroBackground} or ${images.heroOrder} is not null`)
+    .orderBy(asc(images.heroOrder))
+  const plain = ({
+    heroOrder: _order,
+    heroBackground: _background,
+    ...photo
+  }: (typeof rows)[number]): GalleryImage => photo
+  const background = rows.find((r) => r.heroBackground)
+  return {
+    background: background ? plain(background) : null,
+    slides: rows.filter((r) => r.heroOrder !== null).map(plain),
+  }
+}
+
+/**
+ * The hero for the homepage. Until an admin picks, the homepage's own photos
+ * stand in: the first goes behind the hero and all of them take turns in the
+ * frame, so the hero is never empty while there are photos at all.
+ */
+export async function heroPhotos(): Promise<HeroPhotos> {
+  const picked = await pickedHeroPhotos()
+  if (picked.background && picked.slides.length > 0) return picked
+  const home = await listHomeImages()
+  return {
+    background: picked.background ?? home[0] ?? null,
+    slides: picked.slides.length > 0 ? picked.slides : home,
+  }
+}
+
+export type SetHeroResult =
+  { ok: true } | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' }
+
+/**
+ * Save the whole hero at once: the background (or none) and the frame's
+ * photos in order. Saving the whole list keeps it simple to add, remove and
+ * reorder, and the batch runs as one transaction, so it never half-saves.
+ */
+export async function setHeroPhotos(input: {
+  backgroundId: string | null
+  slideIds: string[]
+}): Promise<SetHeroResult> {
+  const { backgroundId, slideIds } = input
+  if (
+    slideIds.length > HERO_SLIDE_COUNT ||
+    new Set(slideIds).size !== slideIds.length
+  )
+    return { ok: false, code: 'INVALID_INPUT' }
+  const ids = [
+    ...new Set([...slideIds, ...(backgroundId ? [backgroundId] : [])]),
+  ]
+  if (ids.length > 0) {
+    const [row] = await db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(images)
+      .where(inArray(images.id, ids))
+    if ((row?.n ?? 0) !== ids.length) return { ok: false, code: 'NOT_FOUND' }
+  }
+  await db.batch([
+    // Clear first, so the unique indexes never see two photos in one place.
+    db
+      .update(images)
+      .set({ heroOrder: null, heroBackground: false })
+      .where(sql`${images.heroBackground} or ${images.heroOrder} is not null`),
+    ...slideIds.map((id, i) =>
+      db
+        .update(images)
+        .set({ heroOrder: i + 1 })
+        .where(eq(images.id, id)),
+    ),
+    ...(backgroundId
+      ? [
+          db
+            .update(images)
+            .set({ heroBackground: true })
+            .where(eq(images.id, backgroundId)),
+        ]
+      : []),
+  ])
+  return { ok: true }
 }
 
 export type SetActivityResult =

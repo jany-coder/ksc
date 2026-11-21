@@ -23,6 +23,16 @@ export const homeMessages = {
     bn: 'আমাদের বিশ্বাস, সামাজিক পরিবর্তন শুধু ব্যক্তিগত উদ্যোগে নয়; সম্মিলিত চিন্তা, দায়িত্বশীল অংশগ্রহণ ও ধারাবাহিক কার্যক্রমের মাধ্যমেই সম্ভব।',
     en: 'We believe social change comes not from individual effort alone, but through shared thinking, responsible participation and steady, continuing work.',
   },
+  'hero.frameLabel': {
+    bn: 'ক্লাবের কার্যক্রমের ছবি',
+    en: 'Photos of the club at work',
+  },
+  'hero.photoAlt': {
+    bn: 'কলমা সোশ্যাল ক্লাবের একটি কার্যক্রম',
+    en: "One of Kalma Social Club's activities",
+  },
+  'hero.pause': { bn: 'ছবি বদলানো থামান', en: 'Pause the photos' },
+  'hero.play': { bn: 'ছবি বদলানো চালু করুন', en: 'Play the photos' },
   'hero.ctaWork': { bn: 'আমাদের কার্যক্রম দেখুন', en: 'See our activities' },
 
   // --- what we work on ---

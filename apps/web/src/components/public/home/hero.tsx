@@ -6,40 +6,38 @@ import { useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
 import { buttonVariants } from '../../ui/button.tsx'
 import { cn } from '../../../lib/utils.ts'
 
-/** A photo for the background: the first photo picked for the homepage. */
-export type HeroPhoto = { id: string; width: number; height: number }
+import { HeroFrame } from './hero-frame.tsx'
+import type { HeroSlide } from './hero-frame.tsx'
 
-// Frosted glass: a see-through white wash, a hairline white edge and a strong
-// blur of whatever is behind it. It only reads as glass when there is a photo
-// behind to blur, which is why the hero has one.
+/** The hero's photos, picked in the admin gallery (see heroPhotos()). */
+export type HeroPhotos = {
+  background: HeroSlide | null
+  slides: HeroSlide[]
+}
+
 const glass =
   'border border-white/20 bg-white/10 backdrop-blur-xl backdrop-saturate-150'
 
-export function Hero({ photo }: { photo: HeroPhoto | null }) {
+export function Hero({ photos }: { photos: HeroPhotos }) {
   const t = useT()
   const localeParams = useLocaleParams()
+  const { background, slides } = photos
 
   return (
     <section className="relative isolate overflow-hidden bg-brand-deep text-white">
-      {photo && (
-        // A phone gets the small copy (the photo sits under a dark layer, so
-        // detail is lost anyway and the page stays light on slow connections);
-        // wider screens get the large one.
-        <picture>
-          <source
-            media="(min-width: 768px)"
-            srcSet={imageUrl(photo.id, 'full')}
-          />
-          <img
-            src={imageUrl(photo.id, 'thumb')}
-            alt=""
-            width={photo.width}
-            height={photo.height}
-            fetchPriority="high"
-            decoding="async"
-            className="absolute inset-0 -z-20 size-full object-cover"
-          />
-        </picture>
+      {background && (
+        // Softly blurred, so it sets the mood without competing with the sharp
+        // photos in the frame. Blurred, the small copy looks the same as the
+        // large one on any screen, so the large one is never downloaded.
+        <img
+          src={imageUrl(background.id, 'thumb')}
+          alt=""
+          width={background.width}
+          height={background.height}
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 -z-20 size-full scale-110 object-cover blur-[3px]"
+        />
       )}
       {/* A deep green layer over the photo: darkest behind the text, so it
           always reads at full contrast, lighter to the right where the
@@ -71,9 +69,15 @@ export function Hero({ photo }: { photo: HeroPhoto | null }) {
           <p className="mb-4 font-heading text-xl font-semibold text-mint md:mb-6 md:text-[28px]">
             {t('hero.tagline')}
           </p>
-          <p className="mb-8 max-w-[52ch] text-[17px] leading-relaxed text-mint-soft md:mb-10 md:text-[21px] md:leading-[1.65]">
+          <p className="mb-5 max-w-[52ch] text-[17px] leading-relaxed text-mint-soft md:text-[21px] md:leading-[1.65]">
             {t('hero.leadShort')}
           </p>
+          {/* Who the club is: moved here from the old glass card, whose place
+              the photo frame took. */}
+          <div className="mb-8 flex max-w-[60ch] flex-col gap-3 border-s-2 border-mint/40 ps-4 text-base leading-[1.75] text-mint-soft/90 md:mb-10 md:text-[17px]">
+            <p>{t('hero.body1')}</p>
+            <p className="hidden md:block">{t('hero.body2')}</p>
+          </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link
               to="/{-$locale}"
@@ -104,29 +108,38 @@ export function Hero({ photo }: { photo: HeroPhoto | null }) {
           </div>
         </div>
 
-        {/* The glass card: the founding year (a fact the club gave us) and
-            who the club is. Member, donor and activity counts are left out on
-            purpose (CLAUDE.md sections 3 and 8). */}
+        {/* The photo frame, in a glass mount, with the founding year (a fact
+            the club gave us) on it. Member, donor and activity counts are
+            left out on purpose (CLAUDE.md sections 3 and 8). */}
         <div
           className={cn(
             glass,
-            'hero-fade min-w-0 rounded-3xl p-6 shadow-[0_24px_60px_rgba(0,0,0,0.35)] md:p-8',
+            'hero-fade min-w-0 rounded-[28px] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.35)] md:p-2.5',
           )}
         >
-          <dl className="mb-5 flex items-baseline gap-3 border-b border-white/15 pb-5">
-            <dd className="font-heading text-[44px] leading-none font-bold md:text-[52px]">
-              {t('hero.statYearValue')}
-            </dd>
-            <dt className="text-[15px] text-mint-soft">
-              {t('hero.statYearLabel')}
-            </dt>
-          </dl>
-          <div className="flex flex-col gap-4 text-base leading-[1.75] text-mint-soft md:text-[17px]">
-            <p>{t('hero.body1')}</p>
-            <p className="hidden md:block">{t('hero.body2')}</p>
-          </div>
+          {slides.length > 0 ? (
+            <HeroFrame slides={slides}>
+              <FoundedBadge />
+            </HeroFrame>
+          ) : (
+            <div className="p-5">
+              <FoundedBadge />
+            </div>
+          )}
         </div>
       </div>
     </section>
+  )
+}
+
+function FoundedBadge() {
+  const t = useT()
+  return (
+    <dl className="m-0 flex min-w-0 items-baseline gap-2.5 rounded-2xl border border-white/20 bg-black/30 px-4 py-2.5 backdrop-blur-md">
+      <dd className="m-0 font-heading text-[32px] leading-none font-bold md:text-[38px]">
+        {t('hero.statYearValue')}
+      </dd>
+      <dt className="text-sm text-mint-soft">{t('hero.statYearLabel')}</dt>
+    </dl>
   )
 }
