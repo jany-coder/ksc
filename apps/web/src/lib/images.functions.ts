@@ -22,6 +22,7 @@ import {
   galleryFilterSchema,
   publicGallerySearchSchema,
 } from './gallery-filter.ts'
+import { setHeroSwitch } from './site-settings.server.ts'
 import { requirePermission } from './session.server.ts'
 
 export const galleryAdminDataFn = createServerFn({ method: 'GET' })
@@ -64,6 +65,17 @@ export const setHeroPhotosFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     await requirePermission('content.write')
     return setHeroPhotos(data)
+  })
+
+// Turn the hero's background or frame on or off; the picks stay as they are.
+export const setHeroSwitchFn = createServerFn({ method: 'POST' })
+  .validator(
+    z.object({ part: z.enum(['background', 'frame']), on: z.boolean() }),
+  )
+  .handler(async ({ data }) => {
+    const member = await requirePermission('content.write')
+    await setHeroSwitch(member.id, data.part, data.on)
+    return { ok: true as const }
   })
 
 export const activityPhotosFn = createServerFn({ method: 'GET' })

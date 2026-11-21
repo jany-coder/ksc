@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 
 import { HERO_SLIDE_COUNT, imageUrl } from '../../lib/image-limits.ts'
-import { setHeroPhotosFn } from '../../lib/images.functions.ts'
+import { setHeroPhotosFn, setHeroSwitchFn } from '../../lib/images.functions.ts'
 import type { HeroPhotos } from '../../lib/images.server.ts'
+import type { HeroPart, HeroSwitches } from '../../lib/site-settings.server.ts'
 import { useNumber, useT } from '../../lib/i18n/index.tsx'
+import { cn } from '../../lib/utils.ts'
 import { Button } from '../ui/button.tsx'
 
 // Picking the photos for the hero at the top of the homepage: one behind it,
@@ -31,12 +33,75 @@ export function useSaveHero(onError: (message: string | null) => void) {
   })
 }
 
+/**
+ * On/off for one part of the hero. Off keeps the picks; the homepage just
+ * shows what it shows with no photos, until it is turned on again.
+ */
+function HeroSwitch({
+  part,
+  on,
+  onError,
+}: {
+  part: HeroPart
+  on: boolean
+  onError: (message: string | null) => void
+}) {
+  const t = useT()
+  const queryClient = useQueryClient()
+  const toggle = useMutation({
+    mutationFn: (next: boolean) =>
+      setHeroSwitchFn({ data: { part, on: next } }),
+    onSuccess: async () => {
+      onError(null)
+      await queryClient.invalidateQueries({ queryKey: ['images'] })
+    },
+    onError: () => onError(t('heroPick.switchError')),
+  })
+  // Shows the new state straight away while it saves.
+  const shown = toggle.isPending ? toggle.variables : on
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={shown}
+      aria-label={t(
+        part === 'background'
+          ? 'heroPick.backgroundSwitch'
+          : 'heroPick.frameSwitch',
+      )}
+      disabled={toggle.isPending}
+      onClick={() => toggle.mutate(!on)}
+      className="inline-flex min-h-8 items-center gap-2 rounded-md px-1 text-[13px] font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-wait"
+    >
+      <span
+        aria-hidden="true"
+        className={cn(
+          'relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors',
+          shown ? 'bg-primary' : 'bg-zinc-300',
+        )}
+      >
+        <span
+          className={cn(
+            'absolute top-0.5 size-4 rounded-full bg-white shadow transition-[inset-inline-start]',
+            shown ? 'start-[18px]' : 'start-0.5',
+          )}
+        />
+      </span>
+      <span className={shown ? 'text-foreground' : 'text-muted-foreground'}>
+        {shown ? t('heroPick.on') : t('heroPick.off')}
+      </span>
+    </button>
+  )
+}
+
 /** The panel at the top of the gallery: what the hero shows now, in order. */
 export function HeroPanel({
   hero,
+  switches,
   onError,
 }: {
   hero: HeroPhotos
+  switches: HeroSwitches
   onError: (message: string | null) => void
 }) {
   const t = useT()
@@ -66,11 +131,28 @@ export function HeroPanel({
 
       <div className="grid gap-5 md:grid-cols-[220px_minmax(0,1fr)]">
         <div className="min-w-0">
-          <h3 className="mb-2 text-sm font-medium">
-            {t('heroPick.backgroundTitle')}
-          </h3>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-x-3">
+            <h3 className="text-sm font-medium">
+              {t('heroPick.backgroundTitle')}
+            </h3>
+            <HeroSwitch
+              part="background"
+              on={switches.background}
+              onError={onError}
+            />
+          </div>
+          {!switches.background && (
+            <p className="mb-2 text-[13px] text-muted-foreground">
+              {t('heroPick.backgroundOff')}
+            </p>
+          )}
           {hero.background ? (
-            <div className="relative overflow-hidden rounded-lg border border-border">
+            <div
+              className={cn(
+                'relative overflow-hidden rounded-lg border border-border',
+                !switches.background && 'opacity-50',
+              )}
+            >
               <img
                 src={imageUrl(hero.background.id, 'thumb')}
                 alt={t('heroPick.backgroundAlt')}
@@ -99,14 +181,27 @@ export function HeroPanel({
         </div>
 
         <div className="min-w-0">
-          <h3 className="mb-2 text-sm font-medium">
-            {t('heroPick.slidesTitle', {
-              n: number(slides.length),
-              max: number(HERO_SLIDE_COUNT),
-            })}
-          </h3>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-x-3">
+            <h3 className="text-sm font-medium">
+              {t('heroPick.slidesTitle', {
+                n: number(slides.length),
+                max: number(HERO_SLIDE_COUNT),
+              })}
+            </h3>
+            <HeroSwitch part="frame" on={switches.frame} onError={onError} />
+          </div>
+          {!switches.frame && (
+            <p className="mb-2 text-[13px] text-muted-foreground">
+              {t('heroPick.frameOff')}
+            </p>
+          )}
           {slides.length > 0 ? (
-            <ol className="m-0 grid list-none grid-cols-2 gap-2 p-0 min-[480px]:grid-cols-3 lg:grid-cols-6">
+            <ol
+              className={cn(
+                'm-0 grid list-none grid-cols-2 gap-2 p-0 min-[480px]:grid-cols-3 lg:grid-cols-6',
+                !switches.frame && 'opacity-50',
+              )}
+            >
               {slides.map((photo, i) => (
                 <li
                   key={photo.id}

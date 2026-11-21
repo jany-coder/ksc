@@ -243,7 +243,11 @@ function GalleryPage() {
 
       <UploadList items={items} busy={busy} onRetry={retry} />
 
-      <HeroPanel hero={data.hero} onError={setDeleteError} />
+      <HeroPanel
+        hero={data.hero}
+        switches={data.heroSwitches}
+        onError={setDeleteError}
+      />
 
       {deleteError && (
         <p role="alert" className="text-sm text-red-700">

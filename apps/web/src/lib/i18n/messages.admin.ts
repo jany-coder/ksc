@@ -1003,6 +1003,28 @@ export const adminMessages = {
     bn: 'হিরোর পেছনে রাখুন',
     en: 'Put behind the hero',
   },
+  'heroPick.on': { bn: 'হোমপেজে চালু', en: 'On the homepage' },
+  'heroPick.off': { bn: 'বন্ধ', en: 'Off' },
+  'heroPick.backgroundSwitch': {
+    bn: 'হিরোর পেছনের ছবি দেখান',
+    en: 'Show the photo behind the hero',
+  },
+  'heroPick.frameSwitch': {
+    bn: 'হিরোর ফ্রেমের ছবি দেখান',
+    en: 'Show the photos in the hero frame',
+  },
+  'heroPick.backgroundOff': {
+    bn: 'বন্ধ আছে: হোমপেজে পেছনটা গাঢ় সবুজ দেখাচ্ছে। বাছাই করা ছবি রাখা আছে, চালু করলেই ফিরে আসবে।',
+    en: 'Off: the homepage shows plain deep green. The pick is kept and comes back when you turn it on.',
+  },
+  'heroPick.frameOff': {
+    bn: 'বন্ধ আছে: হোমপেজে ফ্রেমের জায়গায় ক্লাবের কাজের ক্ষেত্রগুলো দেখাচ্ছে। বাছাই করা ছবি রাখা আছে, চালু করলেই ফিরে আসবে।',
+    en: "Off: the homepage shows the club's areas of work instead. The picks are kept and come back when you turn it on.",
+  },
+  'heroPick.switchError': {
+    bn: 'চালু/বন্ধ সংরক্ষণ করা গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not save the on/off setting. Please try again.',
+  },
   'heroPick.saveError': {
     bn: 'হিরোর ছবির বাছাই সংরক্ষণ করা গেল না।',
     en: 'Could not save the hero photos.',

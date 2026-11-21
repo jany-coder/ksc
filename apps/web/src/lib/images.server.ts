@@ -29,6 +29,8 @@ import {
 import type { StorageState } from './image-limits.ts'
 import { imagesBucket } from './r2.server.ts'
 import { activityChoices } from './activities.server.ts'
+import { heroSwitches } from './site-settings.server.ts'
+import type { HeroSwitches } from './site-settings.server.ts'
 import { dateRange } from './gallery-filter.ts'
 import type { GalleryFilter, PublicGalleryPhoto } from './gallery-filter.ts'
 
@@ -163,8 +165,9 @@ export type GalleryAdminData = {
   activities: ActivityOption[]
   // Counted over every photo, not just the filtered ones on screen.
   homeCount: number
-  // What is picked for the hero, without the fallbacks the homepage adds.
+  // What is picked for the hero, and whether each part is switched on.
   hero: HeroPhotos
+  heroSwitches: HeroSwitches
   usedBytes: number
   state: StorageState
 }
@@ -301,17 +304,26 @@ export async function galleryAdminData(
   filter: GalleryFilter,
   offset: number,
 ): Promise<GalleryAdminData> {
-  const [list, total, unfiledCount, activityRows, homeCount, hero, used] =
-    await Promise.all([
-      // One extra row tells whether another page exists.
-      listAdminImages(filter, ADMIN_GALLERY_PAGE + 1, offset),
-      countAdminImages(filter),
-      countAdminImages({ activity: 'none' }),
-      activityChoices(),
-      countHomeImages(),
-      pickedHeroPhotos(),
-      usedBytes(),
-    ])
+  const [
+    list,
+    total,
+    unfiledCount,
+    activityRows,
+    homeCount,
+    hero,
+    switches,
+    used,
+  ] = await Promise.all([
+    // One extra row tells whether another page exists.
+    listAdminImages(filter, ADMIN_GALLERY_PAGE + 1, offset),
+    countAdminImages(filter),
+    countAdminImages({ activity: 'none' }),
+    activityChoices(),
+    countHomeImages(),
+    pickedHeroPhotos(),
+    heroSwitches(),
+    usedBytes(),
+  ])
   return {
     images: list.slice(0, ADMIN_GALLERY_PAGE),
     hasMore: list.length > ADMIN_GALLERY_PAGE,
@@ -320,6 +332,7 @@ export async function galleryAdminData(
     activities: activityRows,
     homeCount,
     hero,
+    heroSwitches: switches,
     usedBytes: used,
     state: storageState(used),
   }
@@ -360,11 +373,18 @@ async function pickedHeroPhotos(): Promise<HeroPhotos> {
 }
 
 /**
- * The hero for the homepage: exactly what an admin picked, nothing filled in.
- * With no background the hero is plain deep green; with no frame photos it
- * shows the club's areas of work instead (see components/public/home/hero.tsx).
+ * The hero for the homepage: exactly what an admin picked, nothing filled in,
+ * and only the parts switched on. With no background the hero is plain deep
+ * green; with no frame photos it shows the club's areas of work instead (see
+ * components/public/home/hero.tsx).
  */
-export const heroPhotos = (): Promise<HeroPhotos> => pickedHeroPhotos()
+export async function heroPhotos(): Promise<HeroPhotos> {
+  const [picked, on] = await Promise.all([pickedHeroPhotos(), heroSwitches()])
+  return {
+    background: on.background ? picked.background : null,
+    slides: on.frame ? picked.slides : [],
+  }
+}
 
 export type SetHeroResult =
   { ok: true } | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' }
