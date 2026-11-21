@@ -41,6 +41,72 @@ function initialOf(name: string): string {
 
 const dash = <span className="text-muted-foreground">—</span>
 
+/**
+ * The 128px copy of their photo, or the first letter, in a circle.
+ * Decorative: the name is right beside it.
+ */
+function SmallAvatar({
+  row,
+  className,
+}: {
+  row: MemberRow
+  className: string
+}) {
+  return row.photoUrl ? (
+    <img
+      src={row.photoUrl}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      className={cn(
+        'shrink-0 rounded-full bg-secondary object-cover',
+        className,
+      )}
+    />
+  ) : (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'flex shrink-0 items-center justify-center rounded-full bg-secondary font-semibold text-zinc-600',
+        className,
+      )}
+    >
+      {initialOf(row.name)}
+    </span>
+  )
+}
+
+function RoleTag({ role }: { role: MemberRow['role'] }) {
+  const t = useT()
+  // Role is separate from status: shown only for the club's admins.
+  return role === 'member' ? null : (
+    <span className="rounded-[5px] border border-border bg-secondary px-1.5 py-px text-[11px] font-semibold whitespace-nowrap text-zinc-600">
+      {t(ROLE_KEY[role])}
+    </span>
+  )
+}
+
+function BloodTag({ group }: { group: NonNullable<MemberRow['bloodGroup']> }) {
+  return (
+    <span className="inline-flex min-w-[38px] justify-center rounded-[5px] border border-red-200 bg-red-50 px-[7px] py-0.5 text-xs font-semibold text-red-800">
+      {bloodLabel(group)}
+    </span>
+  )
+}
+
+function StatusText({ status }: { status: MemberStatus }) {
+  const t = useT()
+  return (
+    <span className="inline-flex items-center gap-1.5 text-[13px] text-zinc-700">
+      <span
+        aria-hidden="true"
+        className={cn('size-[7px] rounded-full', STATUS_DOT[status])}
+      />
+      {t(STATUS_LABEL_KEY[status])}
+    </span>
+  )
+}
+
 // Built inside the component, because the headings and the role badge need the
 // reader's language (t).
 function makeColumns(t: ReturnType<typeof useT>) {
@@ -49,26 +115,7 @@ function makeColumns(t: ReturnType<typeof useT>) {
       header: t('members.colMember'),
       cell: ({ getValue, row }) => (
         <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-          {/* The 128px copy of their photo, or the first letter. Decorative:
-            the name is right beside it. */}
-          {row.original.photoUrl ? (
-            <img
-              src={row.original.photoUrl}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              width={28}
-              height={28}
-              className="size-7 shrink-0 rounded-full bg-secondary object-cover"
-            />
-          ) : (
-            <span
-              aria-hidden="true"
-              className="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-zinc-600"
-            >
-              {initialOf(getValue())}
-            </span>
-          )}
+          <SmallAvatar row={row.original} className="size-7 text-xs" />
           {/* A real link: opens the detail drawer (?member=<id>), so it works with
             middle-click and "copy link address" too. */}
           <Link
@@ -80,12 +127,7 @@ function makeColumns(t: ReturnType<typeof useT>) {
           >
             {getValue()}
           </Link>
-          {/* Role is separate from status: shown only for the club's admins. */}
-          {row.original.role !== 'member' && (
-            <span className="rounded-[5px] border border-border bg-secondary px-1.5 py-px text-[11px] font-semibold text-zinc-600">
-              {t(ROLE_KEY[row.original.role])}
-            </span>
-          )}
+          <RoleTag role={row.original.role} />
         </span>
       ),
     }),
@@ -99,13 +141,7 @@ function makeColumns(t: ReturnType<typeof useT>) {
       header: t('members.colBlood'),
       cell: ({ getValue }) => {
         const group = getValue()
-        return group ? (
-          <span className="inline-flex min-w-[38px] justify-center rounded-[5px] border border-red-200 bg-red-50 px-[7px] py-0.5 text-xs font-semibold text-red-800">
-            {bloodLabel(group)}
-          </span>
-        ) : (
-          dash
-        )
+        return group ? <BloodTag group={group} /> : dash
       },
     }),
     helper.accessor('houseVillage', {
@@ -122,60 +158,94 @@ function makeColumns(t: ReturnType<typeof useT>) {
     }),
     helper.accessor('status', {
       header: t('a.status'),
-      cell: ({ getValue }) => (
-        <span className="inline-flex items-center gap-1.5 text-[13px] text-zinc-700">
-          <span
-            aria-hidden="true"
-            className={cn('size-[7px] rounded-full', STATUS_DOT[getValue()])}
-          />
-          {t(STATUS_LABEL_KEY[getValue()])}
-        </span>
-      ),
+      cell: ({ getValue }) => <StatusText status={getValue()} />,
     }),
   ])
 }
 
+/**
+ * The members list: a table from md up, a list of cards on a phone (the same
+ * as the activities list), so nothing has to be scrolled sideways.
+ */
 export function MembersTable({ rows }: { rows: MemberRow[] }) {
   const t = useT()
   const columns = useMemo(() => makeColumns(t), [t])
   const table = useTable({ features, columns, data: rows })
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[720px] border-collapse">
-        <caption className="sr-only">{t('members.caption')}</caption>
-        <thead>
-          {table.getHeaderGroups().map((group) => (
-            <tr key={group.id}>
-              {group.headers.map((header) => (
-                <th
-                  key={header.id}
-                  scope="col"
-                  className="border-b border-border bg-background px-3.5 py-[9px] text-start text-xs font-semibold whitespace-nowrap text-muted-foreground"
+    <>
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[720px] border-collapse">
+          <caption className="sr-only">{t('members.caption')}</caption>
+          <thead>
+            {table.getHeaderGroups().map((group) => (
+              <tr key={group.id}>
+                {group.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    scope="col"
+                    className="border-b border-border bg-background px-3.5 py-[9px] text-start text-xs font-semibold whitespace-nowrap text-muted-foreground"
+                  >
+                    {header.isPlaceholder ? null : (
+                      <table.FlexRender header={header} />
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="hover:bg-background">
+                {row.getAllCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className="border-b border-zinc-100 px-3.5 py-[11px] align-middle text-sm text-zinc-800"
+                  >
+                    <table.FlexRender cell={cell} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Phone: one card per member; the whole card opens the quick look. */}
+      <ul
+        aria-label={t('members.caption')}
+        className="divide-y divide-zinc-100 md:hidden"
+      >
+        {rows.map((row) => (
+          <li
+            key={row.id}
+            className="relative flex items-center gap-3 px-4 py-3 active:bg-background"
+          >
+            <SmallAvatar row={row} className="size-11 text-base" />
+            <div className="flex min-w-0 grow flex-col gap-0.5">
+              <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <Link
+                  from="/admin/members/"
+                  to="/admin/members"
+                  search={(prev) => ({ ...prev, member: row.id })}
+                  resetScroll={false}
+                  // Stretched over the whole card: one big tap target.
+                  className="font-medium text-foreground after:absolute after:inset-0"
                 >
-                  {header.isPlaceholder ? null : (
-                    <table.FlexRender header={header} />
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-background">
-              {row.getAllCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="border-b border-zinc-100 px-3.5 py-[11px] align-middle text-sm text-zinc-800"
-                >
-                  <table.FlexRender cell={cell} />
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                  {row.name}
+                </Link>
+                <RoleTag role={row.role} />
+              </span>
+              <span className="truncate text-[13px] text-muted-foreground">
+                <span className="tabular-nums">{row.phone}</span>
+                {row.houseVillage && ` · ${row.houseVillage}`}
+              </span>
+              <StatusText status={row.status} />
+            </div>
+            {row.bloodGroup && <BloodTag group={row.bloodGroup} />}
+          </li>
+        ))}
+      </ul>
+    </>
   )
 }
