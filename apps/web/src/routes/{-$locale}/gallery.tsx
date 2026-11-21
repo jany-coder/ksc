@@ -7,6 +7,7 @@ import {
   groupPhotos,
   publicGallerySearchSchema,
 } from '../../lib/gallery-filter.ts'
+import type { PublicGalleryPhoto } from '../../lib/gallery-filter.ts'
 import { listPublicGalleryFn } from '../../lib/images.functions.ts'
 import { imageUrl } from '../../lib/image-limits.ts'
 import {
@@ -45,9 +46,39 @@ const iconButton =
 const yearLink =
   'inline-flex min-h-11 items-center rounded-full border px-5 text-[17px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
 
+// Keyed by year: switching year starts again from the first page.
 function GalleryPage() {
-  const { photos: images, years } = Route.useLoaderData()
   const { year } = Route.useSearch()
+  return <GalleryBody key={year ?? 'all'} />
+}
+
+function GalleryBody() {
+  const first = Route.useLoaderData()
+  const { year } = Route.useSearch()
+  const years = first.years
+  // Photos fetched by "Show more", after the first page from the loader.
+  const [more, setMore] = useState<PublicGalleryPhoto[]>([])
+  const [hasMore, setHasMore] = useState(first.hasMore)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [moreError, setMoreError] = useState(false)
+  const images = [...first.photos, ...more]
+
+  async function showMore() {
+    setLoadingMore(true)
+    setMoreError(false)
+    try {
+      const page = await listPublicGalleryFn({
+        data: { year, offset: images.length },
+      })
+      setMore((list) => [...list, ...page.photos])
+      setHasMore(page.hasMore)
+    } catch {
+      setMoreError(true)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
   const t = useT()
   const lang = useLang()
   const number = useNumber()
@@ -96,49 +127,68 @@ function GalleryPage() {
       )}
 
       {groups.length > 0 ? (
-        <div className="flex flex-col gap-12">
-          {groups.map((group) => (
-            <section key={group.key} aria-labelledby={`group-${group.key}`}>
-              <h2
-                id={`group-${group.key}`}
-                className="mb-1 text-[22px] font-bold text-brand-deep md:text-[28px]"
+        <>
+          <div className="flex flex-col gap-12">
+            {groups.map((group) => (
+              <section key={group.key} aria-labelledby={`group-${group.key}`}>
+                <h2
+                  id={`group-${group.key}`}
+                  className="mb-1 text-[22px] font-bold text-brand-deep md:text-[28px]"
+                >
+                  {group.title ?? t('gallery.otherPhotos')}
+                </h2>
+                {group.date && (
+                  <p className="mb-4 text-[17px] text-copy">
+                    {formatDate(group.date, lang)}
+                  </p>
+                )}
+                <ul
+                  className={`m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(240px,100%),1fr))] gap-4 p-0 ${group.date ? '' : 'mt-4'}`}
+                >
+                  {group.photos.map(({ photo: image, index }) => (
+                    <li key={image.id}>
+                      {/* A real button: keyboard and screen-reader users can open it. */}
+                      <button
+                        type="button"
+                        onClick={() => setOpen(index)}
+                        aria-label={t('gallery.openPhoto', {
+                          n: number(index + 1),
+                        })}
+                        className="zoom block w-full cursor-zoom-in overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      >
+                        <img
+                          src={imageUrl(image.id, 'thumb')}
+                          width={image.width}
+                          height={image.height}
+                          loading="lazy"
+                          alt={image.caption ?? ''}
+                          className="aspect-[4/3] w-full object-cover"
+                        />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+          {hasMore && (
+            <div className="mt-10 flex flex-col items-center gap-3">
+              <button
+                type="button"
+                disabled={loadingMore}
+                onClick={() => void showMore()}
+                className="inline-flex min-h-12 items-center rounded-full bg-brand-deep px-7 text-[17px] font-semibold text-background hover:bg-brand-deep/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60"
               >
-                {group.title ?? t('gallery.otherPhotos')}
-              </h2>
-              {group.date && (
-                <p className="mb-4 text-[17px] text-copy">
-                  {formatDate(group.date, lang)}
+                {loadingMore ? t('gallery.loadingMore') : t('gallery.showMore')}
+              </button>
+              {moreError && (
+                <p role="alert" className="text-[17px] text-copy">
+                  {t('gallery.moreError')}
                 </p>
               )}
-              <ul
-                className={`m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(240px,100%),1fr))] gap-4 p-0 ${group.date ? '' : 'mt-4'}`}
-              >
-                {group.photos.map(({ photo: image, index }) => (
-                  <li key={image.id}>
-                    {/* A real button: keyboard and screen-reader users can open it. */}
-                    <button
-                      type="button"
-                      onClick={() => setOpen(index)}
-                      aria-label={t('gallery.openPhoto', {
-                        n: number(index + 1),
-                      })}
-                      className="zoom block w-full cursor-zoom-in overflow-hidden rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                    >
-                      <img
-                        src={imageUrl(image.id, 'thumb')}
-                        width={image.width}
-                        height={image.height}
-                        loading="lazy"
-                        alt={image.caption ?? ''}
-                        className="aspect-[4/3] w-full object-cover"
-                      />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+            </div>
+          )}
+        </>
       ) : (
         <p className="text-[17px] text-copy">
           {year === undefined ? t('gallery.empty') : t('gallery.emptyYear')}

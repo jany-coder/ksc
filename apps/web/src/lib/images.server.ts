@@ -123,6 +123,10 @@ export type ActivityOption = {
 
 export type GalleryAdminData = {
   images: AdminGalleryImage[]
+  // True when there are more photos after this page.
+  hasMore: boolean
+  // How many photos match the filter in all, across every page.
+  total: number
   activities: ActivityOption[]
   // Counted over every photo, not just the filtered ones on screen.
   homeCount: number
@@ -215,22 +219,36 @@ function filterConditions(filter: GalleryFilter): SQL[] {
 
 async function listAdminImages(
   filter: GalleryFilter,
-  limit = 200,
+  limit: number,
+  offset: number,
 ): Promise<AdminGalleryImage[]> {
-  return db
-    .select({
-      id: images.id,
-      width: images.width,
-      height: images.height,
-      caption: images.caption,
-      onHome: images.onHome,
-      activityId: images.activityId,
-    })
+  return (
+    db
+      .select({
+        id: images.id,
+        width: images.width,
+        height: images.height,
+        caption: images.caption,
+        onHome: images.onHome,
+        activityId: images.activityId,
+      })
+      .from(images)
+      .leftJoin(activities, eq(images.activityId, activities.id))
+      .where(and(...filterConditions(filter)))
+      // id breaks ties, so pages never overlap or skip a photo.
+      .orderBy(desc(images.uploadedAt), desc(images.id))
+      .limit(limit)
+      .offset(offset)
+  )
+}
+
+async function countAdminImages(filter: GalleryFilter): Promise<number> {
+  const [row] = await db
+    .select({ n: sql<number>`count(*)::int` })
     .from(images)
     .leftJoin(activities, eq(images.activityId, activities.id))
     .where(and(...filterConditions(filter)))
-    .orderBy(desc(images.uploadedAt))
-    .limit(limit)
+  return row?.n ?? 0
 }
 
 async function countHomeImages(): Promise<number> {
@@ -241,17 +259,24 @@ async function countHomeImages(): Promise<number> {
   return row?.n ?? 0
 }
 
+export const ADMIN_GALLERY_PAGE = 100
+
 export async function galleryAdminData(
   filter: GalleryFilter,
+  offset: number,
 ): Promise<GalleryAdminData> {
-  const [list, activityRows, homeCount, used] = await Promise.all([
-    listAdminImages(filter),
+  const [list, total, activityRows, homeCount, used] = await Promise.all([
+    // One extra row tells whether another page exists.
+    listAdminImages(filter, ADMIN_GALLERY_PAGE + 1, offset),
+    countAdminImages(filter),
     listActivities(),
     countHomeImages(),
     usedBytes(),
   ])
   return {
-    images: list,
+    images: list.slice(0, ADMIN_GALLERY_PAGE),
+    hasMore: list.length > ADMIN_GALLERY_PAGE,
+    total,
     activities: activityRows.map(({ id, title, eventDate }) => ({
       id,
       title,

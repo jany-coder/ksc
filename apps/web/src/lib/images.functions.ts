@@ -20,10 +20,10 @@ import {
 import { requirePermission } from './session.server.ts'
 
 export const galleryAdminDataFn = createServerFn({ method: 'GET' })
-  .validator(galleryFilterSchema)
-  .handler(async ({ data }) => {
+  .validator(galleryFilterSchema.extend({ offset: z.number().int().min(0) }))
+  .handler(async ({ data: { offset, ...filter } }) => {
     await requirePermission('content.write')
-    return galleryAdminData(data)
+    return galleryAdminData(filter, offset)
   })
 
 export const deleteImageFn = createServerFn({ method: 'POST' })

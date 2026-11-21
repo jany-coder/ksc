@@ -178,6 +178,12 @@ export const publicMessages = {
     bn: 'এই বছরের কোনো ছবি এখনো যোগ হয়নি।',
     en: 'No photos from this year have been added yet.',
   },
+  'gallery.showMore': { bn: 'আরো ছবি দেখুন', en: 'Show more photos' },
+  'gallery.loadingMore': { bn: 'আনা হচ্ছে…', en: 'Loading…' },
+  'gallery.moreError': {
+    bn: 'আরো ছবি আনা গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not load more photos. Please try again.',
+  },
   'gallery.bigPhoto': { bn: 'বড় ছবি', en: 'Large photo' },
   'gallery.close': { bn: 'বন্ধ করুন', en: 'Close' },
   'gallery.prev': { bn: 'আগের ছবি', en: 'Previous photo' },

@@ -593,6 +593,8 @@ export const adminMessages = {
   },
   'gal.bulkMoveTo': { bn: 'যে অনুষ্ঠানে সরাবেন', en: 'Move to activity' },
   'gal.bulkMove': { bn: 'সরান', en: 'Move' },
+  'gal.showMore': { bn: 'আরো দেখুন', en: 'Show more' },
+  'gal.loadingMore': { bn: 'আনা হচ্ছে…', en: 'Loading…' },
   'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
   'gal.homeCount': {
     bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',

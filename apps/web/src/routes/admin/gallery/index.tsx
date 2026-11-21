@@ -1,8 +1,8 @@
 import {
-  queryOptions,
+  infiniteQueryOptions,
   useMutation,
   useQueryClient,
-  useSuspenseQuery,
+  useSuspenseInfiniteQuery,
 } from '@tanstack/react-query'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { Trash2, Upload } from 'lucide-react'
@@ -49,9 +49,17 @@ import { cn } from '../../../lib/utils.ts'
 // The filter is part of the cache key, so each filtered view is cached on its
 // own, and ['images'] still clears them all after a change.
 const galleryQuery = (filter: GalleryFilter) =>
-  queryOptions({
+  infiniteQueryOptions({
     queryKey: ['images', 'admin', filter],
-    queryFn: () => galleryAdminDataFn({ data: filter }),
+    // An "infinite" query keeps a list of pages; "Show more" fetches the next.
+    // pageParam is the offset: how many photos are already on screen.
+    queryFn: ({ pageParam }) =>
+      galleryAdminDataFn({ data: { ...filter, offset: pageParam } }),
+    initialPageParam: 0,
+    getNextPageParam: (last, pages) =>
+      last.hasMore
+        ? pages.reduce((n, page) => n + page.images.length, 0)
+        : undefined,
   })
 
 export const Route = createFileRoute('/admin/gallery/')({
@@ -68,7 +76,7 @@ export const Route = createFileRoute('/admin/gallery/')({
   validateSearch: galleryFilterSchema,
   loaderDeps: ({ search }) => search,
   loader: ({ context, deps }) =>
-    context.queryClient.ensureQueryData(galleryQuery(deps)),
+    context.queryClient.ensureInfiniteQueryData(galleryQuery(deps)),
   errorComponent: GalleryError,
   component: GalleryPage,
 })
@@ -133,7 +141,14 @@ function GalleryPage() {
   const number = useNumber()
   const filter = Route.useSearch()
   const navigate = useNavigate({ from: Route.fullPath })
-  const { data } = useSuspenseQuery(galleryQuery(filter))
+  const gallery = useSuspenseInfiniteQuery(galleryQuery(filter))
+  // Storage, counts and activities come with every page; read them from the
+  // first. The photos are every loaded page joined together.
+  const first = gallery.data.pages[0]!
+  const data = {
+    ...first,
+    images: gallery.data.pages.flatMap((page) => page.images),
+  }
   const queryClient = useQueryClient()
   const input = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState<UploadItem[]>([])
@@ -378,7 +393,7 @@ function GalleryPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm text-muted-foreground">
         <p role="status">
-          {t('gal.resultCount', { n: number(data.images.length) })}{' '}
+          {t('gal.resultCount', { n: number(data.total) })}{' '}
           {t('gal.homeCount', {
             n: number(homeCount),
             max: number(HOME_PHOTO_COUNT),
@@ -448,87 +463,105 @@ function GalleryPage() {
       )}
 
       {data.images.length > 0 ? (
-        <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3 p-0">
-          {data.images.map((image) => (
-            <li
-              key={image.id}
-              className="relative overflow-hidden rounded-[10px] border border-border bg-card"
-            >
-              <img
-                src={imageUrl(image.id, 'thumb')}
-                width={image.width}
-                height={image.height}
-                loading="lazy"
-                alt={t('gal.photoAlt')}
-                className="aspect-square w-full object-cover"
-              />
-              {/* Tick for a bulk move. The label is for screen readers; the
+        <>
+          <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3 p-0">
+            {data.images.map((image) => (
+              <li
+                key={image.id}
+                className="relative overflow-hidden rounded-[10px] border border-border bg-card"
+              >
+                <img
+                  src={imageUrl(image.id, 'thumb')}
+                  width={image.width}
+                  height={image.height}
+                  loading="lazy"
+                  alt={t('gal.photoAlt')}
+                  className="aspect-square w-full object-cover"
+                />
+                {/* Tick for a bulk move. The label is for screen readers; the
                   box sits on the photo's corner. */}
-              <label className="absolute start-2 top-2 flex size-8 items-center justify-center rounded-md bg-card/90">
-                <input
-                  type="checkbox"
-                  checked={selected.has(image.id)}
-                  onChange={(event) =>
-                    toggleSelected(image.id, event.target.checked)
-                  }
-                  className="size-4 accent-primary"
+                <label className="absolute start-2 top-2 flex size-8 items-center justify-center rounded-md bg-card/90">
+                  <input
+                    type="checkbox"
+                    checked={selected.has(image.id)}
+                    onChange={(event) =>
+                      toggleSelected(image.id, event.target.checked)
+                    }
+                    className="size-4 accent-primary"
+                  />
+                  <span className="sr-only">{t('gal.selectPhoto')}</span>
+                </label>
+                <CaptionField
+                  id={image.id}
+                  initial={image.caption ?? ''}
+                  onError={() => setDeleteError(t('gal.captionError'))}
                 />
-                <span className="sr-only">{t('gal.selectPhoto')}</span>
-              </label>
-              <CaptionField
-                id={image.id}
-                initial={image.caption ?? ''}
-                onError={() => setDeleteError(t('gal.captionError'))}
-              />
-              <div className="px-2 pb-2">
-                <NativeSelect
-                  aria-label={t('gal.photoActivity')}
-                  value={image.activityId ?? ''}
-                  disabled={moveToActivity.isPending}
-                  onChange={(event) =>
-                    moveToActivity.mutate({
-                      ids: [image.id],
-                      activityId: event.target.value || null,
-                    })
-                  }
-                  className="h-8 text-[13px] md:text-[13px]"
+                <div className="px-2 pb-2">
+                  <NativeSelect
+                    aria-label={t('gal.photoActivity')}
+                    value={image.activityId ?? ''}
+                    disabled={moveToActivity.isPending}
+                    onChange={(event) =>
+                      moveToActivity.mutate({
+                        ids: [image.id],
+                        activityId: event.target.value || null,
+                      })
+                    }
+                    className="h-8 text-[13px] md:text-[13px]"
+                  >
+                    <ActivityOptions activities={data.activities} />
+                  </NativeSelect>
+                </div>
+                <label className="flex min-h-9 items-center gap-2 px-2 pb-2 text-[13px]">
+                  <input
+                    type="checkbox"
+                    checked={image.onHome}
+                    // A seventh pick is refused: unpick one first.
+                    disabled={
+                      toggleHome.isPending || (homeFull && !image.onHome)
+                    }
+                    onChange={(event) =>
+                      toggleHome.mutate({
+                        id: image.id,
+                        onHome: event.target.checked,
+                      })
+                    }
+                    className="size-4 accent-primary"
+                  />
+                  {t('gal.onHome')}
+                </label>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon-sm"
+                  className="absolute end-2 top-2"
+                  aria-label={t('gal.deleteAria')}
+                  disabled={remove.isPending}
+                  onClick={() => {
+                    if (window.confirm(t('gal.deleteConfirm')))
+                      remove.mutate(image.id)
+                  }}
                 >
-                  <ActivityOptions activities={data.activities} />
-                </NativeSelect>
-              </div>
-              <label className="flex min-h-9 items-center gap-2 px-2 pb-2 text-[13px]">
-                <input
-                  type="checkbox"
-                  checked={image.onHome}
-                  // A seventh pick is refused: unpick one first.
-                  disabled={toggleHome.isPending || (homeFull && !image.onHome)}
-                  onChange={(event) =>
-                    toggleHome.mutate({
-                      id: image.id,
-                      onHome: event.target.checked,
-                    })
-                  }
-                  className="size-4 accent-primary"
-                />
-                {t('gal.onHome')}
-              </label>
+                  <Trash2 aria-hidden="true" />
+                </Button>
+              </li>
+            ))}
+          </ul>
+          {gallery.hasNextPage && (
+            <div className="flex justify-center">
               <Button
                 type="button"
-                variant="destructive"
-                size="icon-sm"
-                className="absolute end-2 top-2"
-                aria-label={t('gal.deleteAria')}
-                disabled={remove.isPending}
-                onClick={() => {
-                  if (window.confirm(t('gal.deleteConfirm')))
-                    remove.mutate(image.id)
-                }}
+                variant="outline"
+                disabled={gallery.isFetchingNextPage}
+                onClick={() => void gallery.fetchNextPage()}
               >
-                <Trash2 aria-hidden="true" />
+                {gallery.isFetchingNextPage
+                  ? t('gal.loadingMore')
+                  : t('gal.showMore')}
               </Button>
-            </li>
-          ))}
-        </ul>
+            </div>
+          )}
+        </>
       ) : (
         <p className="rounded-[10px] border border-border bg-card px-4 py-10 text-center text-muted-foreground">
           {anyFilter ? t('gal.emptyFiltered') : t('gal.empty')}
