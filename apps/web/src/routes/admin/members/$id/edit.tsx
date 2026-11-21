@@ -9,29 +9,29 @@ import {
 } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 
-import { ChangePhoneForm } from '../../../components/admin/change-phone-form.tsx'
-import { MemberEditForm } from '../../../components/admin/member-edit-form.tsx'
-import { MemberPhotoEditor } from '../../../components/admin/member-photo.tsx'
-import { langOfMatches } from '../../../lib/i18n/core.ts'
-import type { HeadArgs } from '../../../lib/i18n/core.ts'
-import { useLang, useT } from '../../../lib/i18n/index.tsx'
-import { formatDate } from '../../../lib/datetime.ts'
-import type { MemberStatus } from '../../../lib/member-options.ts'
-import type { Role } from '../../../lib/permissions.ts'
+import { ChangePhoneForm } from '../../../../components/admin/change-phone-form.tsx'
+import { MemberEditForm } from '../../../../components/admin/member-edit-form.tsx'
+import { MemberPhotoEditor } from '../../../../components/admin/member-photo.tsx'
+import { langOfMatches } from '../../../../lib/i18n/core.ts'
+import type { HeadArgs } from '../../../../lib/i18n/core.ts'
+import { useLang, useT } from '../../../../lib/i18n/index.tsx'
+import { formatDate } from '../../../../lib/datetime.ts'
+import type { MemberStatus } from '../../../../lib/member-options.ts'
+import type { Role } from '../../../../lib/permissions.ts'
 import {
   RoleBadge,
   StatusBadge,
-} from '../../../components/admin/member-status.tsx'
-import { tFor } from '../../../lib/i18n/messages.ts'
-import { memberToEditValues } from '../../../lib/member-form.ts'
+} from '../../../../components/admin/member-status.tsx'
+import { tFor } from '../../../../lib/i18n/messages.ts'
+import { memberToEditValues } from '../../../../lib/member-form.ts'
 import {
   changeMemberPhoneFn,
   getMemberFn,
   updateMemberFn,
-} from '../../../lib/members.functions.ts'
-import { can } from '../../../lib/permissions.ts'
+} from '../../../../lib/members.functions.ts'
+import { can } from '../../../../lib/permissions.ts'
 
-export const Route = createFileRoute('/admin/members/$id')({
+export const Route = createFileRoute('/admin/members/$id/edit')({
   head: ({ matches }: HeadArgs) => ({
     meta: [{ title: tFor(langOfMatches(matches))('memberEdit.pageTitle') }],
   }),
@@ -73,12 +73,12 @@ function EditMemberPage() {
   return (
     <main className="px-4 py-6 md:p-6">
       <Link
-        to="/admin/members"
-        search={{ member: id }}
-        className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        to="/admin/members/$id"
+        params={{ id }}
+        className="mb-3 inline-flex min-h-8 items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
-        {t('memberNew.back')}
+        {t('memberEdit.backToProfile')}
       </Link>
       <h1 className="text-2xl font-semibold">{t('memberEdit.title')}</h1>
       <p className="mt-0.5 max-w-3xl text-sm text-muted-foreground">
@@ -116,8 +116,8 @@ function EditMemberPage() {
                       : t('a.invalidForm'),
                 }
               await queryClient.invalidateQueries({ queryKey: ['members'] })
-              // Back to the list with this member's drawer open, to see the result.
-              await navigate({ to: '/admin/members', search: { member: id } })
+              // Back to the profile, to see the result.
+              await navigate({ to: '/admin/members/$id', params: { id } })
               return { ok: true }
             }}
           />

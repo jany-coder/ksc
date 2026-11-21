@@ -24,7 +24,6 @@ import { Route as AdminActivitiesIdRouteImport } from './routes/admin/activities
 import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activities/new'
 import { Route as AdminGalleryIndexRouteImport } from './routes/admin/gallery/index'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
-import { Route as AdminMembersIdRouteImport } from './routes/admin/members/$id'
 import { Route as AdminMembersArchivedRouteImport } from './routes/admin/members/archived'
 import { Route as AdminMembersNewRouteImport } from './routes/admin/members/new'
 import { Route as AdminNoticesIndexRouteImport } from './routes/admin/notices/index'
@@ -34,6 +33,8 @@ import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiMemberPhotoIdRouteImport } from './routes/api/member-photo/$id'
 import { Route as Char123LocaleChar125ActivitiesIndexRouteImport } from './routes/{-$locale}/activities/index'
 import { Route as Char123LocaleChar125ActivitiesSlugRouteImport } from './routes/{-$locale}/activities/$slug'
+import { Route as AdminMembersIdIndexRouteImport } from './routes/admin/members/$id/index'
+import { Route as AdminMembersIdEditRouteImport } from './routes/admin/members/$id/edit'
 import { Route as ApiMediaIdSizeRouteImport } from './routes/api/media/$id.$size'
 
 const AdminRouteRoute = AdminRouteRouteImport.update({
@@ -115,11 +116,6 @@ const AdminMembersIndexRoute = AdminMembersIndexRouteImport.update({
   path: '/members/',
   getParentRoute: () => AdminRouteRoute,
 } as any)
-const AdminMembersIdRoute = AdminMembersIdRouteImport.update({
-  id: '/members/$id',
-  path: '/members/$id',
-  getParentRoute: () => AdminRouteRoute,
-} as any)
 const AdminMembersArchivedRoute = AdminMembersArchivedRouteImport.update({
   id: '/members/archived',
   path: '/members/archived',
@@ -167,6 +163,16 @@ const Char123LocaleChar125ActivitiesSlugRoute =
     path: '/activities/$slug',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const AdminMembersIdIndexRoute = AdminMembersIdIndexRouteImport.update({
+  id: '/members/$id/',
+  path: '/members/$id/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminMembersIdEditRoute = AdminMembersIdEditRouteImport.update({
+  id: '/members/$id/edit',
+  path: '/members/$id/edit',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
 const ApiMediaIdSizeRoute = ApiMediaIdSizeRouteImport.update({
   id: '/api/media/$id/$size',
   path: '/api/media/$id/$size',
@@ -186,7 +192,6 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
-  '/admin/members/$id': typeof AdminMembersIdRoute
   '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/$id': typeof AdminNoticesIdRoute
@@ -199,7 +204,9 @@ export interface FileRoutesByFullPath {
   '/admin/members/': typeof AdminMembersIndexRoute
   '/admin/notices/': typeof AdminNoticesIndexRoute
   '/{-$locale}/activities/': typeof Char123LocaleChar125ActivitiesIndexRoute
+  '/admin/members/$id/edit': typeof AdminMembersIdEditRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
+  '/admin/members/$id/': typeof AdminMembersIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/change-password': typeof ChangePasswordRoute
@@ -212,7 +219,6 @@ export interface FileRoutesByTo {
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
-  '/admin/members/$id': typeof AdminMembersIdRoute
   '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/$id': typeof AdminNoticesIdRoute
@@ -225,7 +231,9 @@ export interface FileRoutesByTo {
   '/admin/members': typeof AdminMembersIndexRoute
   '/admin/notices': typeof AdminNoticesIndexRoute
   '/{-$locale}/activities': typeof Char123LocaleChar125ActivitiesIndexRoute
+  '/admin/members/$id/edit': typeof AdminMembersIdEditRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
+  '/admin/members/$id': typeof AdminMembersIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -241,7 +249,6 @@ export interface FileRoutesById {
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
-  '/admin/members/$id': typeof AdminMembersIdRoute
   '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
   '/admin/notices/$id': typeof AdminNoticesIdRoute
@@ -254,7 +261,9 @@ export interface FileRoutesById {
   '/admin/members/': typeof AdminMembersIndexRoute
   '/admin/notices/': typeof AdminNoticesIndexRoute
   '/{-$locale}/activities/': typeof Char123LocaleChar125ActivitiesIndexRoute
+  '/admin/members/$id/edit': typeof AdminMembersIdEditRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
+  '/admin/members/$id/': typeof AdminMembersIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -271,7 +280,6 @@ export interface FileRouteTypes {
     | '/{-$locale}/'
     | '/admin/activities/$id'
     | '/admin/activities/new'
-    | '/admin/members/$id'
     | '/admin/members/archived'
     | '/admin/members/new'
     | '/admin/notices/$id'
@@ -284,7 +292,9 @@ export interface FileRouteTypes {
     | '/admin/members/'
     | '/admin/notices/'
     | '/{-$locale}/activities/'
+    | '/admin/members/$id/edit'
     | '/api/media/$id/$size'
+    | '/admin/members/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/change-password'
@@ -297,7 +307,6 @@ export interface FileRouteTypes {
     | '/{-$locale}'
     | '/admin/activities/$id'
     | '/admin/activities/new'
-    | '/admin/members/$id'
     | '/admin/members/archived'
     | '/admin/members/new'
     | '/admin/notices/$id'
@@ -310,7 +319,9 @@ export interface FileRouteTypes {
     | '/admin/members'
     | '/admin/notices'
     | '/{-$locale}/activities'
+    | '/admin/members/$id/edit'
     | '/api/media/$id/$size'
+    | '/admin/members/$id'
   id:
     | '__root__'
     | '/admin'
@@ -325,7 +336,6 @@ export interface FileRouteTypes {
     | '/{-$locale}/'
     | '/admin/activities/$id'
     | '/admin/activities/new'
-    | '/admin/members/$id'
     | '/admin/members/archived'
     | '/admin/members/new'
     | '/admin/notices/$id'
@@ -338,7 +348,9 @@ export interface FileRouteTypes {
     | '/admin/members/'
     | '/admin/notices/'
     | '/{-$locale}/activities/'
+    | '/admin/members/$id/edit'
     | '/api/media/$id/$size'
+    | '/admin/members/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -460,13 +472,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMembersIndexRouteImport
       parentRoute: typeof AdminRouteRoute
     }
-    '/admin/members/$id': {
-      id: '/admin/members/$id'
-      path: '/members/$id'
-      fullPath: '/admin/members/$id'
-      preLoaderRoute: typeof AdminMembersIdRouteImport
-      parentRoute: typeof AdminRouteRoute
-    }
     '/admin/members/archived': {
       id: '/admin/members/archived'
       path: '/members/archived'
@@ -530,6 +535,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125ActivitiesSlugRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/admin/members/$id/': {
+      id: '/admin/members/$id/'
+      path: '/members/$id'
+      fullPath: '/admin/members/$id/'
+      preLoaderRoute: typeof AdminMembersIdIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/members/$id/edit': {
+      id: '/admin/members/$id/edit'
+      path: '/members/$id/edit'
+      fullPath: '/admin/members/$id/edit'
+      preLoaderRoute: typeof AdminMembersIdEditRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/api/media/$id/$size': {
       id: '/api/media/$id/$size'
       path: '/api/media/$id/$size'
@@ -544,7 +563,6 @@ interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminActivitiesIdRoute: typeof AdminActivitiesIdRoute
   AdminActivitiesNewRoute: typeof AdminActivitiesNewRoute
-  AdminMembersIdRoute: typeof AdminMembersIdRoute
   AdminMembersArchivedRoute: typeof AdminMembersArchivedRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
   AdminNoticesIdRoute: typeof AdminNoticesIdRoute
@@ -553,13 +571,14 @@ interface AdminRouteRouteChildren {
   AdminGalleryIndexRoute: typeof AdminGalleryIndexRoute
   AdminMembersIndexRoute: typeof AdminMembersIndexRoute
   AdminNoticesIndexRoute: typeof AdminNoticesIndexRoute
+  AdminMembersIdEditRoute: typeof AdminMembersIdEditRoute
+  AdminMembersIdIndexRoute: typeof AdminMembersIdIndexRoute
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminActivitiesIdRoute: AdminActivitiesIdRoute,
   AdminActivitiesNewRoute: AdminActivitiesNewRoute,
-  AdminMembersIdRoute: AdminMembersIdRoute,
   AdminMembersArchivedRoute: AdminMembersArchivedRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,
   AdminNoticesIdRoute: AdminNoticesIdRoute,
@@ -568,6 +587,8 @@ const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminGalleryIndexRoute: AdminGalleryIndexRoute,
   AdminMembersIndexRoute: AdminMembersIndexRoute,
   AdminNoticesIndexRoute: AdminNoticesIndexRoute,
+  AdminMembersIdEditRoute: AdminMembersIdEditRoute,
+  AdminMembersIdIndexRoute: AdminMembersIdIndexRoute,
 }
 
 const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(

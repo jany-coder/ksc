@@ -159,8 +159,18 @@ export const adminMessages = {
   },
   'drawer.mobile': { bn: 'মোবাইল', en: 'Mobile' },
   'memberEdit.statusHint': {
-    bn: 'অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্য তালিকা থেকে বিস্তারিত খুলুন।',
-    en: "To change the status or reset a password, open the member's details from the list.",
+    bn: 'অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্যের প্রোফাইলের "পরিচালনা" অংশ ব্যবহার করুন।',
+    en: "To change the status or reset a password, use Manage on the member's profile.",
+  },
+  'drawer.fullProfile': { bn: 'পুরো প্রোফাইল দেখুন', en: 'View full profile' },
+  'memberProfile.pageTitle': {
+    bn: 'সদস্যের প্রোফাইল — কলমা সোশ্যাল ক্লাব',
+    en: 'Member profile — Kalma Social Club',
+  },
+  'memberProfile.back': { bn: 'সদস্য তালিকা', en: 'Members list' },
+  'memberProfile.notFound': {
+    bn: 'এই সদস্যকে পাওয়া যায়নি। হয়তো মুছে ফেলা হয়েছে।',
+    en: 'This member was not found. They may have been deleted.',
   },
   'drawer.call': { bn: 'কল করুন', en: 'Call' },
   'drawer.copy': { bn: 'কপি', en: 'Copy' },
@@ -312,9 +322,10 @@ export const adminMessages = {
   },
   'memberEdit.title': { bn: 'সদস্য সম্পাদনা', en: 'Edit member' },
   'memberEdit.lead': {
-    bn: 'নাম, যোগাযোগ ও রক্তদানের তথ্য বদলানো যায়। অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্যের তথ্যের ড্রয়ার ব্যবহার করুন।',
-    en: "You can change the name, contact and blood donation details. To change the status or reset a password, use the member's details drawer.",
+    bn: 'নাম, ব্যক্তিগত তথ্য, যোগাযোগ আর রক্তদানের তথ্য বদলাতে পারবেন। অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্যের প্রোফাইল দেখুন।',
+    en: "You can change the name, personal, contact and blood donation details. To change the status or reset a password, use the member's profile.",
   },
+  'memberEdit.backToProfile': { bn: 'প্রোফাইলে ফিরুন', en: 'Back to profile' },
   'memberEdit.phoneLabel': { bn: 'মোবাইল নম্বর', en: 'Mobile number' },
   'memberEdit.phoneLocked': {
     bn: 'এই নম্বরটাই সদস্যের পরিচয় (অ্যাডমিন হলে লগইনের নামও), তাই এটি বদলানো যায় না।',
