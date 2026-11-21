@@ -13,7 +13,11 @@
     {
       // The name used in code: env.IMAGES (see src/lib/r2.server.ts).
       "binding": "IMAGES",
-      "bucket_name": "ksc-images"
+      "bucket_name": "ksc-images",
+      // Local dev reads and writes the real bucket, not a simulated one, so the
+      // photos the database points to show up locally. Careful: an upload or
+      // delete made locally changes the live site's photos.
+      "remote": true
     }
   ]
 }
