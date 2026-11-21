@@ -199,13 +199,13 @@
 
   /* Extra public-site colours from the design canvas. */
   --ink: #121a17; /* headings and strong text */
-  --copy: #4b5c54; /* body paragraphs */
-  --subtle: #5c6b64; /* dates, captions */
+  --copy: #3d4c45; /* body paragraphs */
+  --subtle: #4e5d56; /* dates, captions */
   --panel: #f2f5f2; /* alternating section background */
   --line: #e2e7e3; /* card and divider borders */
   --mint: #8fc9ac; /* accent text on dark green */
-  --mint-soft: #d5e5dc; /* body text on dark green */
-  --mint-muted: #a7c9b6; /* captions on dark green */
+  --mint-soft: #e1ede6; /* body text on dark green */
+  --mint-muted: #b5d4c3; /* captions on dark green */
   --mint-line: #2a5543; /* borders on dark green */
   --footer: #121a17; /* footer background */
 }
@@ -289,9 +289,13 @@
     /* Never tighten Bengali: negative spacing pulls the joined letters apart. */
     letter-spacing: 0;
   }
-  /* Older readers: body text 17-19px on the public site. */
+  /* Older readers: body text 17-19px on the public site, in Hind Siliguri's
+     medium weight. Its regular weight has thin strokes that look faint at
+     reading size; medium is already loaded, so this costs nothing. Anything
+     that sets its own weight (headings, buttons) keeps it. */
   .theme-public {
     font-size: 18px;
+    font-weight: 500;
     line-height: 1.7;
   }
 }
