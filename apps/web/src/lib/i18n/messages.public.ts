@@ -171,6 +171,13 @@ export const publicMessages = {
     bn: 'এখনো কোনো ছবি যোগ হয়নি।',
     en: 'No photos have been added yet.',
   },
+  'gallery.years': { bn: 'বছর অনুযায়ী ছবি', en: 'Photos by year' },
+  'gallery.allYears': { bn: 'সব', en: 'All' },
+  'gallery.otherPhotos': { bn: 'অন্যান্য ছবি', en: 'Other photos' },
+  'gallery.emptyYear': {
+    bn: 'এই বছরের কোনো ছবি এখনো যোগ হয়নি।',
+    en: 'No photos from this year have been added yet.',
+  },
   'gallery.bigPhoto': { bn: 'বড় ছবি', en: 'Large photo' },
   'gallery.close': { bn: 'বন্ধ করুন', en: 'Close' },
   'gallery.prev': { bn: 'আগের ছবি', en: 'Previous photo' },

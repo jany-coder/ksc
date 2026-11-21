@@ -7,11 +7,16 @@ import {
   galleryAdminData,
   listHomeImages,
   listImages,
+  listPublicGallery,
+  publicGalleryYears,
   setImageCaption,
   setImageOnHome,
   setImagesActivity,
 } from './images.server.ts'
-import { galleryFilterSchema } from './gallery-filter.ts'
+import {
+  galleryFilterSchema,
+  publicGallerySearchSchema,
+} from './gallery-filter.ts'
 import { requirePermission } from './session.server.ts'
 
 export const galleryAdminDataFn = createServerFn({ method: 'GET' })
@@ -68,3 +73,23 @@ export const listPublicImagesFn = createServerFn({ method: 'GET' })
 export const listHomeImagesFn = createServerFn({ method: 'GET' }).handler(() =>
   listHomeImages(),
 )
+
+export const PUBLIC_GALLERY_PAGE = 60
+
+// Public: no permission check. Returns photos with their activity's title and
+// date only when that activity is published (see listPublicGallery).
+export const listPublicGalleryFn = createServerFn({ method: 'GET' })
+  .validator(
+    publicGallerySearchSchema.extend({ offset: z.number().int().min(0) }),
+  )
+  .handler(async ({ data }) => {
+    const [page, years] = await Promise.all([
+      listPublicGallery({
+        year: data.year,
+        limit: PUBLIC_GALLERY_PAGE,
+        offset: data.offset,
+      }),
+      publicGalleryYears(),
+    ])
+    return { ...page, years }
+  })

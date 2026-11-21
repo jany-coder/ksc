@@ -18,7 +18,7 @@ import type { StorageState } from './image-limits.ts'
 import { imagesBucket } from './r2.server.ts'
 import { listActivities } from './activities.server.ts'
 import { dateRange } from './gallery-filter.ts'
-import type { GalleryFilter } from './gallery-filter.ts'
+import type { GalleryFilter, PublicGalleryPhoto } from './gallery-filter.ts'
 
 // Callers must have checked requirePermission('content.write') first
 // (the upload route does; see routes/api/images.ts).
@@ -318,4 +318,84 @@ export async function setImageCaption(
     .where(eq(images.id, id))
     .returning({ id: images.id })
   return updated.length > 0 ? { ok: true } : { ok: false, code: 'NOT_FOUND' }
+}
+
+// --- Public gallery: anyone can call this, so it returns the bare minimum ---
+
+// The activity's columns only when it is published; a draft looks like "no
+// activity", so its title never reaches the public.
+const isPublished = sql`${activities.status} = 'published'`
+const publicActivityId = sql<
+  string | null
+>`case when ${isPublished} then ${activities.id} end`
+const publicActivityDate = sql<
+  string | null
+>`case when ${isPublished} then ${activities.eventDate}::text end`
+
+export type PublicGalleryPage = {
+  photos: PublicGalleryPhoto[]
+  // True when there are more photos after this page.
+  hasMore: boolean
+}
+
+/**
+ * One page of the public gallery, newest activity first. Within an activity,
+ * newest upload first; photos with no published activity come last. The
+ * activity id is a sort key too, so one activity's photos stay together even
+ * when two activities share a date (or have none).
+ */
+export async function listPublicGallery(input: {
+  year: number | undefined
+  limit: number
+  offset: number
+}): Promise<PublicGalleryPage> {
+  const range = dateRange(input.year, undefined)
+  const rows = await db
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+      activityId: publicActivityId,
+      activityTitle: sql<
+        string | null
+      >`case when ${isPublished} then ${activities.title} end`,
+      activityDate: publicActivityDate,
+    })
+    .from(images)
+    .leftJoin(activities, eq(images.activityId, activities.id))
+    .where(
+      range
+        ? and(
+            isPublished,
+            gte(activities.eventDate, range.from),
+            lt(activities.eventDate, range.to),
+          )
+        : undefined,
+    )
+    .orderBy(
+      sql`${publicActivityDate} desc nulls last`,
+      sql`${publicActivityId} nulls last`,
+      desc(images.uploadedAt),
+      // Last tie-break, so pages never overlap or skip a photo.
+      desc(images.id),
+    )
+    .limit(input.limit + 1)
+    .offset(input.offset)
+  return {
+    photos: rows.slice(0, input.limit),
+    hasMore: rows.length > input.limit,
+  }
+}
+
+/** The years that have published activities with photos, newest first. */
+export async function publicGalleryYears(): Promise<number[]> {
+  const rows = await db
+    .selectDistinct({
+      year: sql<number>`extract(year from ${activities.eventDate})::int`,
+    })
+    .from(images)
+    .innerJoin(activities, eq(images.activityId, activities.id))
+    .where(and(isPublished, sql`${activities.eventDate} is not null`))
+  return rows.map((r) => r.year).sort((a, b) => b - a)
 }

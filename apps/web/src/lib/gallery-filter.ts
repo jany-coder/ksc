@@ -41,3 +41,66 @@ export function dateRange(
     to: `${nextYear}-${pad(nextMonth)}-01`,
   }
 }
+
+// The public gallery takes only a year (?year=2025): visitors look for an
+// event, and the club is young enough that months would be overkill.
+export const publicGallerySearchSchema = z.object({
+  year: galleryFilterSchema.shape.year,
+})
+
+export type PublicGallerySearch = z.infer<typeof publicGallerySearchSchema>
+
+// A public gallery photo. activityTitle and activityDate are set only when the
+// photo's activity is published: a draft's title must not reach the public.
+export type PublicGalleryPhoto = {
+  id: string
+  width: number
+  height: number
+  caption: string | null
+  activityId: string | null
+  activityTitle: string | null
+  activityDate: string | null
+}
+
+export type PhotoGroup = {
+  // The activity id, or 'other' for photos with no published activity.
+  key: string
+  title: string | null
+  date: string | null
+  // Each photo with its place in the whole list, for the lightbox.
+  photos: { photo: PublicGalleryPhoto; index: number }[]
+}
+
+/**
+ * Splits the photos into one group per activity, keeping the server's order
+ * (newest activity first). Photos with no published activity go into one
+ * "other" group at the end.
+ */
+export function groupPhotos(photos: PublicGalleryPhoto[]): PhotoGroup[] {
+  const groups = new Map<string, PhotoGroup>()
+  const other: PhotoGroup = {
+    key: 'other',
+    title: null,
+    date: null,
+    photos: [],
+  }
+  photos.forEach((photo, index) => {
+    if (photo.activityId === null || photo.activityTitle === null) {
+      other.photos.push({ photo, index })
+      return
+    }
+    let group = groups.get(photo.activityId)
+    if (!group) {
+      group = {
+        key: photo.activityId,
+        title: photo.activityTitle,
+        date: photo.activityDate,
+        photos: [],
+      }
+      groups.set(photo.activityId, group)
+    }
+    group.photos.push({ photo, index })
+  })
+  const list = [...groups.values()]
+  return other.photos.length > 0 ? [...list, other] : list
+}
