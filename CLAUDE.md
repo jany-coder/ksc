@@ -224,7 +224,13 @@ admin activity composer.
 - Light sidebar, not dark.
 - Denser: 14px base, 36px control height, 8–10px radius.
 - Borders, not shadows. Shadows only on overlays.
-- Right-hand drawer for detail views instead of a new page.
+- Right-hand drawer for the quick look at a record from its list (the list
+  keeps its filters and scroll). A full page only where there is more to
+  read or do: members have a profile page (`/admin/members/<id>`), linked
+  from the drawer as "View full profile".
+- Edit and add forms: details on the left, a sticky side column for status,
+  settings and Save on wide screens; one column with Save stuck to the
+  bottom on a phone.
 - `⌘K` command search in the top bar.
 
 **House rules**
