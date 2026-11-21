@@ -9,6 +9,7 @@ import { imageSrcSet, imageUrl } from '../../lib/image-limits.ts'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
 import { listPublicNoticesFn } from '../../lib/notices.functions.ts'
+import { publicData } from '../../lib/public-data.ts'
 import { Activities } from '../../components/public/home/activities.tsx'
 import { About } from '../../components/public/home/about.tsx'
 import { Future } from '../../components/public/home/future.tsx'
@@ -21,6 +22,19 @@ import { UpcomingActivities } from '../../components/public/home/upcoming-activi
 import { WhatWeDo } from '../../components/public/home/what-we-do.tsx'
 
 export const Route = createFileRoute('/{-$locale}/')({
+  // Public data for every visitor: the newest past activities, published
+  // activities happening today or later, notices and photos.
+  // Kept for a while and shared by both languages (see publicData).
+  loader: async ({ context: { queryClient } }) => {
+    const [recent, upcoming, notices, images, hero] = await Promise.all([
+      publicData(queryClient, ['recent'], () => listRecentActivitiesFn()),
+      publicData(queryClient, ['upcoming'], () => listUpcomingActivitiesFn()),
+      publicData(queryClient, ['notices'], () => listPublicNoticesFn()),
+      publicData(queryClient, ['home-images'], () => listHomeImagesFn()),
+      publicData(queryClient, ['hero'], () => heroPhotosFn()),
+    ])
+    return { recent, upcoming, notices, images, hero }
+  },
   head: ({ params }) => {
     const t = tFor(params.locale === 'en' ? 'en' : 'bn')
     return {
@@ -30,18 +44,6 @@ export const Route = createFileRoute('/{-$locale}/')({
         { name: 'description', content: t('home.description') },
       ],
     }
-  },
-  // Public data for every visitor: the newest past activities, published
-  // activities happening today or later, notices and photos.
-  loader: async () => {
-    const [recent, upcoming, notices, images, hero] = await Promise.all([
-      listRecentActivitiesFn(),
-      listUpcomingActivitiesFn(),
-      listPublicNoticesFn(),
-      listHomeImagesFn(),
-      heroPhotosFn(),
-    ])
-    return { recent, upcoming, notices, images, hero }
   },
   component: Home,
 })

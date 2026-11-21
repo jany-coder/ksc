@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { Lightbox } from '../../../components/public/lightbox.tsx'
 import { getPublicActivityFn } from '../../../lib/activities.functions.ts'
+import { publicData } from '../../../lib/public-data.ts'
 import { categoryName } from '../../../lib/activity-category.ts'
 import { formatEventWhen } from '../../../lib/datetime.ts'
 import { imageSrcSet, imageUrl } from '../../../lib/image-limits.ts'
@@ -18,8 +19,12 @@ import { tFor } from '../../../lib/i18n/messages.ts'
 
 // One activity's own page: the full text and every photo filed under it.
 export const Route = createFileRoute('/{-$locale}/activities/$slug')({
-  loader: async ({ params }) => {
-    const result = await getPublicActivityFn({ data: { slug: params.slug } })
+  loader: async ({ params, context: { queryClient } }) => {
+    const result = await publicData(
+      queryClient,
+      ['activity', params.slug],
+      () => getPublicActivityFn({ data: { slug: params.slug } }),
+    )
     // A draft or a wrong address: the same "not found" for both.
     if (!result.activity) throw notFound()
     return { activity: result.activity, origin: result.origin }

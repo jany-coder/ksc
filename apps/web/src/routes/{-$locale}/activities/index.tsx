@@ -6,10 +6,13 @@ import { listArchiveActivitiesFn } from '../../../lib/activities.functions.ts'
 import { alternateLinks } from '../../../lib/i18n/hreflang.ts'
 import { useLocaleParams, useNumber, useT } from '../../../lib/i18n/index.tsx'
 import { tFor } from '../../../lib/i18n/messages.ts'
+import { publicData } from '../../../lib/public-data.ts'
 
 // The archive: every published activity that has already happened, newest
 // first, grouped by year.
 export const Route = createFileRoute('/{-$locale}/activities/')({
+  loader: ({ context: { queryClient } }) =>
+    publicData(queryClient, ['archive'], () => listArchiveActivitiesFn()),
   head: ({ params }) => {
     const t = tFor(params.locale === 'en' ? 'en' : 'bn')
     return {
@@ -20,7 +23,6 @@ export const Route = createFileRoute('/{-$locale}/activities/')({
       ],
     }
   },
-  loader: () => listArchiveActivitiesFn(),
   component: ArchivePage,
 })
 

@@ -19,13 +19,16 @@ import {
 } from '../../lib/i18n/index.tsx'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
+import { publicData } from '../../lib/public-data.ts'
 
 export const Route = createFileRoute('/{-$locale}/gallery')({
   // ?year=2025 shows one year's activities; a bad value is simply dropped.
   validateSearch: publicGallerySearchSchema,
   loaderDeps: ({ search }) => search,
-  loader: ({ deps }) =>
-    listPublicGalleryFn({ data: { year: deps.year, offset: 0 } }),
+  loader: ({ deps, context: { queryClient } }) =>
+    publicData(queryClient, ['gallery', deps.year ?? null], () =>
+      listPublicGalleryFn({ data: { year: deps.year, offset: 0 } }),
+    ),
   // After validateSearch and loader: TypeScript reads these options in order,
   // and an untyped head() before them would hide the search type.
   head: ({ params }) => {
