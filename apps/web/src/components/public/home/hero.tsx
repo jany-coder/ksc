@@ -47,14 +47,12 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
           />
         </picture>
       )}
-      {/* With a photo only: a deep green layer over it, light enough for the photo to
-          show. On a wide screen it is darkest behind the text (still above
-          4.5:1 contrast there) and fades to the right; on a phone the text
-          runs the full width, so the layer is even. */}
+      {/* With a photo only: one even deep green layer over all of it, dark
+          enough for the text to read at full contrast anywhere on it. */}
       {background && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 max-md:bg-[rgba(9,38,27,0.82)] md:bg-[linear-gradient(100deg,rgba(9,38,27,0.9)_0%,rgba(9,38,27,0.8)_55%,rgba(9,38,27,0.35)_75%,rgba(9,38,27,0.15)_100%)]"
+          className="absolute inset-0 -z-10 bg-[rgba(9,38,27,0.8)]"
         />
       )}
 
