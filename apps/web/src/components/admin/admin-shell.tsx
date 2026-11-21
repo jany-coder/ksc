@@ -18,6 +18,7 @@ import type { Role } from '../../lib/permissions.ts'
 import { cn } from '../../lib/utils.ts'
 import { LangToggle } from '../lang-toggle.tsx'
 import { Button } from '../ui/button.tsx'
+import { ThemeToggle } from './theme-toggle.tsx'
 
 type Props = {
   member: { name: string; role: Role }
@@ -135,7 +136,8 @@ export function AdminShell({ member, children }: Props) {
           )}
         </nav>
 
-        <div className="mt-3 border-t border-border pt-3 md:mt-auto">
+        <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3 md:mt-auto">
+          <ThemeToggle />
           <LangToggle className="w-full justify-center" />
         </div>
 

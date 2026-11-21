@@ -15,7 +15,23 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * Dark mode (admin panel only). The root layout puts one class on <html>:
+ *   .dark        -> always dark
+ *   .theme-auto  -> dark when the device is set to dark
+ *   (none)       -> light, the default
+ * `dark:` utilities and the token block further down both follow this.
+ */
+@custom-variant dark {
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(.theme-auto, .theme-auto *) {
+      @slot;
+    }
+  }
+}
 
 /*
  * Two themes share one set of shadcn tokens.
@@ -58,6 +74,91 @@
   --sidebar-accent-foreground: #18181b;
   --sidebar-border: #e4e4e7;
   --sidebar-ring: #15803d;
+  color-scheme: light;
+
+  /*
+   * Admin dark theme: the same tokens, darker. Borders still do the
+   * separating; the green turns lighter so it keeps its contrast.
+   */
+  @variant dark {
+    color-scheme: dark; /* native selects, date pickers, scrollbars */
+    --background: #0c0c0e;
+    --foreground: #f4f4f5;
+    --card: #161618;
+    --card-foreground: #f4f4f5;
+    --popover: #161618;
+    --popover-foreground: #f4f4f5;
+    --primary: #4ade80;
+    --primary-foreground: #052e16;
+    --secondary: #232326;
+    --secondary-foreground: #f4f4f5;
+    --muted: #232326;
+    --muted-foreground: #a1a1aa;
+    --accent: #12301f;
+    --accent-foreground: #86efac;
+    --destructive: #f87171;
+    --destructive-foreground: #18181b;
+    --border: #2a2a2e;
+    --input: #3a3a3f;
+    --ring: #4ade80;
+    --sidebar: #111113;
+    --sidebar-foreground: #f4f4f5;
+    --sidebar-primary: #4ade80;
+    --sidebar-primary-foreground: #052e16;
+    --sidebar-accent: #232326;
+    --sidebar-accent-foreground: #f4f4f5;
+    --sidebar-border: #2a2a2e;
+    --sidebar-ring: #4ade80;
+
+    /*
+     * The admin pages also use a few fixed Tailwind shades (grey text, the
+     * red / green / yellow of alerts and badges). Each is swapped for its dark
+     * counterpart here, so "bg-red-50 text-red-700" stays a soft red box with
+     * readable text in both themes, and no page needs its own dark: classes.
+     */
+    --color-zinc-50: #18181b;
+    --color-zinc-100: #232326;
+    --color-zinc-200: #2e2e33;
+    --color-zinc-300: #46464d;
+    --color-zinc-400: #71717a;
+    --color-zinc-500: #8b8b94;
+    --color-zinc-600: #a1a1aa;
+    --color-zinc-700: #c4c4cc;
+    --color-zinc-800: #e0e0e5;
+    --color-zinc-900: #f4f4f5;
+    --color-zinc-950: #fafafa;
+    --color-red-50: #2b1416;
+    --color-red-100: #3a1a1d;
+    --color-red-200: #5a2428;
+    --color-red-300: #7a2e33;
+    --color-red-600: #f87171;
+    --color-red-700: #fca5a5;
+    --color-red-800: #fecaca;
+    --color-red-900: #fee2e2;
+    --color-green-50: #10261a;
+    --color-green-100: #143221;
+    --color-green-200: #1f4a31;
+    --color-green-300: #2a6342;
+    --color-green-600: #4ade80;
+    --color-green-700: #86efac;
+    --color-green-800: #bbf7d0;
+    --color-green-900: #dcfce7;
+    --color-yellow-50: #2a2410;
+    --color-yellow-100: #352d12;
+    --color-yellow-200: #4f4418;
+    --color-yellow-300: #6b5a1a;
+    --color-yellow-600: #facc15;
+    --color-yellow-700: #fde047;
+    --color-yellow-800: #fde68a;
+    --color-yellow-900: #fef3c7;
+    --color-amber-50: #2a1f0f;
+    --color-amber-100: #36280f;
+    --color-amber-200: #533c15;
+    --color-amber-300: #6e4f18;
+    --color-amber-700: #fbbf24;
+    --color-amber-800: #fcd34d;
+    --color-amber-900: #fde68a;
+  }
 }
 
 .theme-public {

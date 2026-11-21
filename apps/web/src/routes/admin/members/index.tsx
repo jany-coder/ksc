@@ -219,7 +219,7 @@ function MembersPage() {
               className={cn(
                 chipClass,
                 active
-                  ? 'border-zinc-900 bg-zinc-900 text-white'
+                  ? 'border-foreground bg-foreground text-background'
                   : 'border-border bg-card text-zinc-700 hover:bg-secondary',
               )}
             >

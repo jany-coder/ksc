@@ -126,7 +126,7 @@ export function ActivityPhotos({ activityId }: { activityId: string }) {
                   className={cn(
                     'absolute start-2 top-2 inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium focus-visible:outline-2 focus-visible:outline-primary',
                     isCover
-                      ? 'bg-primary text-white'
+                      ? 'bg-primary text-primary-foreground'
                       : 'bg-card/90 text-foreground hover:bg-card',
                   )}
                 >

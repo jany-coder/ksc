@@ -51,6 +51,16 @@ export const adminMessages = {
     en: 'Delete it if it is no longer needed. To only hide it, set the status to "Draft" and save.',
   },
 
+  // --- light / dark theme ---
+  'theme.label': { bn: 'রং-এর ধরন', en: 'Theme' },
+  'theme.light': { bn: 'আলো', en: 'Light' },
+  'theme.dark': { bn: 'অন্ধকার', en: 'Dark' },
+  'theme.system': { bn: 'ডিভাইস', en: 'Device' },
+  'theme.systemHint': {
+    bn: 'ফোন বা কম্পিউটারের সেটিং অনুযায়ী',
+    en: 'Follows your phone or computer setting',
+  },
+
   // --- statuses and roles ---
   'status.active': { bn: 'সক্রিয়', en: 'Active' },
   'status.pending': { bn: 'অপেক্ষমাণ', en: 'Pending' },

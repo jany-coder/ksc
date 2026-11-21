@@ -7,6 +7,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
+import { getSavedTheme, themeClass } from '../lib/admin-theme.ts'
 import { LangProvider } from '../lib/i18n/index.tsx'
 import { langOfMatches, resolveLang } from '../lib/i18n/core.ts'
 import type { HeadArgs } from '../lib/i18n/core.ts'
@@ -20,9 +21,17 @@ export type RouterContext = { queryClient: QueryClient }
 export const Route = createRootRouteWithContext<RouterContext>()({
   // The page's language, for <html lang> and for every text on it. Public pages
   // are decided by the URL (/en/...); admin and login by the saved choice.
-  beforeLoad: ({ location }) => ({
-    lang: resolveLang(location.pathname, getSavedLang()),
-  }),
+  // Also the admin panel's light / dark class, decided here so the server
+  // renders it (see lib/admin-theme.ts). Runs on every page change, so leaving
+  // the admin panel drops it.
+  beforeLoad: ({ location }) => {
+    const theme = getSavedTheme() ?? 'light'
+    return {
+      lang: resolveLang(location.pathname, getSavedLang()),
+      adminTheme: theme,
+      themeClass: themeClass(location.pathname, theme),
+    }
+  },
   head: ({ matches }: HeadArgs) => ({
     meta: [
       {
@@ -55,12 +64,12 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const { lang } = Route.useRouteContext()
+  const { lang, themeClass: theme } = Route.useRouteContext()
   return (
     // Browser extensions (Grammarly etc.) inject attributes onto <html> and
     // <body> before React hydrates. suppressHydrationWarning silences only
     // attribute mismatches on these two elements, not on their children.
-    <html lang={lang} suppressHydrationWarning>
+    <html lang={lang} className={theme} suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
