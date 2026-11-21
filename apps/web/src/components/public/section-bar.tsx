@@ -87,7 +87,8 @@ export function SectionBar() {
       // inert: while hidden, the links cannot be focused with Tab either.
       inert={!visible}
       className={cn(
-        'fixed inset-x-0 top-0 z-30 hidden border-b border-line bg-background md:block',
+        // Frosted glass: the page shows through, blurred, as it scrolls under.
+        'fixed inset-x-0 top-0 z-30 hidden border-b border-line/70 bg-background/75 backdrop-blur-xl backdrop-saturate-150 md:block',
         'motion-safe:transition-transform motion-safe:duration-300',
         visible ? 'translate-y-0' : '-translate-y-full',
       )}

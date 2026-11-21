@@ -20,7 +20,8 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label={t('nav.quick')}
-      className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-4 border-t border-line bg-background md:hidden"
+      // Frosted glass, like the bar at the top on wide screens.
+      className="fixed inset-x-0 bottom-0 z-10 grid grid-cols-4 border-t border-line/70 bg-background/80 backdrop-blur-xl backdrop-saturate-150 md:hidden"
     >
       {TABS.map(({ label, icon: Icon, hash }) => (
         <Link

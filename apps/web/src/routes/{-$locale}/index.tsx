@@ -49,7 +49,8 @@ function Home() {
   const { recent, upcoming, notices, images } = Route.useLoaderData()
   return (
     <main>
-      <Hero />
+      {/* The first photo picked for the homepage, behind the hero. */}
+      <Hero photo={images[0] ?? null} />
       <QuickActions />
       <WhatWeDo />
       <About />
