@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { ChevronLeft, ChevronRight, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+
+import { Lightbox } from '../../components/public/lightbox.tsx'
 
 import { formatDate, formatYear } from '../../lib/datetime.ts'
 import {
@@ -39,9 +40,6 @@ export const Route = createFileRoute('/{-$locale}/gallery')({
   },
   component: GalleryPage,
 })
-
-const iconButton =
-  'inline-flex size-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-white'
 
 const yearLink =
   'inline-flex min-h-11 items-center rounded-full border px-5 text-[17px] font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
@@ -204,91 +202,5 @@ function GalleryBody() {
         />
       )}
     </main>
-  )
-}
-
-// A big photo in the browser's own <dialog>: Esc closes it and focus stays
-// inside while it is open, without hand-written code for either.
-function Lightbox({
-  photos,
-  index,
-  onChange,
-  onClose,
-}: {
-  photos: { id: string; caption: string | null }[]
-  index: number
-  onChange: (index: number) => void
-  onClose: () => void
-}) {
-  const t = useT()
-  const dialog = useRef<HTMLDialogElement>(null)
-  useEffect(() => {
-    const el = dialog.current
-    if (el && !el.open) el.showModal()
-  }, [])
-
-  const last = photos.length - 1
-  const go = (to: number) => onChange(Math.min(last, Math.max(0, to)))
-  const photo = photos[index]
-
-  return (
-    <dialog
-      ref={dialog}
-      aria-label={t('gallery.bigPhoto')}
-      onClose={onClose}
-      onKeyDown={(e) => {
-        if (e.key === 'ArrowLeft') go(index - 1)
-        if (e.key === 'ArrowRight') go(index + 1)
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) e.currentTarget.close()
-      }}
-      className="m-auto h-dvh max-h-none w-dvw max-w-none bg-transparent p-0 backdrop:bg-black/85"
-    >
-      <div className="relative flex h-full w-full items-center justify-center p-4 md:p-10">
-        {photo && (
-          <figure className="flex max-h-full max-w-full flex-col items-center gap-3">
-            <img
-              src={imageUrl(photo.id, 'full')}
-              alt={photo.caption ?? ''}
-              className="min-h-0 max-w-full rounded object-contain"
-            />
-            {photo.caption && (
-              <figcaption className="max-w-[60ch] text-center text-base text-white">
-                {photo.caption}
-              </figcaption>
-            )}
-          </figure>
-        )}
-        <button
-          type="button"
-          aria-label={t('gallery.close')}
-          onClick={() => dialog.current?.close()}
-          className={`${iconButton} absolute end-4 top-4`}
-        >
-          <X aria-hidden="true" />
-        </button>
-        {index > 0 && (
-          <button
-            type="button"
-            aria-label={t('gallery.prev')}
-            onClick={() => go(index - 1)}
-            className={`${iconButton} absolute start-4 top-1/2 -translate-y-1/2`}
-          >
-            <ChevronLeft aria-hidden="true" />
-          </button>
-        )}
-        {index < last && (
-          <button
-            type="button"
-            aria-label={t('gallery.next')}
-            onClick={() => go(index + 1)}
-            className={`${iconButton} absolute end-4 top-1/2 -translate-y-1/2`}
-          >
-            <ChevronRight aria-hidden="true" />
-          </button>
-        )}
-      </div>
-    </dialog>
   )
 }

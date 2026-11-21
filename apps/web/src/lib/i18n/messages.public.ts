@@ -184,6 +184,10 @@ export const publicMessages = {
     bn: 'আরো ছবি আনা গেল না। আবার চেষ্টা করুন।',
     en: 'Could not load more photos. Please try again.',
   },
+  'gallery.position': {
+    bn: 'মোট {total}টির মধ্যে {n} নম্বর ছবি',
+    en: 'Photo {n} of {total}',
+  },
   'gallery.bigPhoto': { bn: 'বড় ছবি', en: 'Large photo' },
   'gallery.close': { bn: 'বন্ধ করুন', en: 'Close' },
   'gallery.prev': { bn: 'আগের ছবি', en: 'Previous photo' },
