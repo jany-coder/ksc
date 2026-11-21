@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useLocaleParams, useT } from '../../lib/i18n/index.tsx'
 import type { MessageKey } from '../../lib/i18n/messages.ts'
 import { cn } from '../../lib/utils.ts'
+import { scrollToSameSection } from './same-section.ts'
 
 // Same sections as the header. Kept as a small separate list on purpose: this
 // bar is the slim version, only the sections and nothing else.
@@ -103,6 +104,7 @@ export function SectionBar() {
             to="/{-$locale}"
             params={localeParams}
             hash={item.hash}
+            onClick={scrollToSameSection}
             aria-current={active === item.hash ? 'location' : undefined}
             className={cn(
               'border-b-2 py-2 text-[15px] font-medium transition-colors',

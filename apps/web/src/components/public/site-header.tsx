@@ -5,6 +5,7 @@ import type { MessageKey } from '../../lib/i18n/messages.ts'
 import { buttonVariants } from '../ui/button.tsx'
 import { cn } from '../../lib/utils.ts'
 import { LangSwitch } from './lang-switch.tsx'
+import { scrollToSameSection } from './same-section.ts'
 
 // Section anchors on the home page. They are router links with a hash, so they
 // also work from other public pages (/gallery -> /#what-we-do).
@@ -57,6 +58,7 @@ export function SiteHeader() {
               to="/{-$locale}"
               params={localeParams}
               hash={item.hash}
+              onClick={scrollToSameSection}
               className="text-base font-medium text-zinc-800 hover:text-brand-deep"
             >
               {t(item.key)}
@@ -66,6 +68,7 @@ export function SiteHeader() {
             to="/{-$locale}"
             params={localeParams}
             hash="join"
+            onClick={scrollToSameSection}
             className={cn(
               buttonVariants({ size: 'lg' }),
               'min-h-11 px-5 text-base',

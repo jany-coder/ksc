@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { Droplet, Image } from 'lucide-react'
 
 import { useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
+import { scrollToSameSection } from '../same-section.ts'
 
 // Phone-only shortcuts straight under the hero, as in the mobile design.
 // Someone who needs blood is sent straight to the club's contact details
@@ -16,6 +17,7 @@ export function QuickActions() {
         to="/{-$locale}"
         params={localeParams}
         hash="contact"
+        onClick={scrollToSameSection}
         className="flex min-h-11 flex-col gap-1.5 rounded-2xl border border-line bg-card p-4 shadow-card"
       >
         <Droplet
@@ -34,6 +36,7 @@ export function QuickActions() {
         to="/{-$locale}"
         params={localeParams}
         hash="gallery"
+        onClick={scrollToSameSection}
         className="flex min-h-11 flex-col gap-1.5 rounded-2xl border border-line bg-card p-4 shadow-card"
       >
         <Image

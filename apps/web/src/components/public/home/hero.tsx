@@ -9,6 +9,7 @@ import { cn } from '../../../lib/utils.ts'
 import { HeroFrame } from './hero-frame.tsx'
 import { WORK_AREAS } from './what-we-do.tsx'
 import type { HeroSlide } from './hero-frame.tsx'
+import { scrollToSameSection } from '../same-section.ts'
 
 /** The hero's photos, picked in the admin gallery (see heroPhotos()). */
 export type HeroPhotos = {
@@ -92,6 +93,7 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
               to="/{-$locale}"
               params={localeParams}
               hash="join"
+              onClick={scrollToSameSection}
               className={cn(
                 buttonVariants({ size: 'lg' }),
                 'group min-h-12 gap-2 rounded-full bg-white px-7 text-[17px] text-brand-deep shadow-[0_8px_24px_rgba(0,0,0,0.25)] hover:bg-white/90',
@@ -107,6 +109,7 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
               to="/{-$locale}"
               params={localeParams}
               hash="activities"
+              onClick={scrollToSameSection}
               className={cn(
                 glass,
                 'inline-flex min-h-12 items-center justify-center rounded-full px-7 text-[17px] font-semibold text-white hover:bg-white/15',
@@ -179,6 +182,7 @@ function WorkAreas() {
         to="/{-$locale}"
         params={localeParams}
         hash="what-we-do"
+        onClick={scrollToSameSection}
         className="mt-3 inline-flex min-h-10 items-center gap-1.5 text-[15px] font-semibold text-mint hover:text-white"
       >
         {t('hero.workMore')}
