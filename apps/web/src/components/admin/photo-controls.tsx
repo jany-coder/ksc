@@ -107,9 +107,12 @@ export function HomeToggle({
 /** Delete button on a photo's corner. Asks first; the delete is permanent. */
 export function DeletePhotoButton({
   id,
+  isCover,
   onError,
 }: {
   id: string
+  // An activity's cover: the warning says so, and that the next photo takes over.
+  isCover: boolean
   onError: (message: string | null) => void
 }) {
   const t = useT()
@@ -133,7 +136,10 @@ export function DeletePhotoButton({
       aria-label={t('gal.deleteAria')}
       disabled={remove.isPending}
       onClick={() => {
-        if (window.confirm(t('gal.deleteConfirm'))) remove.mutate()
+        const question = isCover
+          ? t('gal.deleteCoverConfirm')
+          : t('gal.deleteConfirm')
+        if (window.confirm(question)) remove.mutate()
       }}
     >
       <Trash2 aria-hidden="true" />

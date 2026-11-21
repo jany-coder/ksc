@@ -3,7 +3,7 @@ import '@tanstack/react-start/server-only'
 import { and, eq, isNull, sql } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
-import { activities, members, notices } from '../db/schema/index.ts'
+import { activities, images, members, notices } from '../db/schema/index.ts'
 import { BLOOD_GROUPS, MEMBER_STATUSES } from './member-options.ts'
 import type { BloodGroup, MemberStatus } from './member-options.ts'
 
@@ -15,36 +15,43 @@ export type DashboardData = {
   donors: Record<BloodGroup, number>
   activities: { published: number; draft: number }
   notices: { published: number; draft: number }
+  /** Photos not yet filed under any activity. */
+  unfiledPhotos: number
 }
 
 export async function getDashboard(): Promise<DashboardData> {
   const live = isNull(members.archivedAt)
-  const [statusRows, donorRows, activityRows, noticeRows] = await Promise.all([
-    db
-      .select({ status: members.status, n: sql<number>`count(*)::int` })
-      .from(members)
-      .where(live)
-      .groupBy(members.status),
-    db
-      .select({ blood: members.bloodGroup, n: sql<number>`count(*)::int` })
-      .from(members)
-      .where(
-        and(
-          live,
-          eq(members.status, 'active'),
-          eq(members.willingToDonate, true),
-        ),
-      )
-      .groupBy(members.bloodGroup),
-    db
-      .select({ status: activities.status, n: sql<number>`count(*)::int` })
-      .from(activities)
-      .groupBy(activities.status),
-    db
-      .select({ status: notices.status, n: sql<number>`count(*)::int` })
-      .from(notices)
-      .groupBy(notices.status),
-  ])
+  const [statusRows, donorRows, activityRows, noticeRows, unfiledRows] =
+    await Promise.all([
+      db
+        .select({ status: members.status, n: sql<number>`count(*)::int` })
+        .from(members)
+        .where(live)
+        .groupBy(members.status),
+      db
+        .select({ blood: members.bloodGroup, n: sql<number>`count(*)::int` })
+        .from(members)
+        .where(
+          and(
+            live,
+            eq(members.status, 'active'),
+            eq(members.willingToDonate, true),
+          ),
+        )
+        .groupBy(members.bloodGroup),
+      db
+        .select({ status: activities.status, n: sql<number>`count(*)::int` })
+        .from(activities)
+        .groupBy(activities.status),
+      db
+        .select({ status: notices.status, n: sql<number>`count(*)::int` })
+        .from(notices)
+        .groupBy(notices.status),
+      db
+        .select({ n: sql<number>`count(*)::int` })
+        .from(images)
+        .where(isNull(images.activityId)),
+    ])
 
   const memberCounts = { all: 0, active: 0, pending: 0, suspended: 0 }
   for (const status of MEMBER_STATUSES) {
@@ -63,5 +70,6 @@ export async function getDashboard(): Promise<DashboardData> {
     donors,
     activities: split(activityRows),
     notices: split(noticeRows),
+    unfiledPhotos: unfiledRows[0]?.n ?? 0,
   }
 }

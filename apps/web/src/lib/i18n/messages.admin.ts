@@ -615,6 +615,26 @@ export const adminMessages = {
   },
   'act.viewPage': { bn: 'পেজটি দেখুন', en: 'View page' },
   'act.opensNewTab': { bn: '(নতুন ট্যাবে খুলবে)', en: '(opens in a new tab)' },
+  'gal.deleteCoverConfirm': {
+    bn: 'এটি একটি কার্যক্রমের কভার ছবি। মুছে ফেললে ওই কার্যক্রমের পরের ছবিটি কভার হবে, ছবি না থাকলে কভার ছাড়াই দেখাবে। ছবিটি স্থায়ীভাবে মুছে ফেলবেন?',
+    en: "This photo is an activity's cover. If you delete it, that activity's next photo becomes the cover, or it shows without one. Delete this photo permanently?",
+  },
+  'gal.unfiledLabel': { bn: 'সাজানো বাকি', en: 'Still to sort' },
+  'gal.unfiled': {
+    bn: '{n}টি ছবি এখনো কোনো কার্যক্রমে যুক্ত নয়।',
+    en: '{n} photos are not in any activity yet.',
+  },
+  'gal.unfiledShow': { bn: 'ছবিগুলো দেখুন', en: 'Show them' },
+  'gal.openActivity': { bn: 'কার্যক্রম খুলুন →', en: 'Open activity →' },
+  'dash.unfiledTitle': { bn: 'সাজানো বাকি ছবি', en: 'Photos to sort' },
+  'dash.unfiled': {
+    bn: '{n}টি ছবি এখনো কোনো কার্যক্রমে যুক্ত নয়।',
+    en: '{n} photos are not in any activity yet.',
+  },
+  'dash.unfiledLink': {
+    bn: 'গ্যালারিতে সাজান',
+    en: 'Sort them in the gallery',
+  },
   'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
   'gal.homeCount': {
     bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',

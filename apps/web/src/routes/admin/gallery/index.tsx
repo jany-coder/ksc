@@ -4,7 +4,12 @@ import {
   useQueryClient,
   useSuspenseInfiniteQuery,
 } from '@tanstack/react-query'
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
+import {
+  Link,
+  createFileRoute,
+  redirect,
+  useNavigate,
+} from '@tanstack/react-router'
 import { useState } from 'react'
 
 import { Button } from '../../../components/ui/button.tsx'
@@ -239,6 +244,26 @@ function GalleryPage() {
         </p>
       )}
 
+      {/* Photos still to sort, unless that is the view already open. */}
+      {data.unfiledCount > 0 && filter.activity !== 'none' && (
+        <section
+          aria-label={t('gal.unfiledLabel')}
+          className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-yellow-300 bg-yellow-50 px-4 py-3 text-sm text-yellow-900"
+        >
+          <p className="m-0">
+            {t('gal.unfiled', { n: number(data.unfiledCount) })}
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setFilter({ activity: 'none' })}
+          >
+            {t('gal.unfiledShow')}
+          </Button>
+        </section>
+      )}
+
       <GalleryFilters
         filter={filter}
         activities={data.activities}
@@ -365,6 +390,15 @@ function GalleryPage() {
                   >
                     <ActivityOptions activities={data.activities} />
                   </NativeSelect>
+                  {image.activityId && (
+                    <Link
+                      to="/admin/activities/$id"
+                      params={{ id: image.activityId }}
+                      className="mt-1 inline-block text-[13px] text-primary hover:underline"
+                    >
+                      {t('gal.openActivity')}
+                    </Link>
+                  )}
                 </div>
                 <HomeToggle
                   id={image.id}
@@ -372,7 +406,11 @@ function GalleryPage() {
                   homeFull={homeFull}
                   onError={setDeleteError}
                 />
-                <DeletePhotoButton id={image.id} onError={setDeleteError} />
+                <DeletePhotoButton
+                  id={image.id}
+                  isCover={image.isCover}
+                  onError={setDeleteError}
+                />
               </li>
             ))}
           </ul>

@@ -134,8 +134,14 @@ export type GalleryImage = {
   onHome: boolean
 }
 
-// Admins also see which activity each photo belongs to.
-export type AdminGalleryImage = GalleryImage & { activityId: string | null }
+// Admins also see which activity each photo belongs to, and whether some
+// activity uses it as its cover (deleting it then needs a clearer warning).
+export type AdminGalleryImage = GalleryImage & {
+  activityId: string | null
+  isCover: boolean
+}
+
+const isCoverSql = sql<boolean>`exists (select 1 from ${activities} where ${activities.coverImageId} = ${images.id})`
 
 // An activity a photo can be filed under, for the admin dropdowns. Drafts are
 // included: photos are often added before the activity is published.
@@ -151,6 +157,8 @@ export type GalleryAdminData = {
   hasMore: boolean
   // How many photos match the filter in all, across every page.
   total: number
+  // Photos not filed under any activity: the ones still to sort.
+  unfiledCount: number
   activities: ActivityOption[]
   // Counted over every photo, not just the filtered ones on screen.
   homeCount: number
@@ -255,6 +263,7 @@ async function listAdminImages(
         caption: images.caption,
         onHome: images.onHome,
         activityId: images.activityId,
+        isCover: isCoverSql,
       })
       .from(images)
       .leftJoin(activities, eq(images.activityId, activities.id))
@@ -289,18 +298,21 @@ export async function galleryAdminData(
   filter: GalleryFilter,
   offset: number,
 ): Promise<GalleryAdminData> {
-  const [list, total, activityRows, homeCount, used] = await Promise.all([
-    // One extra row tells whether another page exists.
-    listAdminImages(filter, ADMIN_GALLERY_PAGE + 1, offset),
-    countAdminImages(filter),
-    listActivities(),
-    countHomeImages(),
-    usedBytes(),
-  ])
+  const [list, total, unfiledCount, activityRows, homeCount, used] =
+    await Promise.all([
+      // One extra row tells whether another page exists.
+      listAdminImages(filter, ADMIN_GALLERY_PAGE + 1, offset),
+      countAdminImages(filter),
+      countAdminImages({ activity: 'none' }),
+      listActivities(),
+      countHomeImages(),
+      usedBytes(),
+    ])
   return {
     images: list.slice(0, ADMIN_GALLERY_PAGE),
     hasMore: list.length > ADMIN_GALLERY_PAGE,
     total,
+    unfiledCount,
     activities: activityRows.map(({ id, title, eventDate }) => ({
       id,
       title,
@@ -509,6 +521,7 @@ export async function activityPhotos(
         caption: images.caption,
         onHome: images.onHome,
         activityId: images.activityId,
+        isCover: isCoverSql,
       })
       .from(images)
       .where(eq(images.activityId, activityId))

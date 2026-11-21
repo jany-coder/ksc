@@ -2,7 +2,7 @@ import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
 
 import { getDashboardFn } from '../../lib/dashboard.functions.ts'
-import { useT } from '../../lib/i18n/index.tsx'
+import { useNumber, useT } from '../../lib/i18n/index.tsx'
 import { langOfMatches } from '../../lib/i18n/core.ts'
 import type { HeadArgs } from '../../lib/i18n/core.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
@@ -60,6 +60,7 @@ function AdminHome() {
 
 function Figures() {
   const t = useT()
+  const number = useNumber()
   const { data } = useSuspenseQuery(dashboardQuery())
 
   return (
@@ -130,6 +131,25 @@ function Figures() {
         to="/admin/notices"
         counts={data.notices}
       />
+
+      {/* Only when there is sorting to do; nothing to show otherwise. */}
+      {data.unfiledPhotos > 0 && (
+        <section className={card} aria-labelledby="dash-unfiled">
+          <h2 id="dash-unfiled" className="text-[15px] font-semibold">
+            {t('dash.unfiledTitle')}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t('dash.unfiled', { n: number(data.unfiledPhotos) })}
+          </p>
+          <Link
+            to="/admin/gallery"
+            search={{ activity: 'none' }}
+            className="mt-3 inline-block text-sm text-primary hover:underline"
+          >
+            {t('dash.unfiledLink')}
+          </Link>
+        </section>
+      )}
     </div>
   )
 }

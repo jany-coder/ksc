@@ -141,7 +141,11 @@ export function ActivityPhotos({ activityId }: { activityId: string }) {
                   homeFull={homeFull}
                   onError={setError}
                 />
-                <DeletePhotoButton id={photo.id} onError={setError} />
+                <DeletePhotoButton
+                  id={photo.id}
+                  isCover={isCover}
+                  onError={setError}
+                />
               </li>
             )
           })}
