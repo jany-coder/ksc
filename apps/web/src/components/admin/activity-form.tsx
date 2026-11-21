@@ -29,11 +29,15 @@ const card = 'rounded-[10px] border border-border bg-card p-5'
 
 export function ActivityForm({
   initial,
+  photoCount,
   onSubmit,
   submitLabel,
   extra,
 }: {
   initial: ActivityFormInput
+  // How many photos the activity has; null for a new one (photos are added
+  // after the first save). Only used for a reminder, never to block.
+  photoCount: number | null
   onSubmit: (values: ActivityFormInput) => Promise<ActivityFormResult>
   // Overrides the "draft / publish" button text (used by the edit page).
   submitLabel?: string
@@ -170,6 +174,20 @@ export function ActivityForm({
             <p className="text-[13px] text-muted-foreground">
               {publishing ? t('a.publishNote') : t('a.draftNote')}
             </p>
+            {/* A gentle reminder, not a rule: publishing still works. */}
+            {publishing && photoCount === 0 && (
+              <p
+                role="status"
+                className="rounded-md border border-yellow-300 bg-yellow-50 px-2.5 py-1.5 text-[13px] text-yellow-900"
+              >
+                {t('act.noPhotosYet')}
+              </p>
+            )}
+            {publishing && photoCount === null && (
+              <p className="text-[13px] text-muted-foreground">
+                {t('act.photosAfterSave')}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="category">{t('act.fType')}</Label>

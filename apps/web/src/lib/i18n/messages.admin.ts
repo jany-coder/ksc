@@ -613,6 +613,14 @@ export const adminMessages = {
     bn: 'কভার বদলানো গেল না। আবার চেষ্টা করুন।',
     en: 'Could not change the cover. Please try again.',
   },
+  'act.noPhotosYet': {
+    bn: 'এই কার্যক্রমে এখনো কোনো ছবি নেই। নিচের "ছবি" অংশ থেকে যোগ করতে পারেন, পরে যোগ করলেও চলবে।',
+    en: 'This activity has no photos yet. You can add them in "Photos" below, now or later.',
+  },
+  'act.photosAfterSave': {
+    bn: 'সংরক্ষণের পর যে পেজ খুলবে, সেখানে ছবি যোগ করতে পারবেন।',
+    en: 'You can add photos on the page that opens after saving.',
+  },
   'act.viewPage': { bn: 'পেজটি দেখুন', en: 'View page' },
   'act.opensNewTab': { bn: '(নতুন ট্যাবে খুলবে)', en: '(opens in a new tab)' },
   'gal.deleteCoverConfirm': {

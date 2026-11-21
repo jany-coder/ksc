@@ -61,6 +61,7 @@ function NewActivityPage() {
 
       <ActivityForm
         initial={EMPTY}
+        photoCount={null}
         onSubmit={async (values) => {
           const result = await createActivityFn({ data: values })
           if (!result.ok) return { ok: false, message: t('a.invalidForm') }

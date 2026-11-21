@@ -119,6 +119,7 @@ function EditActivityPage() {
 
       <ActivityForm
         initial={activity}
+        photoCount={photoData?.photos.length ?? 0}
         submitLabel={t('a.save')}
         onSubmit={async (values) => {
           const result = await updateActivityFn({ data: { id, values } })
