@@ -757,6 +757,17 @@ export const adminMessages = {
     en: 'Could not save the photo. Please try again.',
   },
   'memberPhoto.alt': { bn: '{name}-এর ছবি', en: 'Photo of {name}' },
+  'memberPhoto.cropTitle': { bn: 'ছবিটি ঠিক করুন', en: 'Crop the photo' },
+  'memberPhoto.cropHint': {
+    bn: 'ছবিটি টেনে সরান, দরকারে জুম করুন। চৌকো ঘরের ভেতরের অংশটুকুই রাখা হবে।',
+    en: 'Drag the photo and zoom if needed. Only the part inside the square is kept.',
+  },
+  'memberPhoto.cropArea': {
+    bn: 'ছবি কাটার জায়গা। তীর-চিহ্নের বোতাম দিয়েও সরানো যায়।',
+    en: 'Crop area. The arrow keys move the photo too.',
+  },
+  'memberPhoto.zoom': { bn: 'জুম', en: 'Zoom' },
+  'memberPhoto.cropSave': { bn: 'ছবি সংরক্ষণ করুন', en: 'Save photo' },
   'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
   'gal.homeCount': {
     bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',

@@ -21,7 +21,7 @@ const json = (body: unknown, status: number) =>
   })
 
 const idSchema = z.uuid()
-// One small photo is well under this; it stops huge bodies early.
+// The two small photos are well under this; it stops huge bodies early.
 const MAX_BODY_BYTES = 400_000
 
 async function allowed(request: Request, permission: Action) {
@@ -43,7 +43,8 @@ export const Route = createFileRoute('/api/member-photo/$id')({
         if ('error' in check) return check.error
         if (!idSchema.safeParse(params.id).success)
           return new Response('Not found', { status: 404 })
-        const object = await getMemberPhotoObject(params.id)
+        const small = new URL(request.url).searchParams.get('size') === 'small'
+        const object = await getMemberPhotoObject(params.id, small)
         if (!object) return new Response('Not found', { status: 404 })
         return new Response(object.body, {
           headers: {
@@ -68,10 +69,12 @@ export const Route = createFileRoute('/api/member-photo/$id')({
 
         const form = await request.formData().catch(() => null)
         const photo = form?.get('photo')
-        if (!(photo instanceof File))
+        const small = form?.get('small')
+        if (!(photo instanceof File) || !(small instanceof File))
           return json({ ok: false, code: 'INVALID_INPUT' }, 400)
         const result = await saveMemberPhoto(check.member.id, params.id, {
           bytes: await photo.arrayBuffer(),
+          small: await small.arrayBuffer(),
           width: Number(form?.get('width')),
           height: Number(form?.get('height')),
         })

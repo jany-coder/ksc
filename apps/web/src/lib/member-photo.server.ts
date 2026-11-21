@@ -6,8 +6,11 @@ import { db } from '../db/index.ts'
 import { auditLog, members } from '../db/schema/index.ts'
 import {
   MAX_MEMBER_PHOTO_BYTES,
+  MAX_MEMBER_PHOTO_SMALL_BYTES,
   isValidDimension,
   looksLikeWebp,
+  memberPhotoKey,
+  smallPhotoKey,
 } from './image-limits.ts'
 import { imagesBucket } from './r2.server.ts'
 
@@ -20,7 +23,10 @@ import { imagesBucket } from './r2.server.ts'
 // A fresh random name each time: a replaced photo gets a new URL, so no
 // browser keeps showing the old one.
 const keyFor = (memberId: string) =>
-  `members/${memberId}/${crypto.randomUUID()}.webp`
+  memberPhotoKey(memberId, crypto.randomUUID())
+
+/** Both files of a photo: the 600px one and the 128px one for the list. */
+export const bothSizes = (key: string) => [key, smallPhotoKey(key)]
 
 export type MemberPhotoResult =
   | { ok: true }
@@ -42,23 +48,36 @@ async function currentKey(memberId: string) {
 export async function saveMemberPhoto(
   actorId: string,
   memberId: string,
-  input: { bytes: ArrayBuffer; width: number; height: number },
+  input: {
+    bytes: ArrayBuffer
+    small: ArrayBuffer
+    width: number
+    height: number
+  },
 ): Promise<MemberPhotoResult> {
   if (!isValidDimension(input.width) || !isValidDimension(input.height))
     return { ok: false, code: 'INVALID_INPUT' }
-  if (input.bytes.byteLength > MAX_MEMBER_PHOTO_BYTES)
+  if (
+    input.bytes.byteLength > MAX_MEMBER_PHOTO_BYTES ||
+    input.small.byteLength > MAX_MEMBER_PHOTO_SMALL_BYTES
+  )
     return { ok: false, code: 'TOO_LARGE' }
   // Trust the bytes, not the browser's claim about the file type.
-  if (!looksLikeWebp(new Uint8Array(input.bytes)))
+  if (
+    !looksLikeWebp(new Uint8Array(input.bytes)) ||
+    !looksLikeWebp(new Uint8Array(input.small))
+  )
     return { ok: false, code: 'NOT_WEBP' }
 
   const row = await currentKey(memberId)
   if (!row) return { ok: false, code: 'NOT_FOUND' }
 
   const key = keyFor(memberId)
-  await imagesBucket.put(key, input.bytes, {
-    httpMetadata: { contentType: 'image/webp' },
-  })
+  const webp = { httpMetadata: { contentType: 'image/webp' } }
+  await Promise.all([
+    imagesBucket.put(key, input.bytes, webp),
+    imagesBucket.put(smallPhotoKey(key), input.small, webp),
+  ])
   try {
     await db.batch([
       db
@@ -74,10 +93,11 @@ export async function saveMemberPhoto(
       }),
     ])
   } catch (error) {
-    await imagesBucket.delete(key) // nothing points at it
+    await imagesBucket.delete(bothSizes(key)) // nothing points at them
     throw error
   }
-  if (row.key) await imagesBucket.delete(row.key)
+  // Older photos have no small copy; deleting a missing key is harmless.
+  if (row.key) await imagesBucket.delete(bothSizes(row.key))
   return { ok: true }
 }
 
@@ -101,16 +121,25 @@ export async function deleteMemberPhoto(
       targetId: memberId,
     }),
   ])
-  await imagesBucket.delete(row.key)
+  await imagesBucket.delete(bothSizes(row.key))
   return { ok: true }
 }
 
-/** The photo file for a member (archived ones too, for the archive view), or null. */
-export async function getMemberPhotoObject(memberId: string) {
+/**
+ * The photo file for a member (archived ones too, for the archive view), or
+ * null. `small` asks for the 128px copy; photos saved before there was one fall
+ * back to the big file.
+ */
+export async function getMemberPhotoObject(memberId: string, small: boolean) {
   const [row] = await db
     .select({ key: members.photoR2Key })
     .from(members)
     .where(eq(members.id, memberId))
     .limit(1)
-  return row?.key ? imagesBucket.get(row.key) : null
+  if (!row?.key) return null
+  if (small) {
+    const object = await imagesBucket.get(smallPhotoKey(row.key))
+    if (object) return object
+  }
+  return imagesBucket.get(row.key)
 }

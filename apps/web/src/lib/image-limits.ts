@@ -18,9 +18,24 @@ export const MAX_FULL_BYTES = 1_000_000
 export const MAX_THUMB_BYTES = 200_000
 export const MAX_DIMENSION = 8000
 
-// A member's photo: one size, enough for an ID-style picture in the drawer.
+// A member's photo: cropped square in the browser, stored in two sizes. 600px
+// for the profile and the drawer, 128px for the members list (a 28px circle
+// there, so 128 is sharp even on a 3x phone screen and only a few KB).
 export const MEMBER_PHOTO_WIDTH = 600
 export const MAX_MEMBER_PHOTO_BYTES = 200_000
+export const MEMBER_PHOTO_SMALL_WIDTH = 128
+export const MAX_MEMBER_PHOTO_SMALL_BYTES = 30_000
+
+/**
+ * Where a member's photo lives in R2. The small copy sits beside the big one
+ * with "-sm" added, so the database keeps a single key for both.
+ */
+export const memberPhotoKey = (memberId: string, version: string) =>
+  `members/${memberId}/${version}.webp`
+export const smallPhotoKey = (key: string) => key.replace(/\.webp$/, '-sm.webp')
+/** The random part of the key; it changes with every new photo. */
+export const photoVersion = (key: string) =>
+  key.slice(key.lastIndexOf('/') + 1, -'.webp'.length)
 
 export const FULL_WIDTH = 1600
 export const THUMB_WIDTH = 400

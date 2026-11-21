@@ -25,6 +25,8 @@ import type { MemberStatus } from './member-options.ts'
 import { PAGE_SIZE, escapeLike } from './members-query.ts'
 import type { MembersSearch } from './members-query.ts'
 import { CsvText, toCsv } from './csv.ts'
+import { photoVersion } from './image-limits.ts'
+import { bothSizes } from './member-photo.server.ts'
 import {
   GENDER_LABEL_KEY,
   MARITAL_LABEL_KEY,
@@ -51,6 +53,8 @@ export type MemberRow = {
   // Shown as a badge next to the name for admins and the super admin.
   role: (typeof members.$inferSelect)['role']
   status: MemberStatus
+  // The 128px copy, for the little circle beside the name. Null without one.
+  photoUrl: string | null
 }
 
 export type MembersPage = {
@@ -86,7 +90,7 @@ export async function listMembers(
 
   // One HTTP round trip for all three queries (db.batch): over Neon's HTTP
   // driver every separate query would be its own request.
-  const [rows, [total], statusCounts] = await db.batch([
+  const [photoRows, [total], statusCounts] = await db.batch([
     db
       .select({
         id: members.id,
@@ -97,6 +101,7 @@ export async function listMembers(
         occupation: members.occupation,
         role: members.role,
         status: members.status,
+        photoR2Key: members.photoR2Key,
       })
       .from(members)
       .where(where)
@@ -119,6 +124,12 @@ export async function listMembers(
     counts[status] = statusCounts.find((r) => r.status === status)?.n ?? 0
     counts.all += counts[status]
   }
+
+  // The R2 key never leaves the server; the page gets an admin-only URL.
+  const rows = photoRows.map(({ photoR2Key, ...row }) => ({
+    ...row,
+    photoUrl: photoUrlFor(row.id, photoR2Key, 'small'),
+  }))
 
   return {
     rows,
@@ -234,10 +245,14 @@ export type MemberDetail = ProfileRow & {
 }
 
 /** "/api/member-photo/<id>?v=<file name>", or null without a photo. */
-function photoUrlFor(id: string, key: string | null): string | null {
+function photoUrlFor(
+  id: string,
+  key: string | null,
+  size: 'full' | 'small' = 'full',
+): string | null {
   if (!key) return null
-  const version = key.slice(key.lastIndexOf('/') + 1, -'.webp'.length)
-  return `/api/member-photo/${id}?v=${version}`
+  const url = `/api/member-photo/${id}?v=${photoVersion(key)}`
+  return size === 'small' ? `${url}&size=small` : url
 }
 
 const dhakaDay = (column: AnyPgColumn) =>
@@ -393,7 +408,9 @@ export async function purgeArchivedMembers(): Promise<number> {
     ])
   }
   // Their photos go too: personal data is not kept past the 30 days.
-  const photoKeys = expired.flatMap((m) => (m.photoR2Key ? [m.photoR2Key] : []))
+  const photoKeys = expired.flatMap((m) =>
+    m.photoR2Key ? bothSizes(m.photoR2Key) : [],
+  )
   if (photoKeys.length > 0) await imagesBucket.delete(photoKeys)
   return expired.length
 }

@@ -2,6 +2,8 @@ import {
   FULL_WIDTH,
   MAX_FULL_BYTES,
   MAX_MEMBER_PHOTO_BYTES,
+  MAX_MEMBER_PHOTO_SMALL_BYTES,
+  MEMBER_PHOTO_SMALL_WIDTH,
   MEMBER_PHOTO_WIDTH,
   MAX_THUMB_BYTES,
   THUMB_WIDTH,
@@ -117,26 +119,68 @@ export async function uploadResized(
     : { ok: false, code: body?.code ?? 'FAILED' }
 }
 
-/** A member's photo: one WebP, at most 600px wide, under 200 KB. */
-export async function resizeMemberPhoto(
+/** The part of the photo the admin kept, in the photo's own pixels. */
+export type CropArea = { x: number; y: number; width: number; height: number }
+
+export type MemberPhotoFiles = { photo: Blob; small: Blob; side: number }
+
+// Draw the kept square into a new square canvas `side` pixels wide.
+function drawCrop(bitmap: ImageBitmap, area: CropArea, side: number) {
+  const canvas = document.createElement('canvas')
+  canvas.width = side
+  canvas.height = side
+  const context = canvas.getContext('2d')
+  if (!context) throw new ResizeError('UNREADABLE')
+  context.imageSmoothingQuality = 'high'
+  context.drawImage(
+    bitmap,
+    area.x,
+    area.y,
+    area.width,
+    area.height,
+    0,
+    0,
+    side,
+    side,
+  )
+  return canvas
+}
+
+/**
+ * A member's photo, cropped to the square the admin chose: one WebP at most
+ * 600px a side (under 200 KB) and a 128px copy for the members list.
+ */
+export async function cropMemberPhoto(
   file: File,
-): Promise<{ blob: Blob; width: number; height: number }> {
+  area: CropArea,
+): Promise<MemberPhotoFiles> {
   let bitmap: ImageBitmap
   try {
+    // Turned upright from the phone's EXIF, the same way the <img> in the
+    // cropper shows it, so the crop lands where the admin put it.
     bitmap = await createImageBitmap(file)
   } catch {
     throw new ResizeError('UNREADABLE')
   }
   try {
-    const scaled = drawScaled(bitmap, MEMBER_PHOTO_WIDTH)
+    // Never enlarge: a small crop stays its own size.
+    const side = Math.max(
+      1,
+      Math.min(MEMBER_PHOTO_WIDTH, Math.round(area.width)),
+    )
+    const small = Math.min(MEMBER_PHOTO_SMALL_WIDTH, side)
     return {
-      blob: await encodeUnder(
-        scaled.canvas,
+      photo: await encodeUnder(
+        drawCrop(bitmap, area, side),
         [0.82, 0.72, 0.62],
         MAX_MEMBER_PHOTO_BYTES,
       ),
-      width: scaled.width,
-      height: scaled.height,
+      small: await encodeUnder(
+        drawCrop(bitmap, area, small),
+        [0.8, 0.65],
+        MAX_MEMBER_PHOTO_SMALL_BYTES,
+      ),
+      side,
     }
   } finally {
     bitmap.close()

@@ -1,10 +1,12 @@
 import { Camera, Trash2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 
-import { ResizeError, resizeMemberPhoto } from '../../lib/image-resize.ts'
+import { ResizeError, cropMemberPhoto } from '../../lib/image-resize.ts'
+import type { CropArea } from '../../lib/image-resize.ts'
 import { useT } from '../../lib/i18n/index.tsx'
 import { cn } from '../../lib/utils.ts'
 import { Button } from '../ui/button.tsx'
+import { PhotoCropDialog } from './photo-crop-dialog.tsx'
 
 // A member's photo: admins only, served by /api/member-photo/<id>, which
 // checks the session on every request.
@@ -41,8 +43,8 @@ export function MemberAvatar({
 
 /**
  * Add, replace or remove a member's photo. Saves at once (it is not part of
- * the details form). The photo is shrunk in the browser to one small WebP
- * before it is sent.
+ * the details form). The admin first picks the square to keep; the browser
+ * then cuts it out and shrinks it to two small WebP files before sending.
  */
 export function MemberPhotoEditor({
   memberId,
@@ -59,32 +61,45 @@ export function MemberPhotoEditor({
   const input = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // The file being cropped; the crop dialog is open while this is set.
+  const [picked, setPicked] = useState<File | null>(null)
+  const [cropError, setCropError] = useState<string | null>(null)
 
-  async function upload(file: File | undefined) {
+  function pick(file: File | undefined) {
+    // Cleared at once, so choosing the same file again still fires onChange.
+    if (input.current) input.current.value = ''
     if (!file) return
-    setBusy(true)
     setError(null)
+    setCropError(null)
+    setPicked(file)
+  }
+
+  async function upload(file: File, area: CropArea) {
+    setBusy(true)
+    setCropError(null)
     try {
-      const photo = await resizeMemberPhoto(file)
+      const photo = await cropMemberPhoto(file, area)
       const form = new FormData()
-      form.set('photo', photo.blob, 'photo.webp')
-      form.set('width', String(photo.width))
-      form.set('height', String(photo.height))
+      form.set('photo', photo.photo, 'photo.webp')
+      form.set('small', photo.small, 'small.webp')
+      form.set('width', String(photo.side))
+      form.set('height', String(photo.side))
       const response = await fetch(`/api/member-photo/${memberId}`, {
         method: 'POST',
         body: form,
       })
       if (!response.ok) throw new Error('upload failed')
       await onChanged()
+      setPicked(null)
     } catch (e) {
-      setError(
+      // Shown in the dialog, which stays open so the admin can try again.
+      setCropError(
         e instanceof ResizeError && e.code === 'UNREADABLE'
           ? t('gal.errUnreadable')
           : t('memberPhoto.error'),
       )
     } finally {
       setBusy(false)
-      if (input.current) input.current.value = ''
     }
   }
 
@@ -132,7 +147,7 @@ export function MemberPhotoEditor({
             className="sr-only"
             tabIndex={-1}
             aria-hidden="true"
-            onChange={(e) => void upload(e.target.files?.[0])}
+            onChange={(e) => pick(e.target.files?.[0])}
           />
           <Button
             type="button"
@@ -167,6 +182,15 @@ export function MemberPhotoEditor({
           </p>
         )}
       </div>
+      {picked && (
+        <PhotoCropDialog
+          file={picked}
+          busy={busy}
+          error={cropError}
+          onCancel={() => setPicked(null)}
+          onSave={(area) => void upload(picked, area)}
+        />
+      )}
     </section>
   )
 }

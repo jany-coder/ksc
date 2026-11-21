@@ -49,12 +49,26 @@ function makeColumns(t: ReturnType<typeof useT>) {
       header: t('members.colMember'),
       cell: ({ getValue, row }) => (
         <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-          <span
-            aria-hidden="true"
-            className="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-zinc-600"
-          >
-            {initialOf(getValue())}
-          </span>
+          {/* The 128px copy of their photo, or the first letter. Decorative:
+            the name is right beside it. */}
+          {row.original.photoUrl ? (
+            <img
+              src={row.original.photoUrl}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width={28}
+              height={28}
+              className="size-7 shrink-0 rounded-full bg-secondary object-cover"
+            />
+          ) : (
+            <span
+              aria-hidden="true"
+              className="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-zinc-600"
+            >
+              {initialOf(getValue())}
+            </span>
+          )}
           {/* A real link: opens the detail drawer (?member=<id>), so it works with
             middle-click and "copy link address" too. */}
           <Link
