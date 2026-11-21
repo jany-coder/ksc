@@ -210,6 +210,15 @@
   --footer: #121a17; /* footer background */
 }
 
+/* Public-site cards: a soft green-tinted shadow at rest, a deeper one when
+   lifted. (The admin panel keeps borders only, CLAUDE.md section 8.) */
+@theme {
+  --shadow-card:
+    0 1px 2px rgb(14 59 42 / 0.05), 0 10px 30px -14px rgb(14 59 42 / 0.2);
+  --shadow-lift:
+    0 2px 4px rgb(14 59 42 / 0.06), 0 22px 44px -18px rgb(14 59 42 / 0.32);
+}
+
 @theme inline {
   /* Fonts are loaded at the top of this file. 'Noto Sans Bengali' comes first
      but only holds the digits, so it changes the numbers and nothing else,
@@ -342,11 +351,13 @@
   .lift {
     transition:
       transform 0.25s ease,
-      border-color 0.25s ease;
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
   }
   .lift:hover {
     transform: translateY(-4px);
-    border-color: var(--primary);
+    border-color: color-mix(in oklab, var(--primary) 45%, transparent);
+    box-shadow: var(--shadow-lift);
   }
   .lift img,
   .zoom img {

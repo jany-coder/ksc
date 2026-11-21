@@ -1,5 +1,10 @@
+import { CircleCheck, Sparkles } from 'lucide-react'
+
 import { useNumber, useT } from '../../../lib/i18n/index.tsx'
 import type { MessageKey } from '../../../lib/i18n/messages.ts'
+import { cn } from '../../../lib/utils.ts'
+import { SectionHeading } from '../section-heading.tsx'
+import { bodyText, liftCard, numberTile, tickItem } from '../styles.ts'
 
 // "Our future mission": the club's plans, in its own words. These are plans,
 // not done work, so the section says so in its title and subtitle.
@@ -7,16 +12,18 @@ function Bullets({ title, items }: { title: MessageKey; items: MessageKey[] }) {
   const t = useT()
   return (
     <>
-      <h5 className="mt-5 mb-2.5 text-base font-semibold text-brand-deep">
+      <h5 className="mt-5 mb-3 text-base font-semibold text-brand-deep">
         {t(title)}
       </h5>
-      <ul className="m-0 flex list-none flex-col gap-2 p-0">
+      <ul className="m-0 flex list-none flex-col gap-2.5 rounded-xl bg-panel p-4 ps-3.5">
         {items.map((key) => (
-          <li
-            key={key}
-            className="relative pl-5 text-base leading-[1.65] text-copy before:absolute before:top-[0.7em] before:left-0 before:size-2 before:-translate-y-1/2 before:rounded-full before:bg-primary"
-          >
-            {t(key)}
+          <li key={key} className={tickItem}>
+            <CircleCheck
+              aria-hidden="true"
+              className="mt-1 size-[18px] shrink-0 text-primary"
+              strokeWidth={2}
+            />
+            <span>{t(key)}</span>
           </li>
         ))}
       </ul>
@@ -24,16 +31,13 @@ function Bullets({ title, items }: { title: MessageKey; items: MessageKey[] }) {
   )
 }
 
-const cardClass = 'rounded-[10px] border border-line bg-card px-7 py-7'
+const cardClass = cn(liftCard, 'p-6 md:p-7')
 
 export function Future() {
   const t = useT()
   const number = useNumber()
   const badge = (n: number) => (
-    <span
-      aria-hidden="true"
-      className="mb-3 inline-flex size-9 items-center justify-center rounded-full bg-primary font-heading text-base font-bold text-primary-foreground"
-    >
+    <span aria-hidden="true" className={cn(numberTile, 'mb-4')}>
       {number(n)}
     </span>
   )
@@ -46,18 +50,13 @@ export function Future() {
       className="scroll-mt-4 md:scroll-mt-16 py-14 md:py-[92px]"
     >
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
-        <h2 className="mb-2 text-[28px] font-bold text-brand-deep md:text-[40px]">
-          {t('future.title')}
-        </h2>
-        <p className="mb-6 font-heading text-lg font-semibold text-primary md:text-xl">
-          {t('future.subtitle')}
-        </p>
-        <p className="mb-4 max-w-[68ch] text-[17px] leading-[1.8] text-zinc-800 md:text-[19px]">
-          {t('future.p1')}
-        </p>
-        <p className="mb-10 max-w-[68ch] text-[17px] leading-[1.8] text-zinc-800 md:mb-12 md:text-[19px]">
-          {t('future.p2')}
-        </p>
+        <SectionHeading
+          title={t('future.title')}
+          subtitle={t('future.subtitle')}
+        >
+          <p className={bodyText}>{t('future.p1')}</p>
+          <p className={bodyText}>{t('future.p2')}</p>
+        </SectionHeading>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(400px,100%),1fr))] gap-6">
           <article className={cardClass}>
@@ -128,20 +127,25 @@ export function Future() {
           </article>
         </div>
 
-        <div className="mt-12 rounded-[10px] border-l-4 border-primary bg-accent px-6 py-8 md:mt-16 md:px-10 md:py-10">
+        {/* The club's dream, set apart on light green (the next section is deep green). */}
+        <div className="relative mt-12 overflow-hidden rounded-3xl border border-primary/15 bg-accent px-6 py-9 md:mt-16 md:px-12 md:py-12">
+          <Sparkles
+            aria-hidden="true"
+            className="absolute -top-3 right-6 size-28 text-primary/[0.08] md:size-40"
+          />
           <h3 className="mb-1 text-2xl font-bold text-brand-deep md:text-[30px]">
             {t('future.dreamTitle')}
           </h3>
           <p className="mb-5 font-heading text-lg font-semibold text-primary">
             {t('future.dreamSubtitle')}
           </p>
-          <p className="mb-4 max-w-[70ch] text-[17px] leading-[1.8] text-zinc-800 md:text-[19px]">
+          <p className="relative mb-4 max-w-[70ch] text-[17px] leading-[1.8] text-zinc-800 md:text-[19px]">
             {t('future.dream1')}
           </p>
-          <p className="mb-4 max-w-[70ch] text-[17px] leading-[1.8] text-zinc-800 md:text-[19px]">
+          <p className="relative mb-5 max-w-[70ch] text-[17px] leading-[1.8] text-zinc-800 md:text-[19px]">
             {t('future.dream2')}
           </p>
-          <p className="max-w-[70ch] text-[17px] leading-[1.8] font-semibold text-brand-deep md:text-[19px]">
+          <p className="relative max-w-[70ch] border-s-2 border-primary ps-4 text-[17px] leading-[1.8] font-semibold text-brand-deep md:text-[19px]">
             {t('future.dream3')}
           </p>
         </div>

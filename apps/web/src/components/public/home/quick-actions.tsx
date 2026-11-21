@@ -16,7 +16,7 @@ export function QuickActions() {
         to="/{-$locale}"
         params={localeParams}
         hash="contact"
-        className="flex min-h-11 flex-col gap-1.5 rounded-[9px] border border-line bg-card p-3.5"
+        className="flex min-h-11 flex-col gap-1.5 rounded-2xl border border-line bg-card p-4 shadow-card"
       >
         <Droplet
           className="size-[22px] text-blood"
@@ -34,7 +34,7 @@ export function QuickActions() {
         to="/{-$locale}"
         params={localeParams}
         hash="gallery"
-        className="flex min-h-11 flex-col gap-1.5 rounded-[9px] border border-line bg-card p-3.5"
+        className="flex min-h-11 flex-col gap-1.5 rounded-2xl border border-line bg-card p-4 shadow-card"
       >
         <Image
           className="size-[22px] text-primary"

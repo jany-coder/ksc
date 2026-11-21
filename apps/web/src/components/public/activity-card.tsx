@@ -1,7 +1,10 @@
 import { Link } from '@tanstack/react-router'
+import { ArrowRight, CalendarDays, MapPin } from 'lucide-react'
 
 import { formatDate } from '../../lib/datetime.ts'
 import { useLang, useLocaleParams, useT } from '../../lib/i18n/index.tsx'
+import { cn } from '../../lib/utils.ts'
+import { liftCard, pill } from './styles.ts'
 
 export type ActivityCardData = {
   id: string
@@ -27,21 +30,28 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
   return (
     // h-full: the grid stretches every card in a row to the same height.
     // relative: the title link's ::after stretches over the whole card.
-    <article className="lift relative flex h-full flex-col overflow-hidden rounded-[10px] border border-line bg-card">
+    <article
+      className={cn(
+        liftCard,
+        'zoom relative flex h-full flex-col overflow-hidden',
+      )}
+    >
       {item.thumbUrl ? (
-        <img
-          src={item.thumbUrl}
-          // The 1600px version for screens that need more than 400px.
-          srcSet={
-            item.fullUrl
-              ? `${item.thumbUrl} 400w, ${item.fullUrl} 1600w`
-              : undefined
-          }
-          sizes="(min-width: 768px) 380px, 100vw"
-          alt={item.title}
-          loading="lazy"
-          className="aspect-[4/3] w-full bg-panel object-cover"
-        />
+        <div className="overflow-hidden">
+          <img
+            src={item.thumbUrl}
+            // The 1600px version for screens that need more than 400px.
+            srcSet={
+              item.fullUrl
+                ? `${item.thumbUrl} 400w, ${item.fullUrl} 1600w`
+                : undefined
+            }
+            sizes="(min-width: 768px) 380px, 100vw"
+            alt={item.title}
+            loading="lazy"
+            className="aspect-[4/3] w-full bg-panel object-cover"
+          />
+        </div>
       ) : (
         // No photo yet: a quiet panel with the club's logo, not an empty box.
         <div className="flex aspect-[4/3] w-full items-center justify-center bg-accent">
@@ -55,16 +65,20 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
         </div>
       )}
 
-      <div className="flex grow flex-col gap-3 px-6 pt-6 pb-7">
+      <div className="flex grow flex-col gap-3 px-6 pt-5 pb-6">
         {(item.eventDate || item.location) && (
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             {item.eventDate && (
-              <span className="rounded-[5px] bg-[#e3f0e9] px-[11px] py-[5px] text-sm font-semibold text-brand-deep">
+              <span className={pill}>
+                <CalendarDays aria-hidden="true" className="size-3.5" />
                 {formatDate(item.eventDate, lang)}
               </span>
             )}
             {item.location && (
-              <span className="text-[15px] text-subtle">{item.location}</span>
+              <span className="inline-flex items-center gap-1 text-[15px] text-subtle">
+                <MapPin aria-hidden="true" className="size-3.5 shrink-0" />
+                {item.location}
+              </span>
             )}
           </div>
         )}
@@ -74,7 +88,7 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
           <Link
             to="/{-$locale}/activities/$slug"
             params={{ ...localeParams, slug: item.slug }}
-            className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none after:focus-visible:rounded-[10px] after:focus-visible:outline-2 after:focus-visible:outline-offset-2 after:focus-visible:outline-primary"
+            className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none after:focus-visible:rounded-2xl after:focus-visible:outline-2 after:focus-visible:outline-offset-2 after:focus-visible:outline-primary"
           >
             {item.title}
           </Link>
@@ -86,9 +100,10 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
         )}
         <span
           aria-hidden="true"
-          className="mt-auto pt-1 text-[15px] font-semibold text-primary"
+          className="mt-auto inline-flex items-center gap-1.5 pt-1 text-[15px] font-semibold text-primary"
         >
-          {t('activities.details')} →
+          {t('activities.details')}
+          <ArrowRight className="size-4 rtl:rotate-180" />
         </span>
       </div>
     </article>

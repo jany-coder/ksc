@@ -1,7 +1,10 @@
-import { BellOff } from 'lucide-react'
+import { BellOff, CalendarDays, Megaphone } from 'lucide-react'
 
 import { formatDate } from '../../../lib/datetime.ts'
 import { useLang, useT } from '../../../lib/i18n/index.tsx'
+import { cn } from '../../../lib/utils.ts'
+import { SectionHeading } from '../section-heading.tsx'
+import { bloodTile, card, iconTile, pill } from '../styles.ts'
 
 // "Notice board": the club's published notices. With none, a calm "no notices
 // right now" panel instead: never made-up notices, since a fake blood request
@@ -26,19 +29,22 @@ export function NoticeBoard({ items = [] }: { items?: Notice[] }) {
     >
       <div className="mx-auto flex w-full max-w-[1180px] flex-wrap gap-14 px-5 md:px-8">
         <div className="min-w-0 flex-[1_1_280px]">
-          <h2 className="mb-3.5 text-[28px] font-bold text-brand-deep md:text-[40px]">
-            {t('notice.title')}
-          </h2>
+          <SectionHeading title={t('notice.title')} className="mb-4 md:mb-5" />
           <p className="text-[17px] leading-[1.65] text-copy md:text-[19px]">
             {t('notice.lead')}
           </p>
         </div>
 
         {items.length === 0 ? (
-          <div className="flex min-w-0 flex-[999_1_460px] flex-col items-center justify-center rounded-[10px] border border-dashed border-[#c9d8cf] bg-card px-6 py-12 text-center md:py-14">
-            <span className="mb-4 inline-flex size-14 items-center justify-center rounded-full bg-accent">
+          <div
+            className={cn(
+              card,
+              'flex min-w-0 flex-[999_1_460px] flex-col items-center justify-center px-6 py-12 text-center md:py-14',
+            )}
+          >
+            <span className={cn(iconTile, 'mb-4 size-14')}>
               <BellOff
-                className="size-7 text-primary"
+                className="size-7"
                 strokeWidth={1.7}
                 aria-hidden="true"
               />
@@ -58,25 +64,49 @@ export function NoticeBoard({ items = [] }: { items?: Notice[] }) {
             </a>
           </div>
         ) : (
-          <ul className="m-0 flex min-w-0 flex-[999_1_460px] list-none flex-col border-t border-line p-0">
+          <ul className="m-0 flex min-w-0 flex-[999_1_460px] list-none flex-col gap-4 p-0">
             {items.map((n) => (
               <li
                 key={n.id}
-                className="flex flex-wrap gap-5 border-b border-line py-[26px]"
+                className={cn(
+                  card,
+                  'flex gap-4 p-5 md:p-6',
+                  // An urgent notice gets a red edge so it is seen first.
+                  n.urgent && 'border-s-4 border-s-blood',
+                )}
               >
-                <span className="flex-[0_0_96px] pt-[3px] text-[15px] text-subtle">
-                  {n.publishedDate ? formatDate(n.publishedDate, lang) : ''}
+                <span
+                  className={cn(
+                    n.urgent ? bloodTile : iconTile,
+                    'hidden sm:inline-flex',
+                  )}
+                >
+                  <Megaphone
+                    aria-hidden="true"
+                    className="size-6"
+                    strokeWidth={1.8}
+                  />
                 </span>
-                <div className="min-w-0 flex-[999_1_240px]">
-                  <h3 className="mb-1.5 flex flex-wrap items-center gap-2.5 text-xl font-semibold text-ink">
+                <div className="min-w-0 grow">
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    {n.publishedDate && (
+                      <span className={pill}>
+                        <CalendarDays aria-hidden="true" className="size-3.5" />
+                        {formatDate(n.publishedDate, lang)}
+                      </span>
+                    )}
                     {n.urgent && (
-                      <span className="rounded bg-[#fbe8e7] px-[9px] py-[3px] font-sans text-[13px] font-semibold text-[#9e2a23]">
+                      <span className="rounded-full bg-[#fbe8e7] px-3 py-1 font-sans text-[13px] font-semibold text-[#9e2a23]">
                         {t('notice.urgent')}
                       </span>
                     )}
+                  </div>
+                  <h3 className="mb-1.5 text-xl leading-snug font-semibold text-ink">
                     {n.title}
                   </h3>
-                  <p className="text-base leading-[1.65] text-copy">{n.body}</p>
+                  <p className="text-base leading-[1.7] whitespace-pre-line text-copy">
+                    {n.body}
+                  </p>
                 </div>
               </li>
             ))}

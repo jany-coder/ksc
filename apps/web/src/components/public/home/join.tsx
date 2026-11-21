@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import {
   BadgeCheck,
+  CircleCheck,
   ListOrdered,
   Mail,
   ShieldCheck,
@@ -10,6 +11,8 @@ import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { useLocaleParams, useNumber, useT } from '../../../lib/i18n/index.tsx'
+import { SectionHeading } from '../section-heading.tsx'
+import { iconTile } from '../styles.ts'
 import type { MessageKey } from '../../../lib/i18n/messages.ts'
 import { buttonVariants } from '../../ui/button.tsx'
 
@@ -56,15 +59,11 @@ function Card({
   return (
     <div
       id={id}
-      className={`flex h-full scroll-mt-4 flex-col rounded-[12px] md:scroll-mt-16 bg-card p-7 text-copy shadow-[0_1px_2px_rgba(0,0,0,0.06)] md:p-8 ${className}`}
+      className={`flex h-full scroll-mt-4 flex-col rounded-2xl bg-card p-6 text-copy shadow-lift md:scroll-mt-16 md:p-8 ${className}`}
     >
       <div className="mb-5 flex items-center gap-3">
-        <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-accent">
-          <Icon
-            className="size-[22px] text-primary"
-            strokeWidth={1.8}
-            aria-hidden="true"
-          />
+        <span className={iconTile}>
+          <Icon className="size-6" strokeWidth={1.8} aria-hidden="true" />
         </span>
         <h3 className="text-[21px] leading-snug font-semibold text-brand-deep md:text-[22px]">
           {t(title)}
@@ -80,11 +79,13 @@ function List({ items }: { items: MessageKey[] }) {
   return (
     <ul className="m-0 flex list-none flex-col gap-3 p-0">
       {items.map((key) => (
-        <li
-          key={key}
-          className="relative pl-5 text-base leading-[1.65] before:absolute before:top-[0.7em] before:left-0 before:size-2 before:-translate-y-1/2 before:rounded-full before:bg-primary"
-        >
-          {t(key)}
+        <li key={key} className="flex gap-3 text-base leading-[1.65]">
+          <CircleCheck
+            aria-hidden="true"
+            className="mt-1 size-[18px] shrink-0 text-primary"
+            strokeWidth={2}
+          />
+          <span>{t(key)}</span>
         </li>
       ))}
     </ul>
@@ -98,21 +99,22 @@ export function Join() {
   return (
     <section
       id="join"
-      className="scroll-mt-4 md:scroll-mt-16 bg-primary py-14 text-primary-foreground md:py-[88px]"
+      // Deep green, like the gallery: the mint text keeps its contrast here.
+      className="scroll-mt-4 bg-brand-deep py-14 text-white md:scroll-mt-16 md:py-[92px]"
     >
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
-        <h2 className="mb-2 text-[28px] font-bold text-white md:text-[40px]">
-          {t('joinSection.title')}
-        </h2>
-        <p className="mb-6 font-heading text-lg font-semibold text-mint-soft md:text-xl">
-          {t('joinSection.subtitle')}
-        </p>
-        <p className="mb-4 max-w-[70ch] text-[17px] leading-[1.8] text-mint-soft md:text-[19px]">
-          {t('joinSection.p1')}
-        </p>
-        <p className="mb-10 max-w-[70ch] text-[17px] leading-[1.8] text-mint-soft md:mb-12 md:text-[19px]">
-          {t('joinSection.p2')}
-        </p>
+        <SectionHeading
+          tone="dark"
+          title={t('joinSection.title')}
+          subtitle={t('joinSection.subtitle')}
+        >
+          <p className="max-w-[70ch] text-[17px] leading-[1.8] text-mint-soft md:text-[19px]">
+            {t('joinSection.p1')}
+          </p>
+          <p className="max-w-[70ch] text-[17px] leading-[1.8] text-mint-soft md:text-[19px]">
+            {t('joinSection.p2')}
+          </p>
+        </SectionHeading>
 
         {/* Phone: one column. Tablet: two. Desktop: three across on top
             (who can join, rights, how to join), then privacy (wide) and
@@ -136,7 +138,7 @@ export function Join() {
                 <li key={key} className="flex gap-3.5">
                   <span
                     aria-hidden="true"
-                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-primary font-heading text-[15px] font-bold text-primary-foreground"
+                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent font-heading text-[15px] font-bold text-primary"
                   >
                     {number(i + 1)}
                   </span>

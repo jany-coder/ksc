@@ -1,11 +1,16 @@
 import { Link } from '@tanstack/react-router'
+import { ArrowRight, CalendarClock, CalendarDays, MapPin } from 'lucide-react'
 
 import { formatEventWhen } from '../../../lib/datetime.ts'
 import { useLang, useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
+import { cn } from '../../../lib/utils.ts'
+import { SectionHeading } from '../section-heading.tsx'
+import { card, iconTile, liftCard, pill } from '../styles.ts'
 
 // "Upcoming activities". The home page passes in the real, published, upcoming
 // activities from the database. When there are none, a plain message is shown:
 // no invented events and no leftover "[placeholder]" text on a live site.
+
 export type UpcomingActivity = {
   id: string
   slug: string
@@ -28,17 +33,25 @@ export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
       className="scroll-mt-4 md:scroll-mt-16 border-y border-line bg-panel py-14 md:py-[92px]"
     >
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
-        <div className="mb-9 md:mb-11">
-          <h2 className="mb-2.5 text-[28px] font-bold text-brand-deep md:text-[40px]">
-            {t('upcoming.title')}
-          </h2>
-          <p className="text-[17px] text-copy md:text-[19px]">
-            {t('upcoming.lead')}
-          </p>
-        </div>
+        <SectionHeading
+          title={t('upcoming.title')}
+          subtitle={t('upcoming.lead')}
+        />
 
         {items.length === 0 ? (
-          <p className="rounded-[10px] border border-line bg-card px-6 py-10 text-center text-[17px] text-copy">
+          <p
+            className={cn(
+              card,
+              'flex flex-col items-center gap-3 px-6 py-10 text-center text-[17px] text-copy',
+            )}
+          >
+            <span className={iconTile}>
+              <CalendarClock
+                aria-hidden="true"
+                className="size-6"
+                strokeWidth={1.8}
+              />
+            </span>
             {t('upcoming.none')}
           </p>
         ) : (
@@ -47,22 +60,28 @@ export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
               <article
                 key={item.id}
                 // relative: the title link's ::after covers the whole card.
-                className="lift relative flex flex-col overflow-hidden rounded-[10px] border border-line bg-card"
+                className={cn(
+                  liftCard,
+                  'zoom relative flex flex-col overflow-hidden',
+                )}
               >
                 {item.imageUrl ? (
-                  <img
-                    src={item.imageUrl}
-                    alt=""
-                    className="h-[170px] w-full object-cover"
-                  />
+                  <div className="overflow-hidden">
+                    <img
+                      src={item.imageUrl}
+                      alt=""
+                      className="h-[180px] w-full object-cover"
+                    />
+                  </div>
                 ) : (
-                  <div className="flex h-[170px] items-center justify-center border-b border-[#dce3dd] bg-[#e8ede9] p-3 text-center text-sm text-subtle">
+                  <div className="flex h-[180px] items-center justify-center bg-accent p-3 text-center text-sm text-subtle">
                     {t('upcoming.imagePlaceholder')}
                   </div>
                 )}
-                <div className="flex grow flex-col gap-3 px-[26px] pt-[26px] pb-7">
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <span className="rounded-[5px] bg-[#e3f0e9] px-[11px] py-[5px] text-sm font-semibold text-brand-deep">
+                <div className="flex grow flex-col gap-3 px-6 pt-5 pb-6">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <span className={pill}>
+                      <CalendarDays aria-hidden="true" className="size-3.5" />
                       {formatEventWhen(
                         item.eventDate,
                         item.eventTime?.slice(0, 5) ?? null,
@@ -70,16 +89,20 @@ export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
                       )}
                     </span>
                     {item.location && (
-                      <span className="text-[15px] text-subtle">
+                      <span className="inline-flex items-center gap-1 text-[15px] text-subtle">
+                        <MapPin
+                          aria-hidden="true"
+                          className="size-3.5 shrink-0"
+                        />
                         {item.location}
                       </span>
                     )}
                   </div>
-                  <h3 className="text-[23px] font-semibold text-ink">
+                  <h3 className="text-[21px] leading-snug font-semibold text-ink md:text-[23px]">
                     <Link
                       to="/{-$locale}/activities/$slug"
                       params={{ ...localeParams, slug: item.slug }}
-                      className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none after:focus-visible:rounded-[10px] after:focus-visible:outline-2 after:focus-visible:outline-offset-2 after:focus-visible:outline-primary"
+                      className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none after:focus-visible:rounded-2xl after:focus-visible:outline-2 after:focus-visible:outline-offset-2 after:focus-visible:outline-primary"
                     >
                       {item.title}
                     </Link>
@@ -91,9 +114,10 @@ export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
                   )}
                   <span
                     aria-hidden="true"
-                    className="mt-auto pt-1 text-[15px] font-semibold text-primary"
+                    className="mt-auto inline-flex items-center gap-1.5 pt-1 text-[15px] font-semibold text-primary"
                   >
-                    {t('activities.details')} →
+                    {t('activities.details')}
+                    <ArrowRight className="size-4 rtl:rotate-180" />
                   </span>
                 </div>
               </article>
