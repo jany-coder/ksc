@@ -59,6 +59,7 @@ export type PublicGalleryPhoto = {
   caption: string | null
   activityId: string | null
   activityTitle: string | null
+  activitySlug: string | null
   activityDate: string | null
 }
 
@@ -66,6 +67,8 @@ export type PhotoGroup = {
   // The activity id, or 'other' for photos with no published activity.
   key: string
   title: string | null
+  // For the link to the activity's page; null for the "other" group.
+  slug: string | null
   date: string | null
   // Each photo with its place in the whole list, for the lightbox.
   photos: { photo: PublicGalleryPhoto; index: number }[]
@@ -81,6 +84,7 @@ export function groupPhotos(photos: PublicGalleryPhoto[]): PhotoGroup[] {
   const other: PhotoGroup = {
     key: 'other',
     title: null,
+    slug: null,
     date: null,
     photos: [],
   }
@@ -94,6 +98,7 @@ export function groupPhotos(photos: PublicGalleryPhoto[]): PhotoGroup[] {
       group = {
         key: photo.activityId,
         title: photo.activityTitle,
+        slug: photo.activitySlug,
         date: photo.activityDate,
         photos: [],
       }

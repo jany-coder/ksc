@@ -191,6 +191,8 @@ export async function listActivities(): Promise<ActivityRow[]> {
 
 export type PublicActivity = {
   id: string
+  // For the link to the activity's own page.
+  slug: string
   title: string
   description: string
   // Plain "YYYY-MM-DD" / "HH:MM:SS" text: the page formats them in the
@@ -218,6 +220,7 @@ export async function listUpcomingPublic(limit = 3): Promise<PublicActivity[]> {
   const rows = await db
     .select({
       id: activities.id,
+      slug: activities.slug,
       title: activities.title,
       description: activities.description,
       eventDate: activities.eventDate,
@@ -241,6 +244,7 @@ export async function listUpcomingPublic(limit = 3): Promise<PublicActivity[]> {
 
   return rows.map((r) => ({
     id: r.id,
+    slug: r.slug,
     title: r.title,
     description: shorten(r.description ?? '', 220),
     eventDate: r.eventDate,
@@ -252,6 +256,7 @@ export async function listUpcomingPublic(limit = 3): Promise<PublicActivity[]> {
 
 export type PastActivity = {
   id: string
+  slug: string
   title: string
   // The full text: long ones are folded on the card with "see more".
   description: string
@@ -272,6 +277,7 @@ export async function listPastPublic(limit: number): Promise<PastActivity[]> {
   const rows = await db
     .select({
       id: activities.id,
+      slug: activities.slug,
       title: activities.title,
       description: activities.description,
       eventDate: activities.eventDate,
@@ -293,6 +299,7 @@ export async function listPastPublic(limit: number): Promise<PastActivity[]> {
 
   return rows.map((r) => ({
     id: r.id,
+    slug: r.slug,
     title: r.title,
     description: r.description ?? '',
     eventDate: r.eventDate,

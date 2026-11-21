@@ -385,6 +385,9 @@ export async function listPublicGallery(input: {
       activityTitle: sql<
         string | null
       >`case when ${isPublished} then ${activities.title} end`,
+      activitySlug: sql<
+        string | null
+      >`case when ${isPublished} then ${activities.slug} end`,
       activityDate: publicActivityDate,
     })
     .from(images)

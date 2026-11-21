@@ -56,6 +56,7 @@ describe('groupPhotos', () => {
     caption: null,
     activityId,
     activityTitle,
+    activitySlug: activityId,
     activityDate: null,
   })
 

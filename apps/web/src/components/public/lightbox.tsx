@@ -1,8 +1,9 @@
+import { Link } from '@tanstack/react-router'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
 import { imageUrl } from '../../lib/image-limits.ts'
-import { useNumber, useT } from '../../lib/i18n/index.tsx'
+import { useLocaleParams, useNumber, useT } from '../../lib/i18n/index.tsx'
 
 const iconButton =
   'inline-flex size-11 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 focus-visible:outline-2 focus-visible:outline-white'
@@ -10,7 +11,13 @@ const iconButton =
 // How far a finger must travel sideways to count as a swipe, in pixels.
 const SWIPE_PX = 50
 
-export type LightboxPhoto = { id: string; caption: string | null }
+export type LightboxPhoto = {
+  id: string
+  caption: string | null
+  // When set, a link under the photo opens its activity's page. Left out on
+  // the activity page itself, where the reader already is.
+  activitySlug?: string | null
+}
 
 /**
  * A big photo in the browser's own <dialog>: Esc closes it and focus stays
@@ -31,6 +38,7 @@ export function Lightbox({
 }) {
   const t = useT()
   const number = useNumber()
+  const localeParams = useLocaleParams()
   const dialog = useRef<HTMLDialogElement>(null)
   // Where a touch began, to tell a swipe from a tap.
   const touchStart = useRef<{ x: number; y: number } | null>(null)
@@ -112,6 +120,15 @@ export function Lightbox({
               <figcaption className="max-w-[60ch] text-center text-base text-white">
                 {photo.caption}
               </figcaption>
+            )}
+            {photo.activitySlug && (
+              <Link
+                to="/{-$locale}/activities/$slug"
+                params={{ ...localeParams, slug: photo.activitySlug }}
+                className="text-base font-semibold text-white underline underline-offset-4 hover:text-white/80"
+              >
+                {t('gallery.aboutActivity')}
+              </Link>
             )}
           </figure>
         )}

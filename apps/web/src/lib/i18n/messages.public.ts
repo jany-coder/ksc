@@ -188,6 +188,10 @@ export const publicMessages = {
     bn: 'মোট {total}টির মধ্যে {n} নম্বর ছবি',
     en: 'Photo {n} of {total}',
   },
+  'gallery.aboutActivity': {
+    bn: 'এই কার্যক্রম সম্পর্কে পড়ুন',
+    en: 'Read about this activity',
+  },
   'gallery.bigPhoto': { bn: 'বড় ছবি', en: 'Large photo' },
   'gallery.close': { bn: 'বন্ধ করুন', en: 'Close' },
   'gallery.prev': { bn: 'আগের ছবি', en: 'Previous photo' },

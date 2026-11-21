@@ -133,7 +133,17 @@ function GalleryBody() {
                   id={`group-${group.key}`}
                   className="mb-1 text-[22px] font-bold text-brand-deep md:text-[28px]"
                 >
-                  {group.title ?? t('gallery.otherPhotos')}
+                  {group.title && group.slug ? (
+                    <Link
+                      to="/{-$locale}/activities/$slug"
+                      params={{ ...localeParams, slug: group.slug }}
+                      className="hover:underline hover:underline-offset-4"
+                    >
+                      {group.title}
+                    </Link>
+                  ) : (
+                    t('gallery.otherPhotos')
+                  )}
                 </h2>
                 {group.date && (
                   <p className="mb-4 text-[17px] text-copy">

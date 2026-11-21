@@ -210,8 +210,7 @@ export const homeMessages = {
     en: 'We believe that small initiatives, kept up steadily, eventually lay the foundation for big social change.',
   },
   'activities.seeAll': { bn: 'সব কার্যক্রম দেখুন', en: 'See all activities' },
-  'activities.seeMore': { bn: 'আরও দেখুন', en: 'See more' },
-  'activities.seeLess': { bn: 'কম দেখুন', en: 'See less' },
+  'activities.details': { bn: 'বিস্তারিত দেখুন', en: 'See details' },
   'activities.empty': {
     bn: 'এখনো কোনো কার্যক্রম যোগ হয়নি। নতুন কার্যক্রম যোগ হলে এখানে দেখা যাবে।',
     en: 'No activities have been added yet. New ones will appear here.',
