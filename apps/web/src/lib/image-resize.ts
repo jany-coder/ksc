@@ -96,8 +96,11 @@ export type UploadOutcome = { ok: true } | { ok: false; code: string }
 /** Send the two files to /api/images (see routes/api/images.ts). */
 export async function uploadResized(
   image: ResizedImage,
+  // The activity to file the photo under; null for none.
+  activityId: string | null = null,
 ): Promise<UploadOutcome> {
   const form = new FormData()
+  if (activityId) form.set('activityId', activityId)
   form.set('full', image.full, 'full.webp')
   form.set('thumb', image.thumb, 'thumb.webp')
   form.set('width', String(image.width))

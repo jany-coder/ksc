@@ -1,4 +1,10 @@
-import { formatBnDate, formatBnTime } from './bn-datetime.ts'
+import {
+  formatBnDate,
+  formatBnMonth,
+  formatBnMonthYear,
+  formatBnTime,
+  formatBnYear,
+} from './bn-datetime.ts'
 import type { Lang } from './i18n/core.ts'
 
 // Dates and times in the reader's language. Bengali uses Bengali digits and the
@@ -15,6 +21,24 @@ export function formatDate(iso: string, lang: Lang): string {
   const [y, m, d] = iso.split('-').map(Number)
   const date = new Date(Date.UTC(y!, m! - 1, d))
   return `${d} ${enMonth.format(date)} ${y}`
+}
+
+/** 3 -> "March" / "মার্চ". Month is 1-12. */
+export function formatMonth(month: number, lang: Lang): string {
+  if (lang === 'bn') return formatBnMonth(month)
+  return enMonth.format(new Date(Date.UTC(2000, month - 1, 1)))
+}
+
+/** "2026-03-14" -> "March 2026" / "মার্চ ২০২৬". */
+export function formatMonthYear(iso: string, lang: Lang): string {
+  if (lang === 'bn') return formatBnMonthYear(iso)
+  const [y, m] = iso.split('-').map(Number)
+  return `${formatMonth(m!, lang)} ${y}`
+}
+
+/** 2026 -> "2026" / "২০২৬". */
+export function formatYear(year: number, lang: Lang): string {
+  return lang === 'bn' ? formatBnYear(year) : String(year)
 }
 
 export function formatTime(hhmm: string, lang: Lang): string {

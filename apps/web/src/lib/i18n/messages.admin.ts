@@ -551,6 +551,19 @@ export const adminMessages = {
     bn: 'ক্যাপশন সংরক্ষণ করা গেল না।',
     en: 'Could not save the caption.',
   },
+  'gal.uploadActivity': {
+    bn: 'নতুন ছবি কোন অনুষ্ঠানের',
+    en: 'Activity for new photos',
+  },
+  'gal.noActivity': { bn: 'কোনো অনুষ্ঠান নয়', en: 'No activity' },
+  'gal.photoActivity': {
+    bn: 'এই ছবির অনুষ্ঠান',
+    en: 'Activity for this photo',
+  },
+  'gal.activityError': {
+    bn: 'অনুষ্ঠান বদলানো গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not change the activity. Please try again.',
+  },
   'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
   'gal.homeCount': {
     bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',

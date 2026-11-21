@@ -9,6 +9,7 @@ import {
   listImages,
   setImageCaption,
   setImageOnHome,
+  setImagesActivity,
 } from './images.server.ts'
 import { requirePermission } from './session.server.ts'
 
@@ -40,6 +41,19 @@ export const setImageOnHomeFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     await requirePermission('content.write')
     return setImageOnHome(data.id, data.onHome)
+  })
+
+// Several ids at once, so admins can move a whole selection in one go.
+export const setImagesActivityFn = createServerFn({ method: 'POST' })
+  .validator(
+    z.object({
+      ids: z.array(z.uuid()).min(1).max(200),
+      activityId: z.uuid().nullable(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    await requirePermission('content.write')
+    return setImagesActivity(data.ids, data.activityId)
   })
 
 // Public: deliberately no permission check, because the gallery is public.

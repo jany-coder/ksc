@@ -10,10 +10,13 @@ import { useRef, useState } from 'react'
 
 import { Button } from '../../../components/ui/button.tsx'
 import { Input } from '../../../components/ui/input.tsx'
+import { NativeSelect } from '../../../components/ui/native-select.tsx'
+import { formatMonthYear } from '../../../lib/datetime.ts'
 import {
   deleteImageFn,
   setImageCaptionFn,
   setImageOnHomeFn,
+  setImagesActivityFn,
   galleryAdminDataFn,
 } from '../../../lib/images.functions.ts'
 import {
@@ -30,10 +33,11 @@ import {
   uploadResized,
 } from '../../../lib/image-resize.ts'
 import { langOfMatches } from '../../../lib/i18n/core.ts'
-import type { HeadArgs } from '../../../lib/i18n/core.ts'
+import type { HeadArgs, Lang } from '../../../lib/i18n/core.ts'
 import { useLang, useNumber, useT } from '../../../lib/i18n/index.tsx'
 import { tFor } from '../../../lib/i18n/messages.ts'
 import type { MessageKey } from '../../../lib/i18n/messages.ts'
+import type { ActivityOption } from '../../../lib/images.server.ts'
 import { can } from '../../../lib/permissions.ts'
 import { cn } from '../../../lib/utils.ts'
 
@@ -96,6 +100,28 @@ type UploadItem = {
   messageKey?: MessageKey
 }
 
+// "ইফতার আয়োজন · মার্চ ২০২৬": the month tells two yearly events apart.
+function activityLabel(activity: ActivityOption, lang: Lang): string {
+  return activity.eventDate
+    ? `${activity.title} · ${formatMonthYear(activity.eventDate, lang)}`
+    : activity.title
+}
+
+function ActivityOptions({ activities }: { activities: ActivityOption[] }) {
+  const t = useT()
+  const lang = useLang()
+  return (
+    <>
+      <option value="">{t('gal.noActivity')}</option>
+      {activities.map((activity) => (
+        <option key={activity.id} value={activity.id}>
+          {activityLabel(activity, lang)}
+        </option>
+      ))}
+    </>
+  )
+}
+
 function GalleryPage() {
   const t = useT()
   const lang = useLang()
@@ -106,6 +132,8 @@ function GalleryPage() {
   const [items, setItems] = useState<UploadItem[]>([])
   const [busy, setBusy] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  // The activity new uploads are filed under; '' means none.
+  const [uploadActivity, setUploadActivity] = useState('')
 
   const full = data.state === 'full'
   const homeCount = data.images.filter((image) => image.onHome).length
@@ -134,7 +162,10 @@ function GalleryPage() {
     for (const [i, file] of chosen.entries()) {
       const key = base + i
       try {
-        const outcome = await uploadResized(await resizeForUpload(file))
+        const outcome = await uploadResized(
+          await resizeForUpload(file),
+          uploadActivity || null,
+        )
         if (outcome.ok) {
           update(key, { status: 'done' })
         } else {
@@ -168,6 +199,16 @@ function GalleryPage() {
     onError: () => setDeleteError(t('gal.deleteError')),
   })
 
+  const moveToActivity = useMutation({
+    mutationFn: (choice: { ids: string[]; activityId: string | null }) =>
+      setImagesActivityFn({ data: choice }),
+    onSuccess: async (result) => {
+      setDeleteError(result.ok ? null : t('gal.activityError'))
+      await queryClient.invalidateQueries({ queryKey: ['images'] })
+    },
+    onError: () => setDeleteError(t('gal.activityError')),
+  })
+
   const toggleHome = useMutation({
     mutationFn: (choice: { id: string; onHome: boolean }) =>
       setImageOnHomeFn({ data: choice }),
@@ -191,7 +232,20 @@ function GalleryPage() {
           <h1 className="mb-0.5 text-2xl font-semibold">{t('gal.title')}</h1>
           <p className="text-sm text-muted-foreground">{t('gal.lead')}</p>
         </div>
-        <div>
+        <div className="flex flex-wrap items-end gap-2">
+          <div className="flex min-w-[220px] flex-col gap-1">
+            <label htmlFor="upload-activity" className="text-sm font-medium">
+              {t('gal.uploadActivity')}
+            </label>
+            <NativeSelect
+              id="upload-activity"
+              value={uploadActivity}
+              disabled={busy}
+              onChange={(event) => setUploadActivity(event.target.value)}
+            >
+              <ActivityOptions activities={data.activities} />
+            </NativeSelect>
+          </div>
           <input
             ref={input}
             id="photos"
@@ -318,6 +372,22 @@ function GalleryPage() {
                 initial={image.caption ?? ''}
                 onError={() => setDeleteError(t('gal.captionError'))}
               />
+              <div className="px-2 pb-2">
+                <NativeSelect
+                  aria-label={t('gal.photoActivity')}
+                  value={image.activityId ?? ''}
+                  disabled={moveToActivity.isPending}
+                  onChange={(event) =>
+                    moveToActivity.mutate({
+                      ids: [image.id],
+                      activityId: event.target.value || null,
+                    })
+                  }
+                  className="h-8 text-[13px] md:text-[13px]"
+                >
+                  <ActivityOptions activities={data.activities} />
+                </NativeSelect>
+              </div>
               <label className="flex min-h-9 items-center gap-2 px-2 pb-2 text-[13px]">
                 <input
                   type="checkbox"

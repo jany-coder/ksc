@@ -1,9 +1,9 @@
 import '@tanstack/react-start/server-only'
 
-import { and, desc, eq, ne, sql } from 'drizzle-orm'
+import { and, desc, eq, inArray, ne, sql } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
-import { images } from '../db/schema/index.ts'
+import { activities, images } from '../db/schema/index.ts'
 import {
   HOME_PHOTO_COUNT,
   MAX_FULL_BYTES,
@@ -15,6 +15,7 @@ import {
 } from './image-limits.ts'
 import type { StorageState } from './image-limits.ts'
 import { imagesBucket } from './r2.server.ts'
+import { listActivities } from './activities.server.ts'
 
 // Callers must have checked requirePermission('content.write') first
 // (the upload route does; see routes/api/images.ts).
@@ -45,9 +46,13 @@ export async function saveImage(
     thumb: ArrayBuffer
     width: number
     height: number
+    // The activity the photo belongs to, or null for "no activity".
+    activityId: string | null
   },
 ): Promise<UploadResult> {
   if (!isValidDimension(input.width) || !isValidDimension(input.height))
+    return { ok: false, code: 'INVALID_INPUT' }
+  if (input.activityId !== null && !(await activityExists(input.activityId)))
     return { ok: false, code: 'INVALID_INPUT' }
   if (
     input.full.byteLength > MAX_FULL_BYTES ||
@@ -83,6 +88,7 @@ export async function saveImage(
       width: input.width,
       height: input.height,
       bytes,
+      activityId: input.activityId,
       uploadedBy: actorId,
     })
   } catch (error) {
@@ -101,10 +107,31 @@ export type GalleryImage = {
   onHome: boolean
 }
 
+// Admins also see which activity each photo belongs to.
+export type AdminGalleryImage = GalleryImage & { activityId: string | null }
+
+// An activity a photo can be filed under, for the admin dropdowns. Drafts are
+// included: photos are often added before the activity is published.
+export type ActivityOption = {
+  id: string
+  title: string
+  eventDate: string | null
+}
+
 export type GalleryAdminData = {
-  images: GalleryImage[]
+  images: AdminGalleryImage[]
+  activities: ActivityOption[]
   usedBytes: number
   state: StorageState
+}
+
+async function activityExists(id: string): Promise<boolean> {
+  const [row] = await db
+    .select({ id: activities.id })
+    .from(activities)
+    .where(eq(activities.id, id))
+    .limit(1)
+  return row !== undefined
 }
 
 export async function listImages(limit = 200): Promise<GalleryImage[]> {
@@ -163,9 +190,55 @@ export async function setImageOnHome(
   return updated.length > 0 ? { ok: true } : { ok: false, code: 'NOT_FOUND' }
 }
 
+async function listAdminImages(limit = 200): Promise<AdminGalleryImage[]> {
+  return db
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+      onHome: images.onHome,
+      activityId: images.activityId,
+    })
+    .from(images)
+    .orderBy(desc(images.uploadedAt))
+    .limit(limit)
+}
+
 export async function galleryAdminData(): Promise<GalleryAdminData> {
-  const [list, used] = await Promise.all([listImages(), usedBytes()])
-  return { images: list, usedBytes: used, state: storageState(used) }
+  const [list, activityRows, used] = await Promise.all([
+    listAdminImages(),
+    listActivities(),
+    usedBytes(),
+  ])
+  return {
+    images: list,
+    activities: activityRows.map(({ id, title, eventDate }) => ({
+      id,
+      title,
+      eventDate,
+    })),
+    usedBytes: used,
+    state: storageState(used),
+  }
+}
+
+export type SetActivityResult =
+  { ok: true; updated: number } | { ok: false; code: 'NOT_FOUND' }
+
+/** File one or more photos under an activity, or under none (null). */
+export async function setImagesActivity(
+  ids: string[],
+  activityId: string | null,
+): Promise<SetActivityResult> {
+  if (activityId !== null && !(await activityExists(activityId)))
+    return { ok: false, code: 'NOT_FOUND' }
+  const updated = await db
+    .update(images)
+    .set({ activityId })
+    .where(inArray(images.id, ids))
+    .returning({ id: images.id })
+  return { ok: true, updated: updated.length }
 }
 
 export type DeleteImageResult = { ok: true } | { ok: false; code: 'NOT_FOUND' }

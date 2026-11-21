@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatDate, formatEventWhen, formatTime } from './datetime.ts'
+import {
+  formatDate,
+  formatEventWhen,
+  formatMonth,
+  formatMonthYear,
+  formatTime,
+  formatYear,
+} from './datetime.ts'
 
 describe('formatDate', () => {
   it('writes English dates in words', () => {
@@ -9,6 +16,22 @@ describe('formatDate', () => {
   })
   it('keeps the Bengali form', () => {
     expect(formatDate('2026-12-20', 'bn')).toBe('২০ ডিসেম্বর ২০২৬')
+  })
+})
+
+describe('formatMonthYear', () => {
+  it('writes month and year', () => {
+    expect(formatMonthYear('2026-03-14', 'en')).toBe('March 2026')
+    expect(formatMonthYear('2026-03-14', 'bn')).toBe('মার্চ ২০২৬')
+  })
+})
+
+describe('formatMonth and formatYear', () => {
+  it('names a month and writes a year without a comma', () => {
+    expect(formatMonth(12, 'en')).toBe('December')
+    expect(formatMonth(12, 'bn')).toBe('ডিসেম্বর')
+    expect(formatYear(2025, 'bn')).toBe('২০২৫')
+    expect(formatYear(2025, 'en')).toBe('2025')
   })
 })
 
