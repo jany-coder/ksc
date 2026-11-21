@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, MapPin } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 import { imageUrl } from '../../../lib/image-limits.ts'
 import { useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
@@ -151,32 +152,68 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
 }
 
 /** In place of the photo frame: the six kinds of work the club names. */
+// How long the light rests on each area, and when it first starts moving:
+// after the six lines have finished rising into place.
+const LIGHT_MS = 3500
+const LIGHT_START_MS = 1600
+
 function WorkAreas() {
   const t = useT()
   const localeParams = useLocaleParams()
+  // The area in the light, or null before it starts (and always, for anyone
+  // whose device asks for reduced motion: then nothing moves at all).
+  const [lit, setLit] = useState<number | null>(null)
+  const [held, setHeld] = useState(false)
+
+  useEffect(() => {
+    // Held (the mouse is over the card): the light stays where it is.
+    if (held || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      return
+    const timer = window.setTimeout(
+      () => setLit((i) => (i === null ? 0 : (i + 1) % WORK_AREAS.length)),
+      lit === null ? LIGHT_START_MS : LIGHT_MS,
+    )
+    return () => window.clearTimeout(timer)
+  }, [lit, held])
+
   return (
-    <div className="px-3 pt-3 pb-4 md:px-4">
+    <div
+      className="px-3 pt-3 pb-4 md:px-4"
+      onMouseEnter={() => setHeld(true)}
+      onMouseLeave={() => setHeld(false)}
+    >
       <h2 className="mb-3 font-heading text-lg font-semibold text-mint md:text-xl">
         {t('whatWeDo.title')}
       </h2>
-      <ul className="m-0 grid list-none grid-cols-1 gap-2 p-0 min-[460px]:grid-cols-2 md:grid-cols-1">
-        {WORK_AREAS.map(({ title, icon: Icon, blood }) => (
-          <li
-            key={title}
-            className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-[15px] leading-snug text-white md:text-base"
-          >
-            <span
+      {/* All six are always on screen; the moving light is decoration only. */}
+      <ul className="work-rise m-0 grid list-none grid-cols-1 gap-2 p-0 min-[460px]:grid-cols-2 md:grid-cols-1">
+        {WORK_AREAS.map(({ title, icon: Icon, blood }, i) => {
+          const on = lit === i
+          return (
+            <li
+              key={title}
+              style={{ animationDelay: `${450 + i * 90}ms` }}
               className={cn(
-                'flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10',
-                // Red only for blood, lightened to read on dark green.
-                blood ? 'text-[#ff9f98]' : 'text-mint',
+                'flex items-center gap-3 rounded-xl border px-3 py-2 text-[15px] leading-snug text-white transition-[background-color,border-color,box-shadow] duration-700 md:text-base',
+                on
+                  ? 'border-white/30 bg-white/[0.15] shadow-[0_8px_24px_rgba(0,0,0,0.25)]'
+                  : 'border-white/10 bg-white/[0.06]',
               )}
             >
-              <Icon aria-hidden="true" className="size-[18px]" />
-            </span>
-            {t(title)}
-          </li>
-        ))}
+              <span
+                className={cn(
+                  'flex size-8 shrink-0 items-center justify-center rounded-lg transition-[transform,background-color] duration-700',
+                  on ? 'scale-110 bg-white/20' : 'bg-white/10',
+                  // Red only for blood, lightened to read on dark green.
+                  blood ? 'text-[#ff9f98]' : 'text-mint',
+                )}
+              >
+                <Icon aria-hidden="true" className="size-[18px]" />
+              </span>
+              {t(title)}
+            </li>
+          )
+        })}
       </ul>
       <Link
         to="/{-$locale}"
