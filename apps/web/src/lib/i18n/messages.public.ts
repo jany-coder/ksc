@@ -193,6 +193,25 @@ export const publicMessages = {
   'gallery.prev': { bn: 'আগের ছবি', en: 'Previous photo' },
   'gallery.next': { bn: 'পরের ছবি', en: 'Next photo' },
 
+  // --- one activity's page (/activities/<slug>) ---
+  'activityPage.pageTitle': {
+    bn: '{title} — কলমা সোশ্যাল ক্লাব',
+    en: '{title} — Kalma Social Club',
+  },
+  'activityPage.back': { bn: 'সব কার্যক্রম', en: 'All activities' },
+  'activityPage.photos': {
+    bn: 'এই কার্যক্রমের ছবি ({n}টি)',
+    en: 'Photos from this activity ({n})',
+  },
+  'activityPage.notFoundTitle': {
+    bn: 'কার্যক্রমটি পাওয়া যায়নি',
+    en: 'Activity not found',
+  },
+  'activityPage.notFound': {
+    bn: 'এই ঠিকানায় কোনো কার্যক্রম নেই। হয়তো লিংকটি ভুল, অথবা কার্যক্রমটি সরিয়ে নেওয়া হয়েছে।',
+    en: 'There is no activity at this address. The link may be wrong, or the activity may have been removed.',
+  },
+
   // --- membership application page (/join) ---
   'apply.pageTitle': {
     bn: 'সদস্য হওয়ার আবেদন — কলমা সোশ্যাল ক্লাব',

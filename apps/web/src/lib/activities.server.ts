@@ -3,7 +3,7 @@ import '@tanstack/react-start/server-only'
 import { and, asc, desc, eq, sql } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
-import { activities } from '../db/schema/index.ts'
+import { activities, images } from '../db/schema/index.ts'
 import {
   ACTIVITY_CATEGORIES,
   ACTIVITY_CATEGORY_SLUG,
@@ -304,4 +304,99 @@ export async function listPastPublic(limit: number): Promise<PastActivity[]> {
         }
       : {}),
   }))
+}
+
+export type ActivityPagePhoto = {
+  id: string
+  width: number
+  height: number
+  caption: string | null
+}
+
+export type ActivityPage = {
+  id: string
+  slug: string
+  title: string
+  // The full text; the page splits it into paragraphs at blank lines.
+  description: string
+  category: string | null
+  eventDate: string | null
+  eventTime: string | null
+  location: string
+  // The cover, or failing that the first photo; null with no photos at all.
+  // The cover may be a photo filed under another activity (it was picked from
+  // the whole gallery), so it is looked up on its own.
+  hero: ActivityPagePhoto | null
+  // Every photo filed under the activity, in upload order.
+  photos: ActivityPagePhoto[]
+}
+
+async function heroPhoto(
+  coverImageId: string | null,
+  photos: ActivityPagePhoto[],
+): Promise<ActivityPagePhoto | null> {
+  if (!coverImageId) return photos[0] ?? null
+  const own = photos.find((p) => p.id === coverImageId)
+  if (own) return own
+  const [cover] = await db
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+    })
+    .from(images)
+    .where(eq(images.id, coverImageId))
+    .limit(1)
+  return cover ?? photos[0] ?? null
+}
+
+/**
+ * One published activity with all its photos, for its own public page. A
+ * draft, or a slug that does not exist, gives null (the page says "not
+ * found"), so a draft cannot be read by guessing its address.
+ */
+export async function getPublicActivity(
+  slug: string,
+): Promise<ActivityPage | null> {
+  const [row] = await db
+    .select({
+      id: activities.id,
+      slug: activities.slug,
+      title: activities.title,
+      description: activities.description,
+      category: activities.category,
+      eventDate: activities.eventDate,
+      eventTime: activities.eventTime,
+      location: activities.location,
+      coverImageId: activities.coverImageId,
+    })
+    .from(activities)
+    .where(and(eq(activities.slug, slug), eq(activities.status, 'published')))
+    .limit(1)
+  if (!row) return null
+
+  const photos = await db
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+    })
+    .from(images)
+    .where(eq(images.activityId, row.id))
+    .orderBy(asc(images.uploadedAt), asc(images.id))
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    description: row.description ?? '',
+    category: row.category,
+    eventDate: row.eventDate,
+    eventTime: row.eventTime,
+    location: row.location ?? '',
+    hero: await heroPhoto(row.coverImageId, photos),
+    photos,
+  }
 }

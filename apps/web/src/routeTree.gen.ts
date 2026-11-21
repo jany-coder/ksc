@@ -17,7 +17,6 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiMembersExportRouteImport } from './routes/api/members-export'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
-import { Route as Char123LocaleChar125ActivitiesRouteImport } from './routes/{-$locale}/activities'
 import { Route as Char123LocaleChar125GalleryRouteImport } from './routes/{-$locale}/gallery'
 import { Route as Char123LocaleChar125JoinRouteImport } from './routes/{-$locale}/join'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
@@ -32,6 +31,8 @@ import { Route as AdminNoticesIndexRouteImport } from './routes/admin/notices/in
 import { Route as AdminNoticesIdRouteImport } from './routes/admin/notices/$id'
 import { Route as AdminNoticesNewRouteImport } from './routes/admin/notices/new'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as Char123LocaleChar125ActivitiesIndexRouteImport } from './routes/{-$locale}/activities/index'
+import { Route as Char123LocaleChar125ActivitiesSlugRouteImport } from './routes/{-$locale}/activities/$slug'
 import { Route as ApiMediaIdSizeRouteImport } from './routes/api/media/$id.$size'
 
 const AdminRouteRoute = AdminRouteRouteImport.update({
@@ -74,12 +75,6 @@ const Char123LocaleChar125IndexRoute =
   Char123LocaleChar125IndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => Char123LocaleChar125RouteRoute,
-  } as any)
-const Char123LocaleChar125ActivitiesRoute =
-  Char123LocaleChar125ActivitiesRouteImport.update({
-    id: '/activities',
-    path: '/activities',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125GalleryRoute =
@@ -154,6 +149,18 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char123LocaleChar125ActivitiesIndexRoute =
+  Char123LocaleChar125ActivitiesIndexRouteImport.update({
+    id: '/activities/',
+    path: '/activities/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125ActivitiesSlugRoute =
+  Char123LocaleChar125ActivitiesSlugRouteImport.update({
+    id: '/activities/$slug',
+    path: '/activities/$slug',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 const ApiMediaIdSizeRoute = ApiMediaIdSizeRouteImport.update({
   id: '/api/media/$id/$size',
   path: '/api/media/$id/$size',
@@ -167,7 +174,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
-  '/{-$locale}/activities': typeof Char123LocaleChar125ActivitiesRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
   '/{-$locale}/join': typeof Char123LocaleChar125JoinRoute
   '/admin/': typeof AdminIndexRoute
@@ -180,10 +186,12 @@ export interface FileRoutesByFullPath {
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/{-$locale}/activities/$slug': typeof Char123LocaleChar125ActivitiesSlugRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/gallery/': typeof AdminGalleryIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
   '/admin/notices/': typeof AdminNoticesIndexRoute
+  '/{-$locale}/activities/': typeof Char123LocaleChar125ActivitiesIndexRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
 }
 export interface FileRoutesByTo {
@@ -191,7 +199,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
-  '/{-$locale}/activities': typeof Char123LocaleChar125ActivitiesRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
   '/{-$locale}/join': typeof Char123LocaleChar125JoinRoute
   '/admin': typeof AdminIndexRoute
@@ -204,10 +211,12 @@ export interface FileRoutesByTo {
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/{-$locale}/activities/$slug': typeof Char123LocaleChar125ActivitiesSlugRoute
   '/admin/activities': typeof AdminActivitiesIndexRoute
   '/admin/gallery': typeof AdminGalleryIndexRoute
   '/admin/members': typeof AdminMembersIndexRoute
   '/admin/notices': typeof AdminNoticesIndexRoute
+  '/{-$locale}/activities': typeof Char123LocaleChar125ActivitiesIndexRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
 }
 export interface FileRoutesById {
@@ -218,7 +227,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
-  '/{-$locale}/activities': typeof Char123LocaleChar125ActivitiesRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
   '/{-$locale}/join': typeof Char123LocaleChar125JoinRoute
   '/admin/': typeof AdminIndexRoute
@@ -231,10 +239,12 @@ export interface FileRoutesById {
   '/admin/notices/$id': typeof AdminNoticesIdRoute
   '/admin/notices/new': typeof AdminNoticesNewRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/{-$locale}/activities/$slug': typeof Char123LocaleChar125ActivitiesSlugRoute
   '/admin/activities/': typeof AdminActivitiesIndexRoute
   '/admin/gallery/': typeof AdminGalleryIndexRoute
   '/admin/members/': typeof AdminMembersIndexRoute
   '/admin/notices/': typeof AdminNoticesIndexRoute
+  '/{-$locale}/activities/': typeof Char123LocaleChar125ActivitiesIndexRoute
   '/api/media/$id/$size': typeof ApiMediaIdSizeRoute
 }
 export interface FileRouteTypes {
@@ -246,7 +256,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/api/images'
     | '/api/members-export'
-    | '/{-$locale}/activities'
     | '/{-$locale}/gallery'
     | '/{-$locale}/join'
     | '/admin/'
@@ -259,10 +268,12 @@ export interface FileRouteTypes {
     | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
+    | '/{-$locale}/activities/$slug'
     | '/admin/activities/'
     | '/admin/gallery/'
     | '/admin/members/'
     | '/admin/notices/'
+    | '/{-$locale}/activities/'
     | '/api/media/$id/$size'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -270,7 +281,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/api/images'
     | '/api/members-export'
-    | '/{-$locale}/activities'
     | '/{-$locale}/gallery'
     | '/{-$locale}/join'
     | '/admin'
@@ -283,10 +293,12 @@ export interface FileRouteTypes {
     | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
+    | '/{-$locale}/activities/$slug'
     | '/admin/activities'
     | '/admin/gallery'
     | '/admin/members'
     | '/admin/notices'
+    | '/{-$locale}/activities'
     | '/api/media/$id/$size'
   id:
     | '__root__'
@@ -296,7 +308,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/api/images'
     | '/api/members-export'
-    | '/{-$locale}/activities'
     | '/{-$locale}/gallery'
     | '/{-$locale}/join'
     | '/admin/'
@@ -309,10 +320,12 @@ export interface FileRouteTypes {
     | '/admin/notices/$id'
     | '/admin/notices/new'
     | '/api/auth/$'
+    | '/{-$locale}/activities/$slug'
     | '/admin/activities/'
     | '/admin/gallery/'
     | '/admin/members/'
     | '/admin/notices/'
+    | '/{-$locale}/activities/'
     | '/api/media/$id/$size'
   fileRoutesById: FileRoutesById
 }
@@ -383,13 +396,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/{-$locale}/'
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
-      parentRoute: typeof Char123LocaleChar125RouteRoute
-    }
-    '/{-$locale}/activities': {
-      id: '/{-$locale}/activities'
-      path: '/activities'
-      fullPath: '/{-$locale}/activities'
-      preLoaderRoute: typeof Char123LocaleChar125ActivitiesRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/gallery': {
@@ -490,6 +496,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/{-$locale}/activities/': {
+      id: '/{-$locale}/activities/'
+      path: '/activities'
+      fullPath: '/{-$locale}/activities/'
+      preLoaderRoute: typeof Char123LocaleChar125ActivitiesIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/activities/$slug': {
+      id: '/{-$locale}/activities/$slug'
+      path: '/activities/$slug'
+      fullPath: '/{-$locale}/activities/$slug'
+      preLoaderRoute: typeof Char123LocaleChar125ActivitiesSlugRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
     '/api/media/$id/$size': {
       id: '/api/media/$id/$size'
       path: '/api/media/$id/$size'
@@ -535,18 +555,22 @@ const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
 )
 
 interface Char123LocaleChar125RouteRouteChildren {
-  Char123LocaleChar125ActivitiesRoute: typeof Char123LocaleChar125ActivitiesRoute
   Char123LocaleChar125GalleryRoute: typeof Char123LocaleChar125GalleryRoute
   Char123LocaleChar125JoinRoute: typeof Char123LocaleChar125JoinRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
+  Char123LocaleChar125ActivitiesSlugRoute: typeof Char123LocaleChar125ActivitiesSlugRoute
+  Char123LocaleChar125ActivitiesIndexRoute: typeof Char123LocaleChar125ActivitiesIndexRoute
 }
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
   {
-    Char123LocaleChar125ActivitiesRoute: Char123LocaleChar125ActivitiesRoute,
     Char123LocaleChar125GalleryRoute: Char123LocaleChar125GalleryRoute,
     Char123LocaleChar125JoinRoute: Char123LocaleChar125JoinRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
+    Char123LocaleChar125ActivitiesSlugRoute:
+      Char123LocaleChar125ActivitiesSlugRoute,
+    Char123LocaleChar125ActivitiesIndexRoute:
+      Char123LocaleChar125ActivitiesIndexRoute,
   }
 
 const Char123LocaleChar125RouteRouteWithChildren =

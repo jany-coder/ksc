@@ -1,4 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
+import { getRequest } from '@tanstack/react-start/server'
 import { z } from 'zod'
 
 import { activityFormSchema } from './activity-form.ts'
@@ -6,6 +7,7 @@ import {
   createActivity,
   deleteActivity,
   getActivity,
+  getPublicActivity,
   listActivities,
   listPastPublic,
   listUpcomingPublic,
@@ -66,3 +68,18 @@ export const listRecentActivitiesFn = createServerFn({
 export const listArchiveActivitiesFn = createServerFn({
   method: 'GET',
 }).handler(() => listPastPublic(300))
+
+// Public: one published activity and its photos, for /activities/<slug>.
+// Drafts give null. Also returns the site's address, because Facebook and
+// WhatsApp previews need full URLs (https://…) for the photo and the page.
+// VITE_SITE_URL wins when set; otherwise the address this request came to.
+export const getPublicActivityFn = createServerFn({ method: 'GET' })
+  .validator(z.object({ slug: z.string().min(1).max(200) }))
+  .handler(async ({ data }) => {
+    const activity = await getPublicActivity(data.slug)
+    const configured = (
+      import.meta.env.VITE_SITE_URL as string | undefined
+    )?.replace(/\/+$/, '')
+    const origin = configured || new URL(getRequest().url).origin
+    return { activity, origin }
+  })

@@ -1,15 +1,15 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 
-import { ActivityCard } from '../../components/public/activity-card.tsx'
-import type { ActivityCardData } from '../../components/public/activity-card.tsx'
-import { listArchiveActivitiesFn } from '../../lib/activities.functions.ts'
-import { alternateLinks } from '../../lib/i18n/hreflang.ts'
-import { useLocaleParams, useNumber, useT } from '../../lib/i18n/index.tsx'
-import { tFor } from '../../lib/i18n/messages.ts'
+import { ActivityCard } from '../../../components/public/activity-card.tsx'
+import type { ActivityCardData } from '../../../components/public/activity-card.tsx'
+import { listArchiveActivitiesFn } from '../../../lib/activities.functions.ts'
+import { alternateLinks } from '../../../lib/i18n/hreflang.ts'
+import { useLocaleParams, useNumber, useT } from '../../../lib/i18n/index.tsx'
+import { tFor } from '../../../lib/i18n/messages.ts'
 
 // The archive: every published activity that has already happened, newest
 // first, grouped by year.
-export const Route = createFileRoute('/{-$locale}/activities')({
+export const Route = createFileRoute('/{-$locale}/activities/')({
   head: ({ params }) => {
     const t = tFor(params.locale === 'en' ? 'en' : 'bn')
     return {
