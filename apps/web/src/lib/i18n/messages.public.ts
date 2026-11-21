@@ -171,10 +171,50 @@ export const publicMessages = {
     bn: 'এখনো কোনো ছবি যোগ হয়নি।',
     en: 'No photos have been added yet.',
   },
+  'gallery.years': { bn: 'বছর অনুযায়ী ছবি', en: 'Photos by year' },
+  'gallery.allYears': { bn: 'সব', en: 'All' },
+  'gallery.otherPhotos': { bn: 'অন্যান্য ছবি', en: 'Other photos' },
+  'gallery.emptyYear': {
+    bn: 'এই বছরের কোনো ছবি এখনো যোগ হয়নি।',
+    en: 'No photos from this year have been added yet.',
+  },
+  'gallery.showMore': { bn: 'আরো ছবি দেখুন', en: 'Show more photos' },
+  'gallery.loadingMore': { bn: 'আনা হচ্ছে…', en: 'Loading…' },
+  'gallery.moreError': {
+    bn: 'আরো ছবি আনা গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not load more photos. Please try again.',
+  },
+  'gallery.position': {
+    bn: 'মোট {total}টির মধ্যে {n} নম্বর ছবি',
+    en: 'Photo {n} of {total}',
+  },
+  'gallery.aboutActivity': {
+    bn: 'এই কার্যক্রম সম্পর্কে পড়ুন',
+    en: 'Read about this activity',
+  },
   'gallery.bigPhoto': { bn: 'বড় ছবি', en: 'Large photo' },
   'gallery.close': { bn: 'বন্ধ করুন', en: 'Close' },
   'gallery.prev': { bn: 'আগের ছবি', en: 'Previous photo' },
   'gallery.next': { bn: 'পরের ছবি', en: 'Next photo' },
+
+  // --- one activity's page (/activities/<slug>) ---
+  'activityPage.pageTitle': {
+    bn: '{title} — কলমা সোশ্যাল ক্লাব',
+    en: '{title} — Kalma Social Club',
+  },
+  'activityPage.back': { bn: 'সব কার্যক্রম', en: 'All activities' },
+  'activityPage.photos': {
+    bn: 'এই কার্যক্রমের ছবি ({n}টি)',
+    en: 'Photos from this activity ({n})',
+  },
+  'activityPage.notFoundTitle': {
+    bn: 'কার্যক্রমটি পাওয়া যায়নি',
+    en: 'Activity not found',
+  },
+  'activityPage.notFound': {
+    bn: 'এই ঠিকানায় কোনো কার্যক্রম নেই। হয়তো লিংকটি ভুল, অথবা কার্যক্রমটি সরিয়ে নেওয়া হয়েছে।',
+    en: 'There is no activity at this address. The link may be wrong, or the activity may have been removed.',
+  },
 
   // --- membership application page (/join) ---
   'apply.pageTitle': {
@@ -191,6 +231,7 @@ export const publicMessages = {
     en: 'Fill in the form. Our committee will review it and contact you. Fields marked * are required.',
   },
   'apply.name': { bn: 'নাম *', en: 'Name *' },
+  'apply.email': { bn: 'ইমেইল (ঐচ্ছিক)', en: 'Email (optional)' },
   'apply.phone': { bn: 'মোবাইল নম্বর *', en: 'Mobile number *' },
   'apply.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
   'apply.bloodUnknown': {
@@ -201,9 +242,6 @@ export const publicMessages = {
     bn: 'প্রয়োজনে রক্ত দিতে আগ্রহী',
     en: 'Willing to donate blood when needed',
   },
-  'apply.address': { bn: 'ঠিকানা', en: 'Address' },
-  'apply.area': { bn: 'এলাকা', en: 'Area' },
-  'apply.occupation': { bn: 'পেশা', en: 'Occupation' },
   'apply.honeypot': {
     bn: 'ওয়েবসাইট (ফাঁকা রাখুন)',
     en: 'Website (leave empty)',

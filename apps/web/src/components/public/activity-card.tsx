@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { Link } from '@tanstack/react-router'
 
 import { formatDate } from '../../lib/datetime.ts'
-import { useLang, useT } from '../../lib/i18n/index.tsx'
+import { useLang, useLocaleParams, useT } from '../../lib/i18n/index.tsx'
 
 export type ActivityCardData = {
   id: string
+  slug: string
   title: string
   description: string
   eventDate: string | null
@@ -13,25 +14,20 @@ export type ActivityCardData = {
   fullUrl?: string
 }
 
-// Past this many characters the description is folded to four lines, with a
-// "see more" button to open it in place. Counted by code point, so Bengali
-// letters count as one each.
-const FOLD_AFTER_CHARS = 180
-
 /**
- * One activity: photo, date, title and description. Used on the home page and
- * in the archive, so both look the same.
+ * One activity: photo, date, title and the start of the description. Used on
+ * the home page and in the archive, so both look the same. The whole card
+ * opens the activity's own page, where the full text and photos are.
  */
 export function ActivityCard({ item }: { item: ActivityCardData }) {
   const t = useT()
   const lang = useLang()
-  const [open, setOpen] = useState(false)
-  const long = Array.from(item.description).length > FOLD_AFTER_CHARS
-  const textId = `activity-${item.id}-text`
+  const localeParams = useLocaleParams()
 
   return (
     // h-full: the grid stretches every card in a row to the same height.
-    <article className="lift flex h-full flex-col overflow-hidden rounded-[10px] border border-line bg-card">
+    // relative: the title link's ::after stretches over the whole card.
+    <article className="lift relative flex h-full flex-col overflow-hidden rounded-[10px] border border-line bg-card">
       {item.thumbUrl ? (
         <img
           src={item.thumbUrl}
@@ -73,31 +69,27 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
           </div>
         )}
         <h3 className="text-[21px] leading-snug font-semibold text-ink md:text-[23px]">
-          {item.title}
+          {/* One link per card, so a screen reader hears each activity once.
+              Its ::after covers the card, so a tap anywhere opens it. */}
+          <Link
+            to="/{-$locale}/activities/$slug"
+            params={{ ...localeParams, slug: item.slug }}
+            className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none after:focus-visible:rounded-[10px] after:focus-visible:outline-2 after:focus-visible:outline-offset-2 after:focus-visible:outline-primary"
+          >
+            {item.title}
+          </Link>
         </h3>
         {item.description && (
-          <>
-            <p
-              id={textId}
-              className={`text-base leading-[1.75] whitespace-pre-line text-copy ${
-                long && !open ? 'line-clamp-4' : ''
-              }`}
-            >
-              {item.description}
-            </p>
-            {long && (
-              <button
-                type="button"
-                aria-expanded={open}
-                aria-controls={textId}
-                onClick={() => setOpen((v) => !v)}
-                className="mt-auto self-start pt-1 text-[15px] font-semibold text-primary underline-offset-2 hover:underline"
-              >
-                {open ? t('activities.seeLess') : t('activities.seeMore')}
-              </button>
-            )}
-          </>
+          <p className="line-clamp-4 text-base leading-[1.75] whitespace-pre-line text-copy">
+            {item.description}
+          </p>
         )}
+        <span
+          aria-hidden="true"
+          className="mt-auto pt-1 text-[15px] font-semibold text-primary"
+        >
+          {t('activities.details')} →
+        </span>
       </div>
     </article>
   )

@@ -8,6 +8,9 @@ import {
   imageUrl,
   isValidDimension,
   looksLikeWebp,
+  memberPhotoKey,
+  photoVersion,
+  smallPhotoKey,
   storageState,
 } from './image-limits.ts'
 
@@ -71,5 +74,18 @@ describe('formatBytes / imageUrl', () => {
 
   it('builds the media URL', () => {
     expect(imageUrl('abc', 'thumb')).toBe('/api/media/abc/thumb')
+  })
+})
+
+describe('member photo keys', () => {
+  const key = memberPhotoKey('m-1', 'abc')
+
+  it('keeps both sizes under the member', () => {
+    expect(key).toBe('members/m-1/abc.webp')
+    expect(smallPhotoKey(key)).toBe('members/m-1/abc-sm.webp')
+  })
+
+  it('reads the version back out of the key', () => {
+    expect(photoVersion(key)).toBe('abc')
   })
 })

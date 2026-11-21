@@ -1,19 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 
 import {
-  ACTIVITY_CATEGORIES,
-  ACTIVITY_CATEGORY_KEY,
+  categoryName,
+  selectableCategories,
+} from '../../lib/activity-category.ts'
+import {
   ACTIVITY_STATUSES,
   ACTIVITY_STATUS_LABEL_KEY,
   activityFormSchema,
 } from '../../lib/activity-form.ts'
 import type { ActivityFormInput } from '../../lib/activity-form.ts'
-import { useNumber, useT } from '../../lib/i18n/index.tsx'
-import { imageUrl } from '../../lib/image-limits.ts'
+import { useLang, useT } from '../../lib/i18n/index.tsx'
 import { Button, buttonVariants } from '../ui/button.tsx'
 import { CheckboxField } from '../ui/checkbox-field.tsx'
 import { FieldError } from '../ui/field-error.tsx'
@@ -21,6 +24,7 @@ import { Input } from '../ui/input.tsx'
 import { Label } from '../ui/label.tsx'
 import { NativeSelect } from '../ui/native-select.tsx'
 import { Textarea } from '../ui/textarea.tsx'
+import { CategoryDialog, categoriesQuery } from './category-dialog.tsx'
 
 // The activity form, shared by "new" and "edit": same fields, same checks, only
 // the starting values and what happens on save differ.
@@ -30,33 +34,51 @@ const card = 'rounded-[10px] border border-border bg-card p-5'
 
 export function ActivityForm({
   initial,
-  photos,
+  photoCount,
   onSubmit,
   submitLabel,
   extra,
+  canManageKinds,
 }: {
   initial: ActivityFormInput
-  // Gallery photos the activity's cover can be picked from.
-  photos: { id: string; width: number; height: number }[]
+  // How many photos the activity has; null for a new one (photos are added
+  // after the first save). Only used for a reminder, never to block.
+  photoCount: number | null
   onSubmit: (values: ActivityFormInput) => Promise<ActivityFormResult>
   // Overrides the "draft / publish" button text (used by the edit page).
   submitLabel?: string
   // Extra cards for the side column, e.g. the delete button.
   extra?: ReactNode
+  // Super admin: may add a new kind from here.
+  canManageKinds: boolean
 }) {
   const t = useT()
-  const number = useNumber()
+  const lang = useLang()
   const [formError, setFormError] = useState<string | null>(null)
+  const [addingKind, setAddingKind] = useState(false)
+  const [newKindId, setNewKindId] = useState<string | null>(null)
+  // Loaded by the page's loader, so this never waits.
+  const { data: kinds } = useSuspenseQuery(categoriesQuery())
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ActivityFormInput>({
     resolver: zodResolver(activityFormSchema),
     defaultValues: initial,
   })
   const publishing = watch('status') === 'published'
+
+  // Pick a just-added kind, once the reloaded list has drawn its <option>
+  // (a <select> cannot take a value it has no option for).
+  useEffect(() => {
+    if (newKindId && kinds.some((k) => k.id === newKindId)) {
+      setValue('categoryId', newKindId, { shouldDirty: true })
+      setNewKindId(null)
+    }
+  }, [newKindId, kinds, setValue])
 
   async function submit(values: ActivityFormInput) {
     setFormError(null)
@@ -156,63 +178,6 @@ export function ActivityForm({
             />
           </div>
         </section>
-
-        {/* Cover photo: pick one of the gallery photos. Each choice is a real
-            radio button inside a <label>, so it works with keyboard and screen
-            readers; the photo is just its picture. */}
-        <fieldset className={card}>
-          <legend className="px-1 text-[15px] font-semibold">
-            {t('act.fCover')}
-          </legend>
-          {photos.length > 0 ? (
-            <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2">
-              <label className="flex aspect-square cursor-pointer items-center justify-center rounded-lg border border-border p-1 text-center text-xs text-muted-foreground has-[:checked]:border-primary has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:focus-visible]:outline-2">
-                <input
-                  type="radio"
-                  value=""
-                  className="sr-only"
-                  {...register('coverImageId')}
-                />
-                {t('act.fCoverNone')}
-              </label>
-              {photos.map((photo, index) => (
-                <label
-                  key={photo.id}
-                  className="block cursor-pointer overflow-hidden rounded-lg border border-border has-[:checked]:border-primary has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:focus-visible]:outline-2"
-                >
-                  <input
-                    type="radio"
-                    value={photo.id}
-                    aria-label={t('act.fCoverN', { n: number(index + 1) })}
-                    className="sr-only"
-                    {...register('coverImageId')}
-                  />
-                  <img
-                    src={imageUrl(photo.id, 'thumb')}
-                    alt=""
-                    loading="lazy"
-                    className="aspect-square w-full object-cover"
-                  />
-                </label>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t('act.fCoverEmpty')}{' '}
-              <Link
-                to="/admin/gallery"
-                className="font-medium text-primary hover:underline"
-              >
-                {t('act.fCoverAdd')}
-              </Link>
-              ।
-            </p>
-          )}
-          <FieldError
-            id="coverImageId-error"
-            message={errors.coverImageId?.message}
-          />
-        </fieldset>
       </div>
 
       <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-4">
@@ -232,17 +197,49 @@ export function ActivityForm({
             <p className="text-[13px] text-muted-foreground">
               {publishing ? t('a.publishNote') : t('a.draftNote')}
             </p>
+            {/* A gentle reminder, not a rule: publishing still works. */}
+            {publishing && photoCount === 0 && (
+              <p
+                role="status"
+                className="rounded-md border border-yellow-300 bg-yellow-50 px-2.5 py-1.5 text-[13px] text-yellow-900"
+              >
+                {t('act.noPhotosYet')}
+              </p>
+            )}
+            {publishing && photoCount === null && (
+              <p className="text-[13px] text-muted-foreground">
+                {t('act.photosAfterSave')}
+              </p>
+            )}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="category">{t('act.fType')}</Label>
-            <NativeSelect id="category" {...register('category')}>
+            <Label htmlFor="categoryId">{t('act.fType')}</Label>
+            <NativeSelect id="categoryId" {...register('categoryId')}>
               <option value="">{t('act.fTypeNone')}</option>
-              {ACTIVITY_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {t(ACTIVITY_CATEGORY_KEY[c])}
+              {selectableCategories(kinds, initial.categoryId).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {categoryName(c, lang)}
                 </option>
               ))}
             </NativeSelect>
+            {canManageKinds && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="-ms-2 text-primary"
+                onClick={() => setAddingKind(true)}
+              >
+                <Plus aria-hidden="true" />
+                {t('kind.add')}
+              </Button>
+            )}
+            {addingKind && (
+              <CategoryDialog
+                onClose={() => setAddingKind(false)}
+                onSaved={setNewKindId}
+              />
+            )}
           </div>
           <CheckboxField label={t('act.fFeatured')} {...register('featured')} />
         </section>

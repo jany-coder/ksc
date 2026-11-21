@@ -1,4 +1,5 @@
 import {
+  boolean,
   index,
   integer,
   pgTable,
@@ -29,6 +30,9 @@ export const images = pgTable(
     activityId: uuid('activity_id').references(() => activities.id, {
       onDelete: 'set null',
     }),
+    // Picked by an admin to show on the homepage (at most 6; see
+    // HOME_PHOTO_COUNT). Empty homepage slots fall back to the newest photos.
+    onHome: boolean('on_home').notNull().default(false),
     uploadedBy: uuid('uploaded_by')
       .notNull()
       .references(() => members.id),

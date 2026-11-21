@@ -7,9 +7,9 @@ import {
 } from '@tanstack/react-router'
 
 import { ActivityForm } from '../../../components/admin/activity-form.tsx'
+import { categoriesQuery } from '../../../components/admin/category-dialog.tsx'
 import { createActivityFn } from '../../../lib/activities.functions.ts'
 import type { ActivityFormInput } from '../../../lib/activity-form.ts'
-import { listPublicImagesFn } from '../../../lib/images.functions.ts'
 import { useT } from '../../../lib/i18n/index.tsx'
 import { langOfMatches } from '../../../lib/i18n/core.ts'
 import type { HeadArgs } from '../../../lib/i18n/core.ts'
@@ -25,28 +25,28 @@ export const Route = createFileRoute('/admin/activities/new')({
     if (!can(context.member.role, 'content.write'))
       throw redirect({ to: '/admin' })
   },
-  // The gallery photos the cover can be picked from.
-  loader: () => listPublicImagesFn({ data: { limit: 100 } }),
+  // The kinds for the form's "Type" list.
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(categoriesQuery()),
   component: NewActivityPage,
 })
 
 const EMPTY: ActivityFormInput = {
   title: '',
   description: '',
-  category: '',
+  categoryId: '',
   eventDate: '',
   eventTime: '',
   location: '',
   status: 'draft',
   featured: false,
-  coverImageId: '',
 }
 
 function NewActivityPage() {
   const t = useT()
-  const photos = Route.useLoaderData()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { member } = Route.useRouteContext()
 
   return (
     <main className="px-4 py-6 md:p-6">
@@ -66,13 +66,18 @@ function NewActivityPage() {
 
       <ActivityForm
         initial={EMPTY}
-        photos={photos}
+        photoCount={null}
+        canManageKinds={can(member.role, 'categories.manage')}
         onSubmit={async (values) => {
           const result = await createActivityFn({ data: values })
           if (!result.ok) return { ok: false, message: t('a.invalidForm') }
           // Cached lists would not show the new activity until they expire.
           await queryClient.invalidateQueries({ queryKey: ['activities'] })
-          await navigate({ to: '/admin/activities' })
+          // Straight on to its edit page, where its photos are added.
+          await navigate({
+            to: '/admin/activities/$id',
+            params: { id: result.id },
+          })
           return { ok: true }
         }}
       />

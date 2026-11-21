@@ -12,7 +12,13 @@ import {
 } from 'drizzle-orm/pg-core'
 
 import { user } from './auth.ts'
-import { bloodGroup, memberRole, memberStatus } from './enums.ts'
+import {
+  bloodGroup,
+  gender,
+  maritalStatus,
+  memberRole,
+  memberStatus,
+} from './enums.ts'
 
 // Personal data lives here, so every query on this table must sit behind an
 // admin check on the server function (CLAUDE.md section 3).
@@ -28,9 +34,33 @@ export const members = pgTable(
     email: text(),
     // Nullable: someone may not know their group when they join.
     bloodGroup: bloodGroup('blood_group'),
+    // Personal details (all optional; see lib/member-profile.ts). No National
+    // ID number, on purpose.
+    fatherName: text('father_name'),
+    motherName: text('mother_name'),
+    dateOfBirth: date('date_of_birth'),
+    gender: gender(),
+    maritalStatus: maritalStatus('marital_status'),
+    occupation: text(),
+    organization: text(),
+    // The address in Bangladeshi form. Replaces the old free-text address and
+    // area columns below: migration 0006 copied their text into house_village.
+    houseVillage: text('house_village'),
+    roadWard: text('road_ward'),
+    postOffice: text('post_office'),
+    postCode: text('post_code'),
+    upazila: text(),
+    district: text(),
+    // DEPRECATED: do not read or write. The old free-text address and area.
+    // Kept only until the new code is deployed, because the live site still
+    // writes them; then a migration copies them into house_village once more
+    // and drops both, and these two lines go.
     address: text(),
     area: text(),
-    occupation: text(),
+    // The member's photo in R2 (members/<id>/<random>.webp), or none. Served
+    // only to admins through /api/member-photo/<id>, never through the public
+    // gallery route.
+    photoR2Key: text('photo_r2_key'),
 
     // The login account for this member, if they have one. Most members will
     // not in v1, so this is nullable. Unique: one login, one member profile.
@@ -66,5 +96,6 @@ export const members = pgTable(
     index('members_status_idx').on(t.status),
     // Bangladeshi mobile: 01, then 3-9, then 8 more digits.
     check('members_phone_format', sql`${t.phone} ~ '^01[3-9][0-9]{8}$'`),
+    check('members_post_code_format', sql`${t.postCode} ~ '^[0-9]{4}$'`),
   ],
 )

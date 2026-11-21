@@ -40,7 +40,9 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
             {t('teaser.lead')}
           </p>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(260px,100%),1fr))] gap-4">
+        {/* Fixed column counts (2, then 3) that divide the six photos evenly,
+            so no row is left half-empty at any screen width. */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
           {photos.length > 0
             ? photos.map((photo) => (
                 <div key={photo.id} className="zoom overflow-hidden rounded-lg">
@@ -50,14 +52,14 @@ export function GalleryTeaser({ photos = [] }: { photos?: GalleryPhoto[] }) {
                     sizes="(min-width: 768px) 300px, 100vw"
                     alt={t('teaser.photoAlt')}
                     loading="lazy"
-                    className="h-[230px] w-full object-cover"
+                    className="h-[150px] w-full object-cover md:h-[260px]"
                   />
                 </div>
               ))
             : PLACEHOLDERS.map((label, i) => (
                 <div
                   key={label}
-                  className="flex h-[230px] items-center justify-center rounded-lg border border-mint-line bg-[#164a35] p-3 text-center text-sm text-mint-muted"
+                  className="flex h-[150px] md:h-[260px] items-center justify-center rounded-lg border border-mint-line bg-[#164a35] p-3 text-center text-sm text-mint-muted"
                 >
                   {t('teaser.placeholder', {
                     n: number(i + 1),

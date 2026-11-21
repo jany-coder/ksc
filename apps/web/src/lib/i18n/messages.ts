@@ -3,6 +3,7 @@ import type { Lang } from './core.ts'
 import { adminMessages } from './messages.admin.ts'
 import { authMessages } from './messages.auth.ts'
 import { homeMessages } from './messages.home.ts'
+import { profileMessages } from './messages.profile.ts'
 import { publicMessages } from './messages.public.ts'
 import { validationMessages } from './messages.validation.ts'
 
@@ -11,6 +12,7 @@ import { validationMessages } from './messages.validation.ts'
 export const messages = {
   ...publicMessages,
   ...homeMessages,
+  ...profileMessages,
   ...validationMessages,
   ...authMessages,
   ...adminMessages,

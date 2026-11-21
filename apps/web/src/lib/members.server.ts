@@ -25,9 +25,18 @@ import type { MemberStatus } from './member-options.ts'
 import { PAGE_SIZE, escapeLike } from './members-query.ts'
 import type { MembersSearch } from './members-query.ts'
 import { CsvText, toCsv } from './csv.ts'
+import { photoVersion } from './image-limits.ts'
+import { bothSizes } from './member-photo.server.ts'
+import {
+  GENDER_LABEL_KEY,
+  MARITAL_LABEL_KEY,
+  profileToRow,
+} from './member-profile.ts'
+import type { ProfileRow } from './member-profile.ts'
 import { canManageMember } from './permissions.ts'
 import type { Role } from './permissions.ts'
 import { normalizePhone, toAsciiDigits } from './phone.ts'
+import { imagesBucket } from './r2.server.ts'
 
 // Read access to member data. Every caller must have checked
 // requirePermission('members.read') FIRST: this file does not check who is
@@ -39,11 +48,13 @@ export type MemberRow = {
   name: string
   phone: string
   bloodGroup: (typeof members.$inferSelect)['bloodGroup']
-  area: string | null
+  houseVillage: string | null
   occupation: string | null
   // Shown as a badge next to the name for admins and the super admin.
   role: (typeof members.$inferSelect)['role']
   status: MemberStatus
+  // The 128px copy, for the little circle beside the name. Null without one.
+  photoUrl: string | null
 }
 
 export type MembersPage = {
@@ -79,17 +90,18 @@ export async function listMembers(
 
   // One HTTP round trip for all three queries (db.batch): over Neon's HTTP
   // driver every separate query would be its own request.
-  const [rows, [total], statusCounts] = await db.batch([
+  const [photoRows, [total], statusCounts] = await db.batch([
     db
       .select({
         id: members.id,
         name: members.name,
         phone: members.phone,
         bloodGroup: members.bloodGroup,
-        area: members.area,
+        houseVillage: members.houseVillage,
         occupation: members.occupation,
         role: members.role,
         status: members.status,
+        photoR2Key: members.photoR2Key,
       })
       .from(members)
       .where(where)
@@ -112,6 +124,12 @@ export async function listMembers(
     counts[status] = statusCounts.find((r) => r.status === status)?.n ?? 0
     counts.all += counts[status]
   }
+
+  // The R2 key never leaves the server; the page gets an admin-only URL.
+  const rows = photoRows.map(({ photoR2Key, ...row }) => ({
+    ...row,
+    photoUrl: photoUrlFor(row.id, photoR2Key, 'small'),
+  }))
 
   return {
     rows,
@@ -164,9 +182,7 @@ export async function createMember(
         phone,
         email: blankToNull(v.email.toLowerCase()),
         bloodGroup: v.bloodGroup === '' ? null : v.bloodGroup,
-        address: blankToNull(v.address),
-        area: blankToNull(v.area),
-        occupation: blankToNull(v.occupation),
+        ...profileToRow(v),
         role: 'member', // never taken from the form
         status: v.status,
         willingToDonate: v.willingToDonate,
@@ -189,15 +205,29 @@ export async function createMember(
   return { ok: true, id }
 }
 
-export type MemberDetail = {
+// Every profile column (lib/member-profile.ts), for the selects below.
+const profileColumns = {
+  fatherName: members.fatherName,
+  motherName: members.motherName,
+  dateOfBirth: members.dateOfBirth,
+  gender: members.gender,
+  maritalStatus: members.maritalStatus,
+  occupation: members.occupation,
+  organization: members.organization,
+  houseVillage: members.houseVillage,
+  roadWard: members.roadWard,
+  postOffice: members.postOffice,
+  postCode: members.postCode,
+  upazila: members.upazila,
+  district: members.district,
+}
+
+export type MemberDetail = ProfileRow & {
   id: string
   name: string
   phone: string
   email: string | null
   bloodGroup: (typeof members.$inferSelect)['bloodGroup']
-  address: string | null
-  area: string | null
-  occupation: string | null
   role: (typeof members.$inferSelect)['role']
   status: MemberStatus
   willingToDonate: boolean
@@ -209,6 +239,20 @@ export type MemberDetail = {
   // True if this member has a login account. The account id itself never leaves
   // the server.
   hasLogin: boolean
+  // The admin-only photo URL, with a version so a new photo shows at once.
+  // Null without a photo. The R2 key itself never leaves the server.
+  photoUrl: string | null
+}
+
+/** "/api/member-photo/<id>?v=<file name>", or null without a photo. */
+function photoUrlFor(
+  id: string,
+  key: string | null,
+  size: 'full' | 'small' = 'full',
+): string | null {
+  if (!key) return null
+  const url = `/api/member-photo/${id}?v=${photoVersion(key)}`
+  return size === 'small' ? `${url}&size=small` : url
 }
 
 const dhakaDay = (column: AnyPgColumn) =>
@@ -223,9 +267,7 @@ export async function getMember(id: string): Promise<MemberDetail | null> {
       phone: members.phone,
       email: members.email,
       bloodGroup: members.bloodGroup,
-      address: members.address,
-      area: members.area,
-      occupation: members.occupation,
+      ...profileColumns,
       role: members.role,
       status: members.status,
       willingToDonate: members.willingToDonate,
@@ -233,11 +275,14 @@ export async function getMember(id: string): Promise<MemberDetail | null> {
       consentDate: dhakaDay(members.consentGivenAt),
       joinedDate: dhakaDay(members.joinedAt),
       hasLogin: sql<boolean>`${members.userId} is not null`,
+      photoR2Key: members.photoR2Key,
     })
     .from(members)
     .where(and(eq(members.id, id), isNull(members.archivedAt)))
     .limit(1)
-  return row ?? null
+  if (!row) return null
+  const { photoR2Key, ...rest } = row
+  return { ...rest, photoUrl: photoUrlFor(row.id, photoR2Key) }
 }
 
 export type SetStatusResult =
@@ -336,7 +381,11 @@ export async function archiveMember(
 export async function purgeArchivedMembers(): Promise<number> {
   const cutoff = sql`now() - make_interval(days => ${ARCHIVE_DAYS})`
   const expired = await db
-    .select({ id: members.id, userId: members.userId })
+    .select({
+      id: members.id,
+      userId: members.userId,
+      photoR2Key: members.photoR2Key,
+    })
     .from(members)
     .where(and(isNotNull(members.archivedAt), lt(members.archivedAt, cutoff)))
   if (expired.length === 0) return 0
@@ -358,6 +407,11 @@ export async function purgeArchivedMembers(): Promise<number> {
       db.delete(user).where(inArray(user.id, userIds)),
     ])
   }
+  // Their photos go too: personal data is not kept past the 30 days.
+  const photoKeys = expired.flatMap((m) =>
+    m.photoR2Key ? bothSizes(m.photoR2Key) : [],
+  )
+  if (photoKeys.length > 0) await imagesBucket.delete(photoKeys)
   return expired.length
 }
 
@@ -378,9 +432,7 @@ export async function exportMembersCsv(
       phone: members.phone,
       email: members.email,
       bloodGroup: members.bloodGroup,
-      address: members.address,
-      area: members.area,
-      occupation: members.occupation,
+      ...profileColumns,
       status: members.status,
       willingToDonate: members.willingToDonate,
       lastDonationDate: members.lastDonationDate,
@@ -405,9 +457,19 @@ export async function exportMembersCsv(
       t('csv.mobile'),
       t('csv.email'),
       t('csv.blood'),
-      t('csv.address'),
-      t('csv.area'),
+      t('csv.fatherName'),
+      t('csv.motherName'),
+      t('csv.dateOfBirth'),
+      t('csv.gender'),
+      t('csv.maritalStatus'),
       t('csv.occupation'),
+      t('csv.organization'),
+      t('csv.houseVillage'),
+      t('csv.roadWard'),
+      t('csv.postOffice'),
+      t('csv.postCode'),
+      t('csv.upazila'),
+      t('csv.district'),
       t('csv.status'),
       t('csv.willing'),
       t('csv.lastDonation'),
@@ -418,9 +480,20 @@ export async function exportMembersCsv(
       new CsvText(r.phone),
       r.email,
       r.bloodGroup,
-      r.address,
-      r.area,
+      r.fatherName,
+      r.motherName,
+      r.dateOfBirth,
+      r.gender && t(GENDER_LABEL_KEY[r.gender]),
+      r.maritalStatus && t(MARITAL_LABEL_KEY[r.maritalStatus]),
       r.occupation,
+      r.organization,
+      r.houseVillage,
+      r.roadWard,
+      r.postOffice,
+      // As text, so Excel keeps it as written.
+      r.postCode && new CsvText(r.postCode),
+      r.upazila,
+      r.district,
       t(STATUS_LABEL_KEY[r.status]),
       r.willingToDonate ? t('a.yes') : t('a.no'),
       r.lastDonationDate,
@@ -467,9 +540,7 @@ export async function updateMember(
       name: v.name,
       email: blankToNull(v.email.toLowerCase()),
       bloodGroup: v.bloodGroup === '' ? null : v.bloodGroup,
-      address: blankToNull(v.address),
-      area: blankToNull(v.area),
-      occupation: blankToNull(v.occupation),
+      ...profileToRow(v),
       willingToDonate: v.willingToDonate,
       lastDonationDate: blankToNull(v.lastDonationDate),
     })

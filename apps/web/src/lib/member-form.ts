@@ -2,13 +2,13 @@ import { z } from 'zod'
 
 import { isRealDate } from './activity-form.ts'
 import { BLOOD_GROUPS, MEMBER_STATUSES } from './member-options.ts'
+import { profileShape, rowToProfile } from './member-profile.ts'
+import type { ProfileRow } from './member-profile.ts'
 import { normalizePhone } from './phone.ts'
 
 // The "new member" form. The browser and the server both use this schema, so
 // they cannot disagree about what a valid member is. Optional fields arrive as
 // empty strings from the form and are turned into NULL when saved.
-const optionalText = z.string().trim().max(200, 'val.tooLong')
-
 export const memberFormSchema = z.object({
   name: z
     .string()
@@ -29,9 +29,8 @@ export const memberFormSchema = z.object({
     ),
   // '' means "not known": the database column is nullable.
   bloodGroup: z.union([z.enum(BLOOD_GROUPS), z.literal('')]),
-  address: optionalText,
-  area: optionalText,
-  occupation: optionalText,
+  // Personal details and address (lib/member-profile.ts).
+  ...profileShape,
   status: z.enum(MEMBER_STATUSES),
   willingToDonate: z.boolean(),
   // Required: a member cannot be saved without recorded consent
@@ -59,23 +58,20 @@ export const memberEditSchema = memberFormSchema
 export type MemberEditInput = z.infer<typeof memberEditSchema>
 
 /** The saved member (as the detail drawer gets it) -> the edit form's starting values. */
-export function memberToEditValues(member: {
-  name: string
-  email: string | null
-  bloodGroup: MemberEditInput['bloodGroup'] | null
-  address: string | null
-  area: string | null
-  occupation: string | null
-  willingToDonate: boolean
-  lastDonationDate: string | null
-}): MemberEditInput {
+export function memberToEditValues(
+  member: ProfileRow & {
+    name: string
+    email: string | null
+    bloodGroup: MemberEditInput['bloodGroup'] | null
+    willingToDonate: boolean
+    lastDonationDate: string | null
+  },
+): MemberEditInput {
   return {
     name: member.name,
     email: member.email ?? '',
     bloodGroup: member.bloodGroup ?? '',
-    address: member.address ?? '',
-    area: member.area ?? '',
-    occupation: member.occupation ?? '',
+    ...rowToProfile(member),
     willingToDonate: member.willingToDonate,
     lastDonationDate: member.lastDonationDate ?? '',
   }

@@ -5,13 +5,12 @@ import { activityFormSchema, isRealDate } from './activity-form.ts'
 const valid = {
   title: 'শীতবস্ত্র বিতরণ',
   description: '',
-  category: '',
+  categoryId: '',
   eventDate: '',
   eventTime: '',
   location: '',
   status: 'draft',
   featured: false,
-  coverImageId: '',
 }
 const fails = (patch: object) =>
   !activityFormSchema.safeParse({ ...valid, ...patch }).success
@@ -38,7 +37,7 @@ describe('activityFormSchema', () => {
     const full = {
       ...valid,
       description: 'বিবরণ',
-      category: 'রক্তদান',
+      categoryId: '2f1c5b9e-8a7d-4c3b-9e6f-1a2b3c4d5e6f',
       eventDate: '2026-12-20',
       eventTime: '15:30',
       location: 'ক্লাব প্রাঙ্গণ',
@@ -55,16 +54,8 @@ describe('activityFormSchema', () => {
     expect(fails({ eventTime: '25:00' })).toBe(true)
     expect(fails({ eventTime: '9:5' })).toBe(true)
   })
-  it('only allows the known categories (or none) and the two statuses', () => {
-    expect(fails({ category: 'অন্য' })).toBe(true)
+  it('only takes a kind by its id (or none), and the two statuses', () => {
+    expect(fails({ categoryId: 'রক্তদান' })).toBe(true)
     expect(fails({ status: 'archived' })).toBe(true)
-  })
-
-  it('accepts a cover photo id or none, but not a made-up value', () => {
-    expect(
-      fails({ coverImageId: '11111111-1111-4111-8111-111111111111' }),
-    ).toBe(false)
-    expect(fails({ coverImageId: '' })).toBe(false)
-    expect(fails({ coverImageId: 'not-an-id' })).toBe(true)
   })
 })

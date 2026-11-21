@@ -1,0 +1,1 @@
+ALTER TABLE "members" ADD COLUMN "photo_r2_key" text;

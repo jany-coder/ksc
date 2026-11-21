@@ -16,6 +16,7 @@ const json = (body: unknown, status: number) =>
 
 // Two small photos are well under this; it stops huge bodies early.
 const MAX_BODY_BYTES = 1_500_000
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export const Route = createFileRoute('/api/images')({
   server: {
@@ -36,11 +37,21 @@ export const Route = createFileRoute('/api/images')({
         if (!(full instanceof File) || !(thumb instanceof File))
           return json({ ok: false, code: 'INVALID_INPUT' }, 400)
 
+        // Optional: the activity to file the photo under. Empty means none.
+        const rawActivity = form?.get('activityId')
+        const activityId =
+          typeof rawActivity === 'string' && rawActivity !== ''
+            ? rawActivity
+            : null
+        if (activityId !== null && !UUID.test(activityId))
+          return json({ ok: false, code: 'INVALID_INPUT' }, 400)
+
         const result = await saveImage(member.id, {
           full: await full.arrayBuffer(),
           thumb: await thumb.arrayBuffer(),
           width: Number(form?.get('width')),
           height: Number(form?.get('height')),
+          activityId,
         })
         if (result.ok) return json(result, 201)
         const status =

@@ -1,16 +1,16 @@
 import '@tanstack/react-start/server-only'
 
-import { and, asc, desc, eq, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, ilike, isNull, sql } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
-import { activities } from '../db/schema/index.ts'
-import {
-  ACTIVITY_CATEGORIES,
-  ACTIVITY_CATEGORY_SLUG,
-  activityFormSchema,
-} from './activity-form.ts'
+import { activities, activityCategories, images } from '../db/schema/index.ts'
+import { ACTIVITY_PAGE_SIZE } from './activities-query.ts'
+import type { ActivitiesSearch } from './activities-query.ts'
+import { categorySlug } from './activity-category.ts'
+import { ACTIVITY_STATUSES, activityFormSchema } from './activity-form.ts'
 import type { ActivityFormInput } from './activity-form.ts'
 import { imageUrl } from './image-limits.ts'
+import { escapeLike } from './members-query.ts'
 import { makeSlug } from './slug.ts'
 
 // --- Admin side: callers must have checked requirePermission('content.write') ---
@@ -32,6 +32,34 @@ function isUniqueViolation(error: unknown): boolean {
   return e?.code === '23505' || e?.cause?.code === '23505'
 }
 
+type CategoryNames = { nameBn: string; nameEn: string }
+
+/**
+ * The chosen kind's names: undefined for none, null for an id that does not
+ * exist (deleted a moment ago, or made up).
+ */
+async function chosenCategory(
+  id: string,
+): Promise<CategoryNames | null | undefined> {
+  if (!id) return undefined
+  const [row] = await db
+    .select({
+      nameBn: activityCategories.nameBn,
+      nameEn: activityCategories.nameEn,
+    })
+    .from(activityCategories)
+    .where(eq(activityCategories.id, id))
+    .limit(1)
+  return row ?? null
+}
+
+// The kind's columns for a save. `category` is the DEPRECATED copy of the
+// Bengali name, still read by the version of the site that is live now.
+const categoryColumns = (id: string, kind: CategoryNames | undefined) => ({
+  categoryId: blankToNull(id),
+  category: kind?.nameBn ?? null,
+})
+
 /** Add an activity. `actorId` is the admin creating it. */
 export async function createActivity(
   actorId: string,
@@ -40,13 +68,15 @@ export async function createActivity(
   const parsed = activityFormSchema.safeParse(input)
   if (!parsed.success) return { ok: false, code: 'INVALID_INPUT' }
   const v = parsed.data
+  const kind = await chosenCategory(v.categoryId)
+  if (kind === null) return { ok: false, code: 'INVALID_INPUT' }
 
   // The random suffix makes a collision very unlikely; if one happens anyway the
   // unique index rejects it and we simply draw another suffix.
   for (let attempt = 0; attempt < 3; attempt++) {
     const slug = makeSlug({
       title: v.title,
-      categorySlug: v.category ? ACTIVITY_CATEGORY_SLUG[v.category] : undefined,
+      categorySlug: kind ? categorySlug(kind.nameEn) : undefined,
       date: v.eventDate || undefined,
     })
     try {
@@ -56,13 +86,12 @@ export async function createActivity(
           title: v.title,
           slug,
           description: blankToNull(v.description),
-          category: blankToNull(v.category),
+          ...categoryColumns(v.categoryId, kind),
           eventDate: blankToNull(v.eventDate),
           eventTime: blankToNull(v.eventTime),
           location: blankToNull(v.location),
           status: v.status,
           featured: v.featured,
-          coverImageId: blankToNull(v.coverImageId),
           createdBy: actorId,
           // Set by the database clock the moment it goes public.
           publishedAt: v.status === 'published' ? sql`now()` : null,
@@ -91,14 +120,13 @@ export async function getActivity(
   return {
     title: row.title,
     description: row.description ?? '',
-    category: ACTIVITY_CATEGORIES.find((c) => c === row.category) ?? '',
+    categoryId: row.categoryId ?? '',
     eventDate: row.eventDate ?? '',
     // The database gives "15:30:00"; the form's time field wants "15:30".
     eventTime: row.eventTime?.slice(0, 5) ?? '',
     location: row.location ?? '',
     status: row.status,
     featured: row.featured,
-    coverImageId: row.coverImageId ?? '',
   }
 }
 
@@ -116,19 +144,20 @@ export async function updateActivity(
   const parsed = activityFormSchema.safeParse(input)
   if (!parsed.success) return { ok: false, code: 'INVALID_INPUT' }
   const v = parsed.data
+  const kind = await chosenCategory(v.categoryId)
+  if (kind === null) return { ok: false, code: 'INVALID_INPUT' }
   try {
     const rows = await db
       .update(activities)
       .set({
         title: v.title,
         description: blankToNull(v.description),
-        category: blankToNull(v.category),
+        ...categoryColumns(v.categoryId, kind),
         eventDate: blankToNull(v.eventDate),
         eventTime: blankToNull(v.eventTime),
         location: blankToNull(v.location),
         status: v.status,
         featured: v.featured,
-        coverImageId: blankToNull(v.coverImageId),
         // First publication stamps the time; later edits and a switch back to
         // draft keep it as it was.
         ...(v.status === 'published'
@@ -163,34 +192,146 @@ export type ActivityRow = {
   id: string
   title: string
   status: 'draft' | 'published'
-  category: string | null
+  category: CategoryNames | null
   eventDate: string | null
   featured: boolean
+  // Photos filed under it, so one still without photos stands out.
+  photoCount: number
+  // The cover's small version, to recognise the activity at a glance.
+  thumbUrl: string | null
 }
 
-/** Every activity, drafts included, latest date first (like the site). For the admin list. */
-export async function listActivities(): Promise<ActivityRow[]> {
+export type ActivitiesPage = {
+  rows: ActivityRow[]
+  /** Activities matching the current filters, across all pages. */
+  total: number
+  /** All activities per status, for the tab badges. */
+  counts: Record<(typeof ACTIVITY_STATUSES)[number] | 'all', number>
+  /** Years that have activities, newest first, for the year filter. */
+  years: number[]
+  page: number
+  pageSize: number
+}
+
+/**
+ * The admin list, drafts included: filtered, sorted by date (newest first
+ * unless asked otherwise) and a page at a time. Activities without a date come
+ * last either way.
+ */
+export async function listActivities(
+  filters: ActivitiesSearch,
+): Promise<ActivitiesPage> {
+  const page = filters.page ?? 1
+  const where = and(
+    filters.status ? eq(activities.status, filters.status) : undefined,
+    filters.category === 'none'
+      ? isNull(activities.categoryId)
+      : filters.category
+        ? eq(activities.categoryId, filters.category)
+        : undefined,
+    // A range, not extract(year ...), so the date index can be used.
+    filters.year
+      ? sql`${activities.eventDate} >= ${`${filters.year}-01-01`}::date and ${activities.eventDate} < ${`${filters.year + 1}-01-01`}::date`
+      : undefined,
+    filters.q
+      ? ilike(activities.title, `%${escapeLike(filters.q)}%`)
+      : undefined,
+  )
+  const order =
+    filters.sort === 'oldest'
+      ? [sql`${activities.eventDate} asc nulls last`, asc(activities.createdAt)]
+      : [
+          sql`${activities.eventDate} desc nulls last`,
+          desc(activities.createdAt),
+        ]
+
+  // One round trip for all four queries (see listMembers).
+  const [rows, [total], statusCounts, years] = await db.batch([
+    db
+      .select({
+        id: activities.id,
+        title: activities.title,
+        status: activities.status,
+        eventDate: activities.eventDate,
+        featured: activities.featured,
+        coverImageId: activities.coverImageId,
+        nameBn: activityCategories.nameBn,
+        nameEn: activityCategories.nameEn,
+        photoCount: sql<number>`(select count(*)::int from ${images} where ${images.activityId} = ${activities.id})`,
+      })
+      .from(activities)
+      .leftJoin(
+        activityCategories,
+        eq(activityCategories.id, activities.categoryId),
+      )
+      .where(where)
+      .orderBy(...order, asc(activities.id))
+      .limit(ACTIVITY_PAGE_SIZE)
+      .offset((page - 1) * ACTIVITY_PAGE_SIZE),
+    db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(activities)
+      .where(where),
+    db
+      .select({ status: activities.status, n: sql<number>`count(*)::int` })
+      .from(activities)
+      .groupBy(activities.status),
+    db
+      .selectDistinct({
+        year: sql<number>`extract(year from ${activities.eventDate})::int`,
+      })
+      .from(activities)
+      .where(sql`${activities.eventDate} is not null`)
+      .orderBy(sql`1 desc`),
+  ])
+
+  const counts = { all: 0, draft: 0, published: 0 }
+  for (const status of ACTIVITY_STATUSES) {
+    counts[status] = statusCounts.find((r) => r.status === status)?.n ?? 0
+    counts.all += counts[status]
+  }
+
+  return {
+    rows: rows.map(({ coverImageId, nameBn, nameEn, ...row }) => ({
+      ...row,
+      category: nameBn !== null && nameEn !== null ? { nameBn, nameEn } : null,
+      thumbUrl: coverImageId ? imageUrl(coverImageId, 'thumb') : null,
+    })),
+    total: total?.n ?? 0,
+    counts,
+    years: years.map((y) => y.year),
+    page,
+    pageSize: ACTIVITY_PAGE_SIZE,
+  }
+}
+
+/**
+ * Every activity's id, title and date, latest first: the choices for "file this
+ * photo under ..." in the gallery.
+ */
+export async function activityChoices(): Promise<
+  { id: string; title: string; eventDate: string | null }[]
+> {
   return db
     .select({
       id: activities.id,
       title: activities.title,
-      status: activities.status,
-      category: activities.category,
       eventDate: activities.eventDate,
-      featured: activities.featured,
     })
     .from(activities)
     .orderBy(
       sql`${activities.eventDate} desc nulls last`,
       desc(activities.createdAt),
     )
-    .limit(300)
+    .limit(1000)
 }
 
 // --- Public side: anyone can call this, so it returns the bare minimum ---
 
 export type PublicActivity = {
   id: string
+  // For the link to the activity's own page.
+  slug: string
   title: string
   description: string
   // Plain "YYYY-MM-DD" / "HH:MM:SS" text: the page formats them in the
@@ -218,6 +359,7 @@ export async function listUpcomingPublic(limit = 3): Promise<PublicActivity[]> {
   const rows = await db
     .select({
       id: activities.id,
+      slug: activities.slug,
       title: activities.title,
       description: activities.description,
       eventDate: activities.eventDate,
@@ -241,6 +383,7 @@ export async function listUpcomingPublic(limit = 3): Promise<PublicActivity[]> {
 
   return rows.map((r) => ({
     id: r.id,
+    slug: r.slug,
     title: r.title,
     description: shorten(r.description ?? '', 220),
     eventDate: r.eventDate,
@@ -252,6 +395,7 @@ export async function listUpcomingPublic(limit = 3): Promise<PublicActivity[]> {
 
 export type PastActivity = {
   id: string
+  slug: string
   title: string
   // The full text: long ones are folded on the card with "see more".
   description: string
@@ -272,6 +416,7 @@ export async function listPastPublic(limit: number): Promise<PastActivity[]> {
   const rows = await db
     .select({
       id: activities.id,
+      slug: activities.slug,
       title: activities.title,
       description: activities.description,
       eventDate: activities.eventDate,
@@ -293,6 +438,7 @@ export async function listPastPublic(limit: number): Promise<PastActivity[]> {
 
   return rows.map((r) => ({
     id: r.id,
+    slug: r.slug,
     title: r.title,
     description: r.description ?? '',
     eventDate: r.eventDate,
@@ -304,4 +450,108 @@ export async function listPastPublic(limit: number): Promise<PastActivity[]> {
         }
       : {}),
   }))
+}
+
+export type ActivityPagePhoto = {
+  id: string
+  width: number
+  height: number
+  caption: string | null
+}
+
+export type ActivityPage = {
+  id: string
+  slug: string
+  title: string
+  // The full text; the page splits it into paragraphs at blank lines.
+  description: string
+  // The kind's names; the page shows the reader's language.
+  category: CategoryNames | null
+  eventDate: string | null
+  eventTime: string | null
+  location: string
+  // The cover, or failing that the first photo; null with no photos at all.
+  // The cover may be a photo filed under another activity (it was picked from
+  // the whole gallery), so it is looked up on its own.
+  hero: ActivityPagePhoto | null
+  // Every photo filed under the activity, in upload order.
+  photos: ActivityPagePhoto[]
+}
+
+async function heroPhoto(
+  coverImageId: string | null,
+  photos: ActivityPagePhoto[],
+): Promise<ActivityPagePhoto | null> {
+  if (!coverImageId) return photos[0] ?? null
+  const own = photos.find((p) => p.id === coverImageId)
+  if (own) return own
+  const [cover] = await db
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+    })
+    .from(images)
+    .where(eq(images.id, coverImageId))
+    .limit(1)
+  return cover ?? photos[0] ?? null
+}
+
+/**
+ * One published activity with all its photos, for its own public page. A
+ * draft, or a slug that does not exist, gives null (the page says "not
+ * found"), so a draft cannot be read by guessing its address.
+ */
+export async function getPublicActivity(
+  slug: string,
+): Promise<ActivityPage | null> {
+  const [row] = await db
+    .select({
+      id: activities.id,
+      slug: activities.slug,
+      title: activities.title,
+      description: activities.description,
+      nameBn: activityCategories.nameBn,
+      nameEn: activityCategories.nameEn,
+      eventDate: activities.eventDate,
+      eventTime: activities.eventTime,
+      location: activities.location,
+      coverImageId: activities.coverImageId,
+    })
+    .from(activities)
+    .leftJoin(
+      activityCategories,
+      eq(activityCategories.id, activities.categoryId),
+    )
+    .where(and(eq(activities.slug, slug), eq(activities.status, 'published')))
+    .limit(1)
+  if (!row) return null
+
+  const photos = await db
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+    })
+    .from(images)
+    .where(eq(images.activityId, row.id))
+    .orderBy(asc(images.uploadedAt), asc(images.id))
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    description: row.description ?? '',
+    category:
+      row.nameBn !== null && row.nameEn !== null
+        ? { nameBn: row.nameBn, nameEn: row.nameEn }
+        : null,
+    eventDate: row.eventDate,
+    eventTime: row.eventTime,
+    location: row.location ?? '',
+    hero: await heroPhoto(row.coverImageId, photos),
+    photos,
+  }
 }

@@ -1,0 +1,50 @@
+import type { Entry } from './core.ts'
+
+// Labels for the member profile fields (lib/member-profile.ts), shared by the
+// public application form and the admin forms, drawer and CSV.
+export const profileMessages = {
+  'profile.personal': { bn: 'ব্যক্তিগত তথ্য', en: 'Personal information' },
+  'profile.contact': { bn: 'যোগাযোগের তথ্য', en: 'Contact information' },
+  'profile.address': { bn: 'ঠিকানা', en: 'Address' },
+  'profile.allOptional': {
+    bn: 'এই অংশের সব ঘর ঐচ্ছিক।',
+    en: 'Every field in this part is optional.',
+  },
+  'profile.fatherName': { bn: 'বাবার নাম', en: "Father's name" },
+  'profile.motherName': { bn: 'মায়ের নাম', en: "Mother's name" },
+  'profile.dateOfBirth': { bn: 'জন্ম তারিখ', en: 'Date of birth' },
+  'profile.gender': { bn: 'লিঙ্গ', en: 'Gender' },
+  'profile.genderMale': { bn: 'পুরুষ', en: 'Male' },
+  'profile.genderFemale': { bn: 'নারী', en: 'Female' },
+  'profile.genderOther': { bn: 'অন্যান্য', en: 'Other' },
+  'profile.maritalStatus': { bn: 'বৈবাহিক অবস্থা', en: 'Marital status' },
+  'profile.maritalSingle': { bn: 'অবিবাহিত', en: 'Single' },
+  'profile.maritalMarried': { bn: 'বিবাহিত', en: 'Married' },
+  'profile.maritalOther': { bn: 'অন্যান্য', en: 'Other' },
+  'profile.notGiven': { bn: 'বলা হয়নি', en: 'Not given' },
+  'profile.occupation': { bn: 'পেশা', en: 'Occupation' },
+  'profile.organization': {
+    bn: 'প্রতিষ্ঠান (কর্মস্থল বা শিক্ষাপ্রতিষ্ঠান)',
+    en: 'Organisation (workplace or school)',
+  },
+  'profile.houseVillage': { bn: 'বাসা / গ্রাম', en: 'House / village' },
+  'profile.roadWard': { bn: 'রোড / ওয়ার্ড', en: 'Road / ward' },
+  'profile.postOffice': { bn: 'ডাকঘর', en: 'Post office' },
+  'profile.postCode': { bn: 'পোস্ট কোড', en: 'Post code' },
+  'profile.upazila': { bn: 'উপজেলা / থানা', en: 'Upazila / thana' },
+  'profile.district': { bn: 'জেলা', en: 'District' },
+
+  'csv.occupation': { bn: 'পেশা', en: 'Occupation' },
+  'csv.fatherName': { bn: 'বাবার নাম', en: "Father's name" },
+  'csv.motherName': { bn: 'মায়ের নাম', en: "Mother's name" },
+  'csv.dateOfBirth': { bn: 'জন্ম তারিখ', en: 'Date of birth' },
+  'csv.gender': { bn: 'লিঙ্গ', en: 'Gender' },
+  'csv.maritalStatus': { bn: 'বৈবাহিক অবস্থা', en: 'Marital status' },
+  'csv.organization': { bn: 'প্রতিষ্ঠান', en: 'Organisation' },
+  'csv.houseVillage': { bn: 'বাসা / গ্রাম', en: 'House / village' },
+  'csv.roadWard': { bn: 'রোড / ওয়ার্ড', en: 'Road / ward' },
+  'csv.postOffice': { bn: 'ডাকঘর', en: 'Post office' },
+  'csv.postCode': { bn: 'পোস্ট কোড', en: 'Post code' },
+  'csv.upazila': { bn: 'উপজেলা / থানা', en: 'Upazila / thana' },
+  'csv.district': { bn: 'জেলা', en: 'District' },
+} satisfies Record<string, Entry>

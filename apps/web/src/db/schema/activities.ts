@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import type { AnyPgColumn } from 'drizzle-orm/pg-core'
 
+import { activityCategories } from './activity-categories.ts'
 import { publishStatus } from './enums.ts'
 import { images } from './images.ts'
 import { members } from './members.ts'
@@ -23,6 +24,14 @@ export const activities = pgTable(
     // Used in the public URL, so it must be unique.
     slug: text().notNull(),
     description: text(),
+    // The activity's kind. Restrict: a kind in use cannot be deleted (the
+    // admin panel offers "hide" instead).
+    categoryId: uuid('category_id').references(() => activityCategories.id, {
+      onDelete: 'restrict',
+    }),
+    // DEPRECATED: the kind's Bengali name, from before kinds had their own
+    // table. Still written (the version of the site that is live now reads
+    // it); dropped once this code is deployed.
     category: text(),
     // `date` and `time` are separate columns: an event can have a day but no
     // fixed hour yet.
@@ -51,5 +60,6 @@ export const activities = pgTable(
   (t) => [
     uniqueIndex('activities_slug_unique').on(t.slug),
     index('activities_event_date_idx').on(t.eventDate),
+    index('activities_category_id_idx').on(t.categoryId),
   ],
 )

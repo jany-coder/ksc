@@ -1,11 +1,14 @@
+import { Link } from '@tanstack/react-router'
+
 import { formatEventWhen } from '../../../lib/datetime.ts'
-import { useLang, useT } from '../../../lib/i18n/index.tsx'
+import { useLang, useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
 
 // "Upcoming activities". The home page passes in the real, published, upcoming
 // activities from the database. When there are none, a plain message is shown:
 // no invented events and no leftover "[placeholder]" text on a live site.
 export type UpcomingActivity = {
   id: string
+  slug: string
   title: string
   description: string
   // Plain "YYYY-MM-DD" and "HH:MM:SS" text, formatted here in the reader's language.
@@ -18,6 +21,7 @@ export type UpcomingActivity = {
 export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
   const t = useT()
   const lang = useLang()
+  const localeParams = useLocaleParams()
   return (
     <section
       id="upcoming"
@@ -42,7 +46,8 @@ export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
             {items.map((item) => (
               <article
                 key={item.id}
-                className="lift flex flex-col overflow-hidden rounded-[10px] border border-line bg-card"
+                // relative: the title link's ::after covers the whole card.
+                className="lift relative flex flex-col overflow-hidden rounded-[10px] border border-line bg-card"
               >
                 {item.imageUrl ? (
                   <img
@@ -71,13 +76,25 @@ export function UpcomingActivities({ items }: { items: UpcomingActivity[] }) {
                     )}
                   </div>
                   <h3 className="text-[23px] font-semibold text-ink">
-                    {item.title}
+                    <Link
+                      to="/{-$locale}/activities/$slug"
+                      params={{ ...localeParams, slug: item.slug }}
+                      className="after:absolute after:inset-0 after:content-[''] focus-visible:outline-none after:focus-visible:rounded-[10px] after:focus-visible:outline-2 after:focus-visible:outline-offset-2 after:focus-visible:outline-primary"
+                    >
+                      {item.title}
+                    </Link>
                   </h3>
                   {item.description && (
                     <p className="text-[17px] leading-[1.7] text-copy">
                       {item.description}
                     </p>
                   )}
+                  <span
+                    aria-hidden="true"
+                    className="mt-auto pt-1 text-[15px] font-semibold text-primary"
+                  >
+                    {t('activities.details')} →
+                  </span>
                 </div>
               </article>
             ))}

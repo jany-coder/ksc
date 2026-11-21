@@ -30,3 +30,11 @@ export const bloodGroup = pgEnum('blood_group', [
 
 // Shared by activities and notices.
 export const publishStatus = pgEnum('publish_status', ['draft', 'published'])
+
+// Member profile choices (see lib/member-profile.ts for the labels).
+export const gender = pgEnum('gender', ['male', 'female', 'other'])
+export const maritalStatus = pgEnum('marital_status', [
+  'single',
+  'married',
+  'other',
+])

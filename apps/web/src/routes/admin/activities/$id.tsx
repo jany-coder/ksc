@@ -1,4 +1,4 @@
-import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import {
   Link,
   createFileRoute,
@@ -6,16 +6,21 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router'
+import { ExternalLink } from 'lucide-react'
 import { useState } from 'react'
 
 import { ActivityForm } from '../../../components/admin/activity-form.tsx'
+import { categoriesQuery } from '../../../components/admin/category-dialog.tsx'
+import {
+  ActivityPhotos,
+  activityPhotosQuery,
+} from '../../../components/admin/activity-photos.tsx'
 import { Button } from '../../../components/ui/button.tsx'
 import {
   deleteActivityFn,
   getActivityFn,
   updateActivityFn,
 } from '../../../lib/activities.functions.ts'
-import { listPublicImagesFn } from '../../../lib/images.functions.ts'
 import { useT } from '../../../lib/i18n/index.tsx'
 import { langOfMatches } from '../../../lib/i18n/core.ts'
 import type { HeadArgs } from '../../../lib/i18n/core.ts'
@@ -31,13 +36,16 @@ export const Route = createFileRoute('/admin/activities/$id')({
     if (!can(context.member.role, 'content.write'))
       throw redirect({ to: '/admin' })
   },
-  loader: async ({ params }) => {
-    const [activity, photos] = await Promise.all([
+  loader: async ({ params, context }) => {
+    const [activity] = await Promise.all([
       getActivityFn({ data: { id: params.id } }),
-      listPublicImagesFn({ data: { limit: 100 } }),
+      // The photos come through the query cache, so uploads refresh them.
+      context.queryClient.ensureQueryData(activityPhotosQuery(params.id)),
+      // The kinds for the form's "Type" list.
+      context.queryClient.ensureQueryData(categoriesQuery()),
     ])
     if (!activity) throw notFound()
-    return { activity, photos }
+    return { activity }
   },
   notFoundComponent: ActivityNotFound,
   component: EditActivityPage,
@@ -57,8 +65,10 @@ function ActivityNotFound() {
 
 function EditActivityPage() {
   const t = useT()
-  const { activity, photos } = Route.useLoaderData()
+  const { activity } = Route.useLoaderData()
   const { id } = Route.useParams()
+  const { member } = Route.useRouteContext()
+  const { data: photoData } = useSuspenseQuery(activityPhotosQuery(id))
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [confirming, setConfirming] = useState(false)
@@ -94,11 +104,27 @@ function EditActivityPage() {
         </span>
         <span className="text-foreground">{t('a.edit')}</span>
       </nav>
-      <h1 className="text-2xl font-semibold">{t('act.editTitle')}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold">{t('act.editTitle')}</h1>
+        {/* The public page exists only once the activity is published. */}
+        {photoData?.published && (
+          <a
+            href={`/activities/${photoData.slug}`}
+            target="_blank"
+            rel="noopener"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-sm font-medium hover:bg-secondary"
+          >
+            {t('act.viewPage')}
+            <ExternalLink aria-hidden="true" className="size-4" />
+            <span className="sr-only">{t('act.opensNewTab')}</span>
+          </a>
+        )}
+      </div>
 
       <ActivityForm
         initial={activity}
-        photos={photos}
+        photoCount={photoData?.photos.length ?? 0}
+        canManageKinds={can(member.role, 'categories.manage')}
         submitLabel={t('a.save')}
         onSubmit={async (values) => {
           const result = await updateActivityFn({ data: { id, values } })
@@ -165,6 +191,8 @@ function EditActivityPage() {
           </section>
         }
       />
+
+      <ActivityPhotos activityId={id} />
     </main>
   )
 }

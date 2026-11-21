@@ -144,7 +144,7 @@ export const adminMessages = {
   'members.colMember': { bn: 'সদস্য', en: 'Member' },
   'members.colMobile': { bn: 'মোবাইল', en: 'Mobile' },
   'members.colBlood': { bn: 'রক্ত', en: 'Blood' },
-  'members.colArea': { bn: 'এলাকা', en: 'Area' },
+  'members.colVillage': { bn: 'বাসা / গ্রাম', en: 'House / village' },
   'members.colOccupation': { bn: 'পেশা', en: 'Occupation' },
 
   // --- member detail drawer ---
@@ -158,13 +158,113 @@ export const adminMessages = {
     en: 'This member could not be found.',
   },
   'drawer.mobile': { bn: 'মোবাইল', en: 'Mobile' },
+  'memberEdit.statusHint': {
+    bn: 'অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্যের প্রোফাইলের "পরিচালনা" অংশ ব্যবহার করুন।',
+    en: "To change the status or reset a password, use Manage on the member's profile.",
+  },
+  'drawer.fullProfile': { bn: 'পুরো প্রোফাইল দেখুন', en: 'View full profile' },
+  'memberProfile.pageTitle': {
+    bn: 'সদস্যের প্রোফাইল — কলমা সোশ্যাল ক্লাব',
+    en: 'Member profile — Kalma Social Club',
+  },
+  'memberProfile.back': { bn: 'সদস্য তালিকা', en: 'Members list' },
+  'memberProfile.notFound': {
+    bn: 'এই সদস্যকে পাওয়া যায়নি। হয়তো মুছে ফেলা হয়েছে।',
+    en: 'This member was not found. They may have been deleted.',
+  },
+  'history.title': { bn: 'ইতিহাস', en: 'History' },
+  'history.empty': { bn: 'এখনো কিছু লেখা হয়নি।', en: 'Nothing recorded yet.' },
+  'history.loadError': {
+    bn: 'ইতিহাস আনা গেল না।',
+    en: 'Could not load the history.',
+  },
+  'history.unknownAdmin': { bn: 'একজন অ্যাডমিন', en: 'An admin' },
+  'history.apply': {
+    bn: 'ওয়েবসাইট থেকে সদস্য হওয়ার আবেদন এসেছে',
+    en: 'Applied to join through the website',
+  },
+  'history.create': {
+    bn: '{actor} সদস্য হিসেবে যোগ করেছেন',
+    en: '{actor} added this member',
+  },
+  'history.update': {
+    bn: '{actor} তথ্য বদলেছেন',
+    en: '{actor} changed the details',
+  },
+  'history.phoneChange': {
+    bn: '{actor} মোবাইল নম্বর বদলেছেন',
+    en: '{actor} changed the mobile number',
+  },
+  'history.photo': { bn: '{actor} ছবি দিয়েছেন', en: '{actor} added a photo' },
+  'history.photoRemove': {
+    bn: '{actor} ছবি সরিয়েছেন',
+    en: '{actor} removed the photo',
+  },
+  'history.statusChange': {
+    bn: '{actor} অবস্থা বদলেছেন: {from} থেকে {to}',
+    en: '{actor} changed the status from {from} to {to}',
+  },
+  'history.passwordReset': {
+    bn: '{actor} পাসওয়ার্ড রিসেট করেছেন',
+    en: '{actor} reset the password',
+  },
+  'history.adminCreate': {
+    bn: '{actor} অ্যাডমিন বানিয়েছেন',
+    en: '{actor} made them an admin',
+  },
+  'history.superCreate': {
+    bn: '{actor} সুপার অ্যাডমিন বানিয়েছেন',
+    en: '{actor} made them a super admin',
+  },
+  'history.adminRemove': {
+    bn: '{actor} অ্যাডমিন পদ সরিয়েছেন',
+    en: '{actor} removed admin rights',
+  },
+  'history.delete': {
+    bn: '{actor} মুছে ফেলেছেন (৩০ দিনের আর্কাইভে)',
+    en: '{actor} deleted them (30-day archive)',
+  },
+  'history.restore': {
+    bn: '{actor} আর্কাইভ থেকে ফিরিয়ে এনেছেন',
+    en: '{actor} restored them from the archive',
+  },
+  'history.other': {
+    bn: '{actor} একটি পরিবর্তন করেছেন',
+    en: '{actor} made a change',
+  },
+  'memberNew.photoLater': {
+    bn: 'সংরক্ষণের পর সদস্যের প্রোফাইল খুলবে, সেখান থেকে ছবি দিতে পারবেন।',
+    en: "After saving, the member's profile opens; add the photo there.",
+  },
+  'drawer.call': { bn: 'কল করুন', en: 'Call' },
+  'drawer.copy': { bn: 'কপি', en: 'Copy' },
+  'drawer.copied': { bn: 'কপি হয়েছে', en: 'Copied' },
+  'drawer.editShort': { bn: 'এডিট', en: 'Edit' },
+  'drawer.pendingNote': {
+    bn: 'এই আবেদনটি অনুমোদনের অপেক্ষায় আছে।',
+    en: 'This application is waiting for approval.',
+  },
+  'drawer.approve': { bn: 'অনুমোদন দিন', en: 'Approve' },
+  'drawer.sectionBlood': { bn: 'রক্তদান', en: 'Blood donation' },
+  'drawer.sectionContact': { bn: 'যোগাযোগ', en: 'Contact' },
+  'drawer.sectionMembership': { bn: 'সদস্যপদ', en: 'Membership' },
+  'drawer.sectionManage': { bn: 'পরিচালনা', en: 'Manage' },
+  'drawer.login': { bn: 'লগইন অ্যাকাউন্ট', en: 'Login account' },
+  'drawer.never': { bn: 'এখনো দেননি', en: 'Not yet' },
+  'drawer.daysAgo': { bn: '{n} দিন আগে', en: '{n} days ago' },
+  'drawer.age': { bn: '{n} বছর', en: '{n} years' },
+  'drawer.personalEmpty': {
+    bn: 'কোনো ব্যক্তিগত তথ্য যোগ করা হয়নি।',
+    en: 'No personal details added yet.',
+  },
+  'drawer.personalMissing': {
+    bn: 'আরো {n}টি ঘর ফাঁকা।',
+    en: '{n} more fields are empty.',
+  },
+  'drawer.fillIn': { bn: 'পূরণ করুন', en: 'Fill in' },
   'drawer.email': { bn: 'ইমেইল', en: 'Email' },
-  'drawer.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
   'drawer.willing': { bn: 'রক্তদানে আগ্রহী', en: 'Willing to donate' },
   'drawer.lastDonation': { bn: 'সর্বশেষ রক্তদান', en: 'Last donation' },
-  'drawer.address': { bn: 'ঠিকানা', en: 'Address' },
-  'drawer.area': { bn: 'এলাকা', en: 'Area' },
-  'drawer.occupation': { bn: 'পেশা', en: 'Occupation' },
   'drawer.joined': { bn: 'যোগদানের তারিখ', en: 'Date joined' },
   'drawer.consent': {
     bn: 'তথ্য ব্যবহারে সম্মতি দিয়েছেন',
@@ -273,9 +373,6 @@ export const adminMessages = {
   'memberNew.email': { bn: 'ইমেইল (ঐচ্ছিক)', en: 'Email (optional)' },
   'memberNew.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
   'memberNew.bloodUnknown': { bn: 'জানা নেই', en: 'Not known' },
-  'memberNew.address': { bn: 'ঠিকানা (ঐচ্ছিক)', en: 'Address (optional)' },
-  'memberNew.area': { bn: 'এলাকা (ঐচ্ছিক)', en: 'Area (optional)' },
-  'memberNew.occupation': { bn: 'পেশা (ঐচ্ছিক)', en: 'Occupation (optional)' },
   'memberNew.willing': {
     bn: 'রক্ত দিতে রাজি',
     en: 'Willing to donate blood',
@@ -289,9 +386,10 @@ export const adminMessages = {
   },
   'memberEdit.title': { bn: 'সদস্য সম্পাদনা', en: 'Edit member' },
   'memberEdit.lead': {
-    bn: 'নাম, যোগাযোগ ও রক্তদানের তথ্য বদলানো যায়। অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্যের তথ্যের ড্রয়ার ব্যবহার করুন।',
-    en: "You can change the name, contact and blood donation details. To change the status or reset a password, use the member's details drawer.",
+    bn: 'নাম, ব্যক্তিগত তথ্য, যোগাযোগ আর রক্তদানের তথ্য বদলাতে পারবেন। অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্যের প্রোফাইল দেখুন।',
+    en: "You can change the name, personal, contact and blood donation details. To change the status or reset a password, use the member's profile.",
   },
+  'memberEdit.backToProfile': { bn: 'প্রোফাইলে ফিরুন', en: 'Back to profile' },
   'memberEdit.phoneLabel': { bn: 'মোবাইল নম্বর', en: 'Mobile number' },
   'memberEdit.phoneLocked': {
     bn: 'এই নম্বরটাই সদস্যের পরিচয় (অ্যাডমিন হলে লগইনের নামও), তাই এটি বদলানো যায় না।',
@@ -364,7 +462,6 @@ export const adminMessages = {
     bn: 'তালিকা আনা যায়নি। পেজ রিফ্রেশ করুন।',
     en: 'Could not load the list. Refresh the page.',
   },
-  'drawer.edit': { bn: 'তথ্য সম্পাদনা', en: 'Edit details' },
 
   // --- activities ---
   'act.pageTitle': {
@@ -387,6 +484,97 @@ export const adminMessages = {
   },
   'act.caption': { bn: 'কার্যক্রমের তালিকা', en: 'List of activities' },
   'act.colType': { bn: 'ধরন', en: 'Type' },
+  'act.colPhotos': { bn: 'ছবি', en: 'Photos' },
+  'act.photos': { bn: '{n}টি ছবি', en: '{n} photos' },
+  'act.noPhotos': { bn: 'ছবি নেই', en: 'No photos' },
+  'act.noDate': { bn: 'তারিখ নেই', en: 'No date' },
+  'act.byStatus': { bn: 'অবস্থা অনুযায়ী', en: 'By status' },
+  'act.searchLabel': { bn: 'কার্যক্রম খুঁজুন', en: 'Search activities' },
+  'act.searchPlaceholder': {
+    bn: 'শিরোনামের কোনো শব্দ',
+    en: 'A word from the title',
+  },
+  'act.yearLabel': { bn: 'বছর', en: 'Year' },
+  'act.allYears': { bn: 'সব বছর', en: 'All years' },
+  'act.kindLabel': { bn: 'ধরন', en: 'Type' },
+  'act.allKinds': { bn: 'সব ধরন', en: 'All types' },
+  'act.noKind': { bn: 'ধরন দেওয়া নেই', en: 'No type given' },
+  'act.sortLabel': { bn: 'সাজানো', en: 'Order' },
+  'act.sortNewest': { bn: 'তারিখ: নতুন আগে', en: 'Date: newest first' },
+  'act.sortOldest': { bn: 'তারিখ: পুরোনো আগে', en: 'Date: oldest first' },
+  'act.sortByDate': {
+    bn: 'তারিখ অনুযায়ী উল্টো করে সাজান',
+    en: 'Reverse the date order',
+  },
+  'act.emptyFilter': {
+    bn: 'এই ফিল্টারে কোনো কার্যক্রম পাওয়া যায়নি।',
+    en: 'No activities match this filter.',
+  },
+  'act.clearFilters': { bn: 'সব ফিল্টার মুছুন', en: 'Clear all filters' },
+  'act.summary': {
+    bn: '{all}টির মধ্যে {total}টি মিলেছে',
+    en: '{total} of {all} activities match',
+  },
+  'act.range': {
+    bn: ' · {from}–{to} দেখানো হচ্ছে',
+    en: ' · showing {from}–{to}',
+  },
+  'act.manageKinds': { bn: 'ধরন সাজান', en: 'Manage types' },
+
+  // --- kinds of activity (super admin) ---
+  'kind.pageTitle': {
+    bn: 'কার্যক্রমের ধরন — কলমা সোশ্যাল ক্লাব',
+    en: 'Activity types — Kalma Social Club',
+  },
+  'kind.title': { bn: 'কার্যক্রমের ধরন', en: 'Activity types' },
+  'kind.lead': {
+    bn: 'কার্যক্রম লেখার সময় এই তালিকা থেকে ধরন বাছাই করা হয়। নাম বদলালে সেই ধরনের সব কার্যক্রমে নতুন নাম দেখাবে।',
+    en: 'Activities pick their type from this list. Renaming a type changes it on every activity of that type.',
+  },
+  'kind.add': { bn: 'নতুন ধরন', en: 'New type' },
+  'kind.addTitle': { bn: 'নতুন ধরন যোগ করুন', en: 'Add a type' },
+  'kind.editTitle': { bn: 'ধরন সম্পাদনা', en: 'Edit type' },
+  'kind.nameBn': { bn: 'বাংলা নাম *', en: 'Bengali name *' },
+  'kind.nameBnPh': { bn: 'যেমন: বৃক্ষরোপণ', en: 'Written in Bengali' },
+  'kind.nameEn': { bn: 'ইংরেজি নাম *', en: 'English name *' },
+  'kind.nameEnPh': { bn: 'যেমন: Tree planting', en: 'e.g. Tree planting' },
+  'kind.nameEnNote': {
+    bn: 'ওয়েবসাইটের ইংরেজি সংস্করণে আর নতুন কার্যক্রমের লিংকে এটা ব্যবহার হয়।',
+    en: 'Used on the English site and in the links of new activities.',
+  },
+  'kind.errTaken': {
+    bn: 'এই নামে আগেই একটি ধরন আছে।',
+    en: 'A type with this name already exists.',
+  },
+  'kind.errSave': {
+    bn: 'ধরন সংরক্ষণ করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।',
+    en: 'Could not save the type. Check your internet and try again.',
+  },
+  'kind.used': { bn: '{n}টি কার্যক্রম', en: '{n} activities' },
+  'kind.unused': { bn: 'কোনো কার্যক্রম নেই', en: 'No activities' },
+  'kind.hidden': { bn: 'লুকানো', en: 'Hidden' },
+  'kind.hide': { bn: 'লুকান', en: 'Hide' },
+  'kind.show': { bn: 'আবার দেখান', en: 'Show again' },
+  'kind.hiddenNote': {
+    bn: 'লুকানো ধরন নতুন কার্যক্রমে বাছাই করা যায় না, তবে যেসব কার্যক্রমে আগে থেকে আছে সেগুলোতে থেকে যায়। যে ধরন কোনো কার্যক্রমে ব্যবহার হচ্ছে, সেটা মোছা যায় না, শুধু লুকানো যায়।',
+    en: 'A hidden type cannot be picked for new activities, but stays on the ones that already have it. A type in use cannot be deleted, only hidden.',
+  },
+  'kind.deleteConfirm': {
+    bn: '“{name}” ধরনটি মুছে ফেলবেন?',
+    en: 'Delete the type “{name}”?',
+  },
+  'kind.inUse': {
+    bn: 'এই ধরন কোনো কার্যক্রমে ব্যবহার হচ্ছে, তাই মোছা যাবে না। লুকিয়ে রাখতে পারেন।',
+    en: 'This type is used by an activity, so it cannot be deleted. You can hide it.',
+  },
+  'kind.empty': {
+    bn: 'এখনো কোনো ধরন যোগ হয়নি।',
+    en: 'No types have been added yet.',
+  },
+  'kind.loadError': {
+    bn: 'ধরনের তালিকা লোড করা গেল না।',
+    en: 'Could not load the types.',
+  },
   'act.colDate': { bn: 'তারিখ', en: 'Date' },
   'act.featured': { bn: 'হোমপেজের উপরে', en: 'Top of home page' },
   'act.newPageTitle': {
@@ -433,25 +621,12 @@ export const adminMessages = {
     bn: 'কার্যক্রমটি কী নিয়ে, কারা অংশ নিতে পারবেন, কী আনতে হবে — সংক্ষেপে লিখুন।',
     en: 'What the activity is about, who can take part, what to bring: in a few words.',
   },
-  'act.fCover': { bn: 'কভার ছবি', en: 'Cover photo' },
-  'act.fCoverNone': { bn: 'ছবি ছাড়া', en: 'No photo' },
-  'act.fCoverN': { bn: 'ছবি {n}', en: 'Photo {n}' },
-  'act.fCoverEmpty': {
-    bn: 'গ্যালারিতে এখনো কোনো ছবি নেই।',
-    en: 'The gallery has no photos yet.',
-  },
-  'act.fCoverAdd': { bn: 'আগে ছবি যোগ করুন', en: 'Add photos first' },
   'act.fType': { bn: 'ধরন', en: 'Type' },
   'act.fTypeNone': { bn: 'বেছে নেওয়া হয়নি', en: 'Not chosen' },
   'act.fFeatured': {
     bn: 'হোমপেজের উপরে দেখান',
     en: 'Show at the top of the home page',
   },
-  'cat.blood': { bn: 'রক্তদান', en: 'Blood donation' },
-  'cat.relief': { bn: 'ত্রাণ ও সহায়তা', en: 'Relief and support' },
-  'cat.education': { bn: 'শিক্ষা', en: 'Education' },
-  'cat.sports': { bn: 'খেলাধুলা', en: 'Sports' },
-  'cat.meeting': { bn: 'সভা', en: 'Meeting' },
 
   // --- notices ---
   'not.pageTitle': {
@@ -551,6 +726,147 @@ export const adminMessages = {
     bn: 'ক্যাপশন সংরক্ষণ করা গেল না।',
     en: 'Could not save the caption.',
   },
+  'gal.uploadActivity': {
+    bn: 'নতুন ছবি কোন অনুষ্ঠানের',
+    en: 'Activity for new photos',
+  },
+  'gal.noActivity': { bn: 'কোনো অনুষ্ঠান নয়', en: 'No activity' },
+  'gal.photoActivity': {
+    bn: 'এই ছবির অনুষ্ঠান',
+    en: 'Activity for this photo',
+  },
+  'gal.activityError': {
+    bn: 'অনুষ্ঠান বদলানো গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not change the activity. Please try again.',
+  },
+  'gal.filters': { bn: 'ছবি ছাঁকুন', en: 'Filter photos' },
+  'gal.filterYear': { bn: 'বছর', en: 'Year' },
+  'gal.filterMonth': { bn: 'মাস', en: 'Month' },
+  'gal.filterActivity': { bn: 'অনুষ্ঠান', en: 'Activity' },
+  'gal.filterAll': { bn: 'সব', en: 'All' },
+  'gal.filterAllActivities': { bn: 'সব অনুষ্ঠান', en: 'All activities' },
+  'gal.filterNoActivity': {
+    bn: 'কোনো অনুষ্ঠানে যুক্ত নয়',
+    en: 'Not in any activity',
+  },
+  'gal.filterClear': { bn: 'ফিল্টার মুছুন', en: 'Clear filters' },
+  'gal.resultCount': { bn: '{n}টি ছবি।', en: '{n} photos.' },
+  'gal.emptyFiltered': {
+    bn: 'এই ফিল্টারে কোনো ছবি নেই।',
+    en: 'No photos match these filters.',
+  },
+  'gal.selectPhoto': { bn: 'ছবিটি বাছাই করুন', en: 'Select this photo' },
+  'gal.selectAll': { bn: 'সব বাছাই করুন', en: 'Select all' },
+  'gal.selectNone': { bn: 'বাছাই বাতিল', en: 'Clear selection' },
+  'gal.selectedCount': {
+    bn: '{n}টি ছবি বাছাই করা হয়েছে',
+    en: '{n} photos selected',
+  },
+  'gal.bulkLabel': {
+    bn: 'বাছাই করা ছবির অনুষ্ঠান বদলান',
+    en: 'Change the activity of the selected photos',
+  },
+  'gal.bulkMoveTo': { bn: 'যে অনুষ্ঠানে সরাবেন', en: 'Move to activity' },
+  'gal.bulkMove': { bn: 'সরান', en: 'Move' },
+  'gal.showMore': { bn: 'আরো দেখুন', en: 'Show more' },
+  'gal.loadingMore': { bn: 'আনা হচ্ছে…', en: 'Loading…' },
+  'gal.waiting': { bn: 'অপেক্ষায়', en: 'Waiting' },
+  'gal.retry': { bn: 'আবার চেষ্টা', en: 'Try again' },
+  'gal.dropHint': {
+    bn: 'ছবিগুলো এখানে টেনে এনে ছেড়ে দিন, অথবা বোতাম চেপে বেছে নিন। একসাথে অনেকগুলো দেওয়া যায়।',
+    en: 'Drag photos here, or use the button to choose them. You can add many at once.',
+  },
+  'gal.leaveWhileUploading': {
+    bn: 'ছবি আপলোড এখনো চলছে। এখন বের হলে বাকি ছবিগুলো আপলোড হবে না। তবুও বের হবেন?',
+    en: 'Photos are still uploading. If you leave now, the rest will not be uploaded. Leave anyway?',
+  },
+  'actPhotos.title': { bn: 'ছবি ({n}টি)', en: 'Photos ({n})' },
+  'actPhotos.lead': {
+    bn: 'এখানে দেওয়া ছবি এই কার্যক্রমের পেজে আর গ্যালারিতে দেখা যায়। ছবির সব পরিবর্তন সঙ্গে সঙ্গে সংরক্ষণ হয়, উপরের "সংরক্ষণ" চাপতে হয় না। তারকা চিহ্ন দিয়ে কভার ছবি বদলান।',
+    en: "Photos added here appear on this activity's page and in the gallery. Photo changes save at once; there is no need to press Save above. Use the star to change the cover.",
+  },
+  'actPhotos.empty': {
+    bn: 'এখনো কোনো ছবি নেই। প্রথম যে ছবিটি দেবেন, সেটিই কভার হবে।',
+    en: 'No photos yet. The first photo you add becomes the cover.',
+  },
+  'actPhotos.cover': { bn: 'কভার', en: 'Cover' },
+  'actPhotos.isCover': { bn: 'এটি কভার ছবি', en: 'This is the cover' },
+  'actPhotos.makeCover': { bn: 'কভার করুন', en: 'Make cover' },
+  'actPhotos.coverError': {
+    bn: 'কভার বদলানো গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not change the cover. Please try again.',
+  },
+  'act.noPhotosYet': {
+    bn: 'এই কার্যক্রমে এখনো কোনো ছবি নেই। নিচের "ছবি" অংশ থেকে যোগ করতে পারেন, পরে যোগ করলেও চলবে।',
+    en: 'This activity has no photos yet. You can add them in "Photos" below, now or later.',
+  },
+  'act.photosAfterSave': {
+    bn: 'সংরক্ষণের পর যে পেজ খুলবে, সেখানে ছবি যোগ করতে পারবেন।',
+    en: 'You can add photos on the page that opens after saving.',
+  },
+  'act.viewPage': { bn: 'পেজটি দেখুন', en: 'View page' },
+  'act.opensNewTab': { bn: '(নতুন ট্যাবে খুলবে)', en: '(opens in a new tab)' },
+  'gal.deleteCoverConfirm': {
+    bn: 'এটি একটি কার্যক্রমের কভার ছবি। মুছে ফেললে ওই কার্যক্রমের পরের ছবিটি কভার হবে, ছবি না থাকলে কভার ছাড়াই দেখাবে। ছবিটি স্থায়ীভাবে মুছে ফেলবেন?',
+    en: "This photo is an activity's cover. If you delete it, that activity's next photo becomes the cover, or it shows without one. Delete this photo permanently?",
+  },
+  'gal.unfiledLabel': { bn: 'সাজানো বাকি', en: 'Still to sort' },
+  'gal.unfiled': {
+    bn: '{n}টি ছবি এখনো কোনো কার্যক্রমে যুক্ত নয়।',
+    en: '{n} photos are not in any activity yet.',
+  },
+  'gal.unfiledShow': { bn: 'ছবিগুলো দেখুন', en: 'Show them' },
+  'gal.openActivity': { bn: 'কার্যক্রম খুলুন →', en: 'Open activity →' },
+  'dash.unfiledTitle': { bn: 'সাজানো বাকি ছবি', en: 'Photos to sort' },
+  'dash.unfiled': {
+    bn: '{n}টি ছবি এখনো কোনো কার্যক্রমে যুক্ত নয়।',
+    en: '{n} photos are not in any activity yet.',
+  },
+  'dash.unfiledLink': {
+    bn: 'গ্যালারিতে সাজান',
+    en: 'Sort them in the gallery',
+  },
+  'memberPhoto.title': { bn: 'ছবি', en: 'Photo' },
+  'memberPhoto.note': {
+    bn: 'শুধু অ্যাডমিনরা দেখতে পান। ছবি সঙ্গে সঙ্গে সংরক্ষণ হয়।',
+    en: 'Only admins can see it. The photo saves at once.',
+  },
+  'memberPhoto.add': { bn: 'ছবি দিন', en: 'Add photo' },
+  'memberPhoto.replace': { bn: 'ছবি বদলান', en: 'Replace photo' },
+  'memberPhoto.remove': { bn: 'ছবি সরান', en: 'Remove photo' },
+  'memberPhoto.removeConfirm': {
+    bn: 'সদস্যের ছবিটি স্থায়ীভাবে মুছে ফেলবেন?',
+    en: "Delete this member's photo permanently?",
+  },
+  'memberPhoto.error': {
+    bn: 'ছবি সংরক্ষণ করা গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not save the photo. Please try again.',
+  },
+  'memberPhoto.alt': { bn: '{name}-এর ছবি', en: 'Photo of {name}' },
+  'memberPhoto.cropTitle': { bn: 'ছবিটি ঠিক করুন', en: 'Crop the photo' },
+  'memberPhoto.cropHint': {
+    bn: 'ছবিটি টেনে সরান, দরকারে জুম করুন। চৌকো ঘরের ভেতরের অংশটুকুই রাখা হবে।',
+    en: 'Drag the photo and zoom if needed. Only the part inside the square is kept.',
+  },
+  'memberPhoto.cropArea': {
+    bn: 'ছবি কাটার জায়গা। তীর-চিহ্নের বোতাম দিয়েও সরানো যায়।',
+    en: 'Crop area. The arrow keys move the photo too.',
+  },
+  'memberPhoto.zoom': { bn: 'জুম', en: 'Zoom' },
+  'memberPhoto.cropSave': { bn: 'ছবি সংরক্ষণ করুন', en: 'Save photo' },
+  'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
+  'gal.homeCount': {
+    bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',
+    en: 'Picked for the homepage: {n}/{max}. Empty slots show the newest photos.',
+  },
+  'gal.homeFull': {
+    bn: 'হোমপেজের জন্য {max}টা ছবি বাছাই হয়ে গেছে। আরেকটা দিতে আগে একটা বাদ দিন।',
+    en: '{max} photos are already picked for the homepage. Unpick one first.',
+  },
+  'gal.homeError': {
+    bn: 'হোমপেজের বাছাই সংরক্ষণ করা গেল না।',
+    en: 'Could not save the homepage choice.',
+  },
   'gal.deleteAria': { bn: 'ছবিটি মুছুন', en: 'Delete this photo' },
   'gal.deleteConfirm': {
     bn: 'ছবিটি স্থায়ীভাবে মুছে ফেলবেন?',
@@ -594,9 +910,6 @@ export const adminMessages = {
   'csv.mobile': { bn: 'মোবাইল', en: 'Mobile' },
   'csv.email': { bn: 'ইমেইল', en: 'Email' },
   'csv.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
-  'csv.address': { bn: 'ঠিকানা', en: 'Address' },
-  'csv.area': { bn: 'এলাকা', en: 'Area' },
-  'csv.occupation': { bn: 'পেশা', en: 'Occupation' },
   'csv.status': { bn: 'অবস্থা', en: 'Status' },
   'csv.willing': { bn: 'রক্তদানে আগ্রহী', en: 'Willing to donate' },
   'csv.lastDonation': { bn: 'সর্বশেষ রক্তদান', en: 'Last donation' },

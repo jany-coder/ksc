@@ -15,6 +15,7 @@ export type Action =
   | 'members.export' // CSV export: dangerous, super_admin only
   | 'admins.manage' // create or remove admins: dangerous, super_admin only
   | 'members.changePhone' // the phone is the login name: super_admin only
+  | 'categories.manage' // add, rename, hide the kinds of activity: super_admin
 
 const ADMINS: readonly Role[] = ['admin', 'super_admin']
 const SUPER_ONLY: readonly Role[] = ['super_admin']
@@ -27,6 +28,7 @@ const allowed: Record<Action, readonly Role[]> = {
   'members.export': SUPER_ONLY,
   'admins.manage': SUPER_ONLY,
   'members.changePhone': SUPER_ONLY,
+  'categories.manage': SUPER_ONLY,
 }
 
 export function can(role: Role, action: Action): boolean {

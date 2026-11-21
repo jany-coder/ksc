@@ -29,6 +29,22 @@ export function formatBnDate(iso: string): string {
   return `${digits.format(d!)} ${monthName.format(date)} ${digits.format(y!)}`
 }
 
+/** 3 -> "মার্চ". Month is 1-12. */
+export function formatBnMonth(month: number): string {
+  return monthName.format(new Date(Date.UTC(2000, month - 1, 1)))
+}
+
+/** "2026-03-14" -> "মার্চ ২০২৬". */
+export function formatBnMonthYear(iso: string): string {
+  const [y, m] = iso.split('-').map(Number)
+  return `${formatBnMonth(m!)} ${digits.format(y!)}`
+}
+
+/** 2026 -> "২০২৬" (no thousands comma). */
+export function formatBnYear(year: number): string {
+  return digits.format(year)
+}
+
 /** "15:30" -> "বিকাল ৩:৩০". */
 export function formatBnTime(hhmm: string): string {
   const [h, min] = hhmm.split(':').map(Number)

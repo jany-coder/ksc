@@ -4,7 +4,7 @@ import {
   listRecentActivitiesFn,
   listUpcomingActivitiesFn,
 } from '../../lib/activities.functions.ts'
-import { listPublicImagesFn } from '../../lib/images.functions.ts'
+import { listHomeImagesFn } from '../../lib/images.functions.ts'
 import { imageSrcSet, imageUrl } from '../../lib/image-limits.ts'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
@@ -38,7 +38,7 @@ export const Route = createFileRoute('/{-$locale}/')({
       listRecentActivitiesFn(),
       listUpcomingActivitiesFn(),
       listPublicNoticesFn(),
-      listPublicImagesFn({ data: { limit: 6 } }),
+      listHomeImagesFn(),
     ])
     return { recent, upcoming, notices, images }
   },

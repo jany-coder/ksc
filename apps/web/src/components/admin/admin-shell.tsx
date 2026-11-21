@@ -76,7 +76,11 @@ export function AdminShell({ member, children }: Props) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background md:flex-row">
-      <aside className="flex shrink-0 flex-col border-b border-border bg-sidebar p-3 md:w-60 md:border-r md:border-b-0">
+      {/* From md up the sidebar stays put while the page scrolls: sticky at
+          the top, exactly one screen tall, scrolling inside itself only if
+          the menu is ever taller than the screen. On a phone it is the bar
+          at the top and scrolls away as before. */}
+      <aside className="flex shrink-0 flex-col border-b border-border bg-sidebar p-3 md:sticky md:top-0 md:h-screen md:w-60 md:overflow-y-auto md:border-r md:border-b-0">
         <div className="flex items-center gap-2.5 px-2 pt-1.5 pb-3 md:pb-4">
           <img
             src="/logo.png"

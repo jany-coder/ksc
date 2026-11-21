@@ -22,6 +22,22 @@ export const validationMessages = {
     en: 'A member cannot be added without consent',
   },
   'val.titleRequired': { bn: 'শিরোনাম লিখুন', en: 'Enter a title' },
+  'val.categoryBnRequired': {
+    bn: 'বাংলা নাম লিখুন',
+    en: 'Enter the Bengali name',
+  },
+  'val.categoryEnRequired': {
+    bn: 'ইংরেজি নাম লিখুন',
+    en: 'Enter the English name',
+  },
+  'val.categoryEnLatin': {
+    bn: 'ইংরেজি নামে শুধু ইংরেজি অক্ষর ও সংখ্যা দিন, শুরুতে একটি অক্ষর',
+    en: 'Use English letters and numbers only, starting with a letter',
+  },
+  'val.categoryTooLong': {
+    bn: 'নামটি ৪০ অক্ষরের মধ্যে রাখুন',
+    en: 'Keep the name under 40 characters',
+  },
   'val.titleTooLong': {
     bn: 'শিরোনাম অনেক বেশি লম্বা',
     en: 'The title is too long',
@@ -59,5 +75,13 @@ export const validationMessages = {
   'val.passwordMismatch': {
     bn: 'দুটি পাসওয়ার্ড মিলছে না',
     en: 'The two passwords do not match',
+  },
+  'val.birthDateInvalid': {
+    bn: 'সঠিক জন্ম তারিখ দিন (আজকের পরের তারিখ হবে না)',
+    en: 'Enter a valid date of birth (not in the future)',
+  },
+  'val.postCodeInvalid': {
+    bn: 'পোস্ট কোড ৪ অঙ্কের হয়, যেমন ১৩৪০',
+    en: 'A post code has 4 digits, e.g. 1340',
   },
 } satisfies Record<string, Entry>
