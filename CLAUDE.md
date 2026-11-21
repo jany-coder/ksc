@@ -264,6 +264,14 @@ the RC-to-1.0 transition already changed APIs (`.inputValidator()` was
 removed). Read release notes before upgrading, and check the current docs
 rather than older blog posts.
 
+**Branches — a fixed rule.** All work happens on `dev`. `main` only ever
+receives merges from `dev`: never commit, fix or resolve anything directly on
+`main`. Before every commit, check the branch is `dev`. When the user asks to
+release, merge `dev` into `main`, push `main`, check on the remote
+(`git ls-remote`) that it arrived, then switch back to `dev` and bring it up
+to `main` so the two never drift apart. Merge conflicts are resolved on `dev`
+(merge `main` into `dev` first), not on `main`.
+
 ---
 
 ## 10. Working agreement
