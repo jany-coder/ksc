@@ -4,14 +4,19 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { Trash2, Upload } from 'lucide-react'
 import { useRef, useState } from 'react'
 
 import { Button } from '../../../components/ui/button.tsx'
 import { Input } from '../../../components/ui/input.tsx'
 import { NativeSelect } from '../../../components/ui/native-select.tsx'
-import { formatMonthYear } from '../../../lib/datetime.ts'
+import {
+  GalleryFilters,
+  activityLabel,
+} from '../../../components/admin/gallery-filters.tsx'
+import { galleryFilterSchema } from '../../../lib/gallery-filter.ts'
+import type { GalleryFilter } from '../../../lib/gallery-filter.ts'
 import {
   deleteImageFn,
   setImageCaptionFn,
@@ -33,7 +38,7 @@ import {
   uploadResized,
 } from '../../../lib/image-resize.ts'
 import { langOfMatches } from '../../../lib/i18n/core.ts'
-import type { HeadArgs, Lang } from '../../../lib/i18n/core.ts'
+import type { HeadArgs } from '../../../lib/i18n/core.ts'
 import { useLang, useNumber, useT } from '../../../lib/i18n/index.tsx'
 import { tFor } from '../../../lib/i18n/messages.ts'
 import type { MessageKey } from '../../../lib/i18n/messages.ts'
@@ -41,10 +46,12 @@ import type { ActivityOption } from '../../../lib/images.server.ts'
 import { can } from '../../../lib/permissions.ts'
 import { cn } from '../../../lib/utils.ts'
 
-const galleryQuery = () =>
+// The filter is part of the cache key, so each filtered view is cached on its
+// own, and ['images'] still clears them all after a change.
+const galleryQuery = (filter: GalleryFilter) =>
   queryOptions({
-    queryKey: ['images', 'admin'],
-    queryFn: () => galleryAdminDataFn(),
+    queryKey: ['images', 'admin', filter],
+    queryFn: () => galleryAdminDataFn({ data: filter }),
   })
 
 export const Route = createFileRoute('/admin/gallery/')({
@@ -56,7 +63,12 @@ export const Route = createFileRoute('/admin/gallery/')({
     if (!can(context.member.role, 'content.write'))
       throw redirect({ to: '/admin' })
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(galleryQuery()),
+  // validateSearch reads ?year=&month=&activity= from the URL; loaderDeps
+  // tells the loader to run again whenever they change.
+  validateSearch: galleryFilterSchema,
+  loaderDeps: ({ search }) => search,
+  loader: ({ context, deps }) =>
+    context.queryClient.ensureQueryData(galleryQuery(deps)),
   errorComponent: GalleryError,
   component: GalleryPage,
 })
@@ -100,13 +112,6 @@ type UploadItem = {
   messageKey?: MessageKey
 }
 
-// "ইফতার আয়োজন · মার্চ ২০২৬": the month tells two yearly events apart.
-function activityLabel(activity: ActivityOption, lang: Lang): string {
-  return activity.eventDate
-    ? `${activity.title} · ${formatMonthYear(activity.eventDate, lang)}`
-    : activity.title
-}
-
 function ActivityOptions({ activities }: { activities: ActivityOption[] }) {
   const t = useT()
   const lang = useLang()
@@ -126,7 +131,9 @@ function GalleryPage() {
   const t = useT()
   const lang = useLang()
   const number = useNumber()
-  const { data } = useSuspenseQuery(galleryQuery())
+  const filter = Route.useSearch()
+  const navigate = useNavigate({ from: Route.fullPath })
+  const { data } = useSuspenseQuery(galleryQuery(filter))
   const queryClient = useQueryClient()
   const input = useRef<HTMLInputElement>(null)
   const [items, setItems] = useState<UploadItem[]>([])
@@ -134,9 +141,28 @@ function GalleryPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null)
   // The activity new uploads are filed under; '' means none.
   const [uploadActivity, setUploadActivity] = useState('')
+  // Photos ticked for a bulk move. Cleared when the filter changes.
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [bulkActivity, setBulkActivity] = useState('')
+
+  const setFilter = (next: GalleryFilter) => {
+    setSelected(new Set())
+    void navigate({ search: next })
+  }
+  const toggleSelected = (id: string, on: boolean) =>
+    setSelected((current) => {
+      const next = new Set(current)
+      if (on) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  const anyFilter =
+    filter.year !== undefined ||
+    filter.month !== undefined ||
+    filter.activity !== undefined
 
   const full = data.state === 'full'
-  const homeCount = data.images.filter((image) => image.onHome).length
+  const homeCount = data.homeCount
   const homeFull = homeCount >= HOME_PHOTO_COUNT
   const percent = Math.min(100, (data.usedBytes / STORAGE_FREE_BYTES) * 100)
 
@@ -204,6 +230,7 @@ function GalleryPage() {
       setImagesActivityFn({ data: choice }),
     onSuccess: async (result) => {
       setDeleteError(result.ok ? null : t('gal.activityError'))
+      if (result.ok) setSelected(new Set())
       await queryClient.invalidateQueries({ queryKey: ['images'] })
     },
     onError: () => setDeleteError(t('gal.activityError')),
@@ -343,13 +370,81 @@ function GalleryPage() {
         </p>
       )}
 
-      {data.images.length > 0 && (
-        <p role="status" className="text-sm text-muted-foreground">
+      <GalleryFilters
+        filter={filter}
+        activities={data.activities}
+        onChange={setFilter}
+      />
+
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm text-muted-foreground">
+        <p role="status">
+          {t('gal.resultCount', { n: number(data.images.length) })}{' '}
           {t('gal.homeCount', {
             n: number(homeCount),
             max: number(HOME_PHOTO_COUNT),
           })}
         </p>
+        {data.images.length > 0 && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              setSelected(
+                selected.size === data.images.length
+                  ? new Set()
+                  : new Set(data.images.map((image) => image.id)),
+              )
+            }
+          >
+            {selected.size === data.images.length
+              ? t('gal.selectNone')
+              : t('gal.selectAll')}
+          </Button>
+        )}
+      </div>
+
+      {/* Appears once a photo is ticked: move the whole selection at once. */}
+      {selected.size > 0 && (
+        <section
+          aria-label={t('gal.bulkLabel')}
+          className="sticky top-2 z-10 flex flex-wrap items-end gap-3 rounded-[10px] border border-border bg-card p-3 shadow-sm"
+        >
+          <p className="w-full text-sm font-medium sm:w-auto sm:self-center">
+            {t('gal.selectedCount', { n: number(selected.size) })}
+          </p>
+          <div className="flex w-full min-w-0 flex-col gap-1 sm:w-72">
+            <label htmlFor="bulk-activity" className="text-sm font-medium">
+              {t('gal.bulkMoveTo')}
+            </label>
+            <NativeSelect
+              id="bulk-activity"
+              value={bulkActivity}
+              onChange={(event) => setBulkActivity(event.target.value)}
+            >
+              <ActivityOptions activities={data.activities} />
+            </NativeSelect>
+          </div>
+          <Button
+            type="button"
+            disabled={moveToActivity.isPending}
+            onClick={() =>
+              moveToActivity.mutate({
+                ids: [...selected],
+                activityId: bulkActivity || null,
+              })
+            }
+          >
+            {t('gal.bulkMove')}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setSelected(new Set())}
+          >
+            {t('gal.selectNone')}
+          </Button>
+        </section>
       )}
 
       {data.images.length > 0 ? (
@@ -367,6 +462,19 @@ function GalleryPage() {
                 alt={t('gal.photoAlt')}
                 className="aspect-square w-full object-cover"
               />
+              {/* Tick for a bulk move. The label is for screen readers; the
+                  box sits on the photo's corner. */}
+              <label className="absolute start-2 top-2 flex size-8 items-center justify-center rounded-md bg-card/90">
+                <input
+                  type="checkbox"
+                  checked={selected.has(image.id)}
+                  onChange={(event) =>
+                    toggleSelected(image.id, event.target.checked)
+                  }
+                  className="size-4 accent-primary"
+                />
+                <span className="sr-only">{t('gal.selectPhoto')}</span>
+              </label>
               <CaptionField
                 id={image.id}
                 initial={image.caption ?? ''}
@@ -423,7 +531,7 @@ function GalleryPage() {
         </ul>
       ) : (
         <p className="rounded-[10px] border border-border bg-card px-4 py-10 text-center text-muted-foreground">
-          {t('gal.empty')}
+          {anyFilter ? t('gal.emptyFiltered') : t('gal.empty')}
         </p>
       )}
     </main>

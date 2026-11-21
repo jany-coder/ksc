@@ -11,14 +11,15 @@ import {
   setImageOnHome,
   setImagesActivity,
 } from './images.server.ts'
+import { galleryFilterSchema } from './gallery-filter.ts'
 import { requirePermission } from './session.server.ts'
 
-export const galleryAdminDataFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
+export const galleryAdminDataFn = createServerFn({ method: 'GET' })
+  .validator(galleryFilterSchema)
+  .handler(async ({ data }) => {
     await requirePermission('content.write')
-    return galleryAdminData()
-  },
-)
+    return galleryAdminData(data)
+  })
 
 export const deleteImageFn = createServerFn({ method: 'POST' })
   .validator(z.object({ id: z.uuid() }))

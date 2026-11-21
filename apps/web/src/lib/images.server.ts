@@ -1,6 +1,7 @@
 import '@tanstack/react-start/server-only'
 
-import { and, desc, eq, inArray, ne, sql } from 'drizzle-orm'
+import { and, desc, eq, gte, inArray, isNull, lt, ne, sql } from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
 import { activities, images } from '../db/schema/index.ts'
@@ -16,6 +17,8 @@ import {
 import type { StorageState } from './image-limits.ts'
 import { imagesBucket } from './r2.server.ts'
 import { listActivities } from './activities.server.ts'
+import { dateRange } from './gallery-filter.ts'
+import type { GalleryFilter } from './gallery-filter.ts'
 
 // Callers must have checked requirePermission('content.write') first
 // (the upload route does; see routes/api/images.ts).
@@ -121,6 +124,8 @@ export type ActivityOption = {
 export type GalleryAdminData = {
   images: AdminGalleryImage[]
   activities: ActivityOption[]
+  // Counted over every photo, not just the filtered ones on screen.
+  homeCount: number
   usedBytes: number
   state: StorageState
 }
@@ -190,7 +195,28 @@ export async function setImageOnHome(
   return updated.length > 0 ? { ok: true } : { ok: false, code: 'NOT_FOUND' }
 }
 
-async function listAdminImages(limit = 200): Promise<AdminGalleryImage[]> {
+// The WHERE conditions for a filter. A year or month matches the photo's
+// activity date, so photos with no activity never match one.
+function filterConditions(filter: GalleryFilter): SQL[] {
+  const conditions: SQL[] = []
+  if (filter.activity === 'none') {
+    conditions.push(isNull(images.activityId))
+    return conditions
+  }
+  if (filter.activity) conditions.push(eq(images.activityId, filter.activity))
+  const range = dateRange(filter.year, filter.month)
+  if (range)
+    conditions.push(
+      gte(activities.eventDate, range.from),
+      lt(activities.eventDate, range.to),
+    )
+  return conditions
+}
+
+async function listAdminImages(
+  filter: GalleryFilter,
+  limit = 200,
+): Promise<AdminGalleryImage[]> {
   return db
     .select({
       id: images.id,
@@ -201,14 +227,27 @@ async function listAdminImages(limit = 200): Promise<AdminGalleryImage[]> {
       activityId: images.activityId,
     })
     .from(images)
+    .leftJoin(activities, eq(images.activityId, activities.id))
+    .where(and(...filterConditions(filter)))
     .orderBy(desc(images.uploadedAt))
     .limit(limit)
 }
 
-export async function galleryAdminData(): Promise<GalleryAdminData> {
-  const [list, activityRows, used] = await Promise.all([
-    listAdminImages(),
+async function countHomeImages(): Promise<number> {
+  const [row] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(images)
+    .where(eq(images.onHome, true))
+  return row?.n ?? 0
+}
+
+export async function galleryAdminData(
+  filter: GalleryFilter,
+): Promise<GalleryAdminData> {
+  const [list, activityRows, homeCount, used] = await Promise.all([
+    listAdminImages(filter),
     listActivities(),
+    countHomeImages(),
     usedBytes(),
   ])
   return {
@@ -218,6 +257,7 @@ export async function galleryAdminData(): Promise<GalleryAdminData> {
       title,
       eventDate,
     })),
+    homeCount,
     usedBytes: used,
     state: storageState(used),
   }
