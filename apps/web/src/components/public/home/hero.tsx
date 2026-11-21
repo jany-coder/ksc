@@ -54,7 +54,7 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
       {background && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 max-md:bg-[rgba(9,38,27,0.78)] md:bg-[linear-gradient(100deg,rgba(9,38,27,0.88)_0%,rgba(9,38,27,0.74)_55%,rgba(9,38,27,0.35)_75%,rgba(9,38,27,0.15)_100%)]"
+          className="absolute inset-0 -z-10 max-md:bg-[rgba(9,38,27,0.82)] md:bg-[linear-gradient(100deg,rgba(9,38,27,0.9)_0%,rgba(9,38,27,0.8)_55%,rgba(9,38,27,0.35)_75%,rgba(9,38,27,0.15)_100%)]"
         />
       )}
 
@@ -80,12 +80,12 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
           <p className="mb-4 font-heading text-xl font-semibold text-mint md:mb-6 md:text-[28px]">
             {t('hero.tagline')}
           </p>
-          <p className="mb-5 max-w-[52ch] text-[17px] leading-relaxed text-mint-soft md:text-[21px] md:leading-[1.65]">
+          <p className="mb-5 max-w-[52ch] text-[17px] leading-relaxed text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] md:text-[21px] md:leading-[1.65]">
             {t('hero.leadShort')}
           </p>
           {/* Who the club is: moved here from the old glass card, whose place
               the photo frame took. */}
-          <div className="mb-8 flex max-w-[60ch] flex-col gap-3 border-s-2 border-mint/40 ps-4 text-base leading-[1.75] text-mint-soft/90 md:mb-10 md:text-[17px]">
+          <div className="mb-8 flex max-w-[60ch] flex-col gap-3 border-s-2 border-mint/60 ps-4 text-base leading-[1.75] text-white/95 [text-shadow:0_1px_3px_rgba(0,0,0,0.5)] md:mb-10 md:text-[17px]">
             <p>{t('hero.body1')}</p>
             <p className="hidden md:block">{t('hero.body2')}</p>
           </div>
