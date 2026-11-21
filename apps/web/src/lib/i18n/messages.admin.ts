@@ -72,6 +72,9 @@ export const adminMessages = {
   'role.member': { bn: 'সদস্য', en: 'Member' },
 
   // --- shell (sidebar) ---
+  'shell.viewSite': { bn: 'ওয়েবসাইট দেখুন', en: 'View website' },
+  'shell.viewSiteShort': { bn: 'ওয়েবসাইট', en: 'Website' },
+  'shell.newTab': { bn: '(নতুন ট্যাবে খোলে)', en: '(opens in a new tab)' },
   'shell.admin': { bn: 'অ্যাডমিন', en: 'Admin' },
   'shell.soon': { bn: 'শীঘ্রই আসছে', en: 'Coming soon' },
   'shell.signOut': { bn: 'সাইন আউট', en: 'Sign out' },
