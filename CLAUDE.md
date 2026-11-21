@@ -66,6 +66,9 @@ natural Bengali equivalent.
   outgrown or long-running jobs are needed.
 - **Image carousel / slider on the homepage** — grid gallery instead.
   Sliders hide content past the first slide. A lightbox on click is fine.
+  One agreed exception: the hero's photo frame, where photos fade into one
+  another as decoration (no text in it, every photo is in the gallery too,
+  with a pause button and reduced-motion support).
 
 ---
 
