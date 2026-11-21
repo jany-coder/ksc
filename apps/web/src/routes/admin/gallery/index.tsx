@@ -17,12 +17,12 @@ import { NativeSelect } from '../../../components/ui/native-select.tsx'
 import {
   CaptionField,
   DeletePhotoButton,
-  HomeToggle,
 } from '../../../components/admin/photo-controls.tsx'
+import { HeroPanel } from '../../../components/admin/hero-picker.tsx'
 import {
-  HeroPanel,
-  HeroToggles,
-} from '../../../components/admin/hero-picker.tsx'
+  PlacementButtons,
+  PlacementLegend,
+} from '../../../components/admin/photo-placement.tsx'
 import {
   PhotoDropZone,
   UploadList,
@@ -350,22 +350,33 @@ function GalleryPage() {
 
       {data.images.length > 0 ? (
         <>
+          <PlacementLegend />
           <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3 p-0">
             {data.images.map((image) => (
               <li
                 key={image.id}
                 className="relative overflow-hidden rounded-[10px] border border-border bg-card"
               >
-                <img
-                  src={imageUrl(image.id, 'thumb')}
-                  srcSet={imageSrcSet(image.id, image.width)}
-                  sizes="200px"
-                  width={image.width}
-                  height={image.height}
-                  loading="lazy"
-                  alt={t('gal.photoAlt')}
-                  className="aspect-square w-full object-cover"
-                />
+                <div className="relative">
+                  <img
+                    src={imageUrl(image.id, 'thumb')}
+                    srcSet={imageSrcSet(image.id, image.width)}
+                    sizes="200px"
+                    width={image.width}
+                    height={image.height}
+                    loading="lazy"
+                    alt={t('gal.photoAlt')}
+                    className="aspect-square w-full object-cover"
+                  />
+                  <PlacementButtons
+                    id={image.id}
+                    onHome={image.onHome}
+                    homeFull={homeFull}
+                    hero={data.hero}
+                    onError={setDeleteError}
+                    className="absolute start-2 bottom-2"
+                  />
+                </div>
                 {/* Tick for a bulk move. The label is for screen readers; the
                   box sits on the photo's corner. */}
                 <label className="absolute start-2 top-2 flex size-8 items-center justify-center rounded-md bg-card/90">
@@ -409,17 +420,6 @@ function GalleryPage() {
                     </Link>
                   )}
                 </div>
-                <HomeToggle
-                  id={image.id}
-                  onHome={image.onHome}
-                  homeFull={homeFull}
-                  onError={setDeleteError}
-                />
-                <HeroToggles
-                  id={image.id}
-                  hero={data.hero}
-                  onError={setDeleteError}
-                />
                 <DeletePhotoButton
                   id={image.id}
                   isCover={image.isCover}

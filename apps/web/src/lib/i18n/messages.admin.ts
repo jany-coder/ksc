@@ -953,13 +953,18 @@ export const adminMessages = {
     bn: 'হোমপেজের বাছাই সংরক্ষণ করা গেল না।',
     en: 'Could not save the homepage choice.',
   },
+  'gal.legend': { bn: 'ছবির কোণার বোতাম:', en: 'Buttons on each photo:' },
+  'gal.legendOn': {
+    bn: '(সবুজ মানে চালু)',
+    en: '(green means on)',
+  },
   'heroPick.pickerTitle': {
     bn: 'হোমপেজের হিরো সেকশনের ছবি',
     en: 'Photos for the homepage hero',
   },
   'heroPick.pickerLead': {
-    bn: 'নিচের যেকোনো ছবিতে "হিরোর ফ্রেমে দেখান" বা "হিরোর পেছনে রাখুন" চিহ্ন দিন। এই বাছাই হোমপেজের গ্যালারির বাছাই থেকে আলাদা।',
-    en: 'Tick "Show in the hero frame" or "Put behind the hero" on any photo below. This is separate from the homepage gallery picks.',
+    bn: 'নিচের যেকোনো ছবির কোণার বোতাম দিয়ে ছবিটা হিরোর ফ্রেমে বা পেছনে দিন। এই বাছাই হোমপেজের গ্যালারির বাছাই থেকে আলাদা।',
+    en: 'Use the buttons on the corner of any photo below to put it in the hero frame or behind the hero. This is separate from the homepage gallery picks.',
   },
   'heroPick.backgroundTitle': { bn: 'পেছনের ছবি', en: 'Background photo' },
   'heroPick.backgroundAlt': {

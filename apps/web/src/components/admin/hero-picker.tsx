@@ -11,14 +11,14 @@ import { Button } from '../ui/button.tsx'
 // and up to six that take turns in its photo frame. Every change saves the
 // whole hero at once (see setHeroPhotos).
 
-type Hero = { backgroundId: string | null; slideIds: string[] }
+export type Hero = { backgroundId: string | null; slideIds: string[] }
 
-const idsOf = (hero: HeroPhotos): Hero => ({
+export const idsOf = (hero: HeroPhotos): Hero => ({
   backgroundId: hero.background?.id ?? null,
   slideIds: hero.slides.map((photo) => photo.id),
 })
 
-function useSaveHero(onError: (message: string | null) => void) {
+export function useSaveHero(onError: (message: string | null) => void) {
   const t = useT()
   const queryClient = useQueryClient()
   return useMutation({
@@ -178,68 +178,5 @@ export function HeroPanel({
         </div>
       </div>
     </section>
-  )
-}
-
-/** The two hero ticks on one photo in the gallery grid. */
-export function HeroToggles({
-  id,
-  hero,
-  onError,
-}: {
-  id: string
-  hero: HeroPhotos
-  onError: (message: string | null) => void
-}) {
-  const t = useT()
-  const number = useNumber()
-  const save = useSaveHero(onError)
-  const current = idsOf(hero)
-  const inFrame = current.slideIds.includes(id)
-  const frameFull = current.slideIds.length >= HERO_SLIDE_COUNT
-  const isBackground = current.backgroundId === id
-
-  return (
-    <div className="flex flex-col px-2 pb-2 text-[13px]">
-      <label className="flex min-h-8 items-center gap-2">
-        <input
-          type="checkbox"
-          checked={inFrame}
-          disabled={save.isPending || (frameFull && !inFrame)}
-          onChange={(event) =>
-            save.mutate({
-              ...current,
-              slideIds: event.target.checked
-                ? [...current.slideIds, id]
-                : current.slideIds.filter((other) => other !== id),
-            })
-          }
-          className="size-4 accent-primary"
-        />
-        {t('heroPick.inFrame')}
-      </label>
-      {frameFull && !inFrame && (
-        <p className="mb-1 text-xs text-muted-foreground">
-          {t('heroPick.frameFull', { max: number(HERO_SLIDE_COUNT) })}
-        </p>
-      )}
-      {/* A checkbox, not a radio: none at all is a valid choice too. Ticking
-          it here moves the background off whichever photo had it. */}
-      <label className="flex min-h-8 items-center gap-2">
-        <input
-          type="checkbox"
-          checked={isBackground}
-          disabled={save.isPending}
-          onChange={(event) =>
-            save.mutate({
-              ...current,
-              backgroundId: event.target.checked ? id : null,
-            })
-          }
-          className="size-4 accent-primary"
-        />
-        {t('heroPick.asBackground')}
-      </label>
-    </div>
   )
 }

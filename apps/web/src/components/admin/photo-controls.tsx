@@ -56,25 +56,15 @@ export function CaptionField({
   )
 }
 
-/**
- * "Show on homepage" checkbox. `homeFull`: six are already picked, so an
- * unpicked photo cannot be added (the server refuses a seventh as well).
- */
-export function HomeToggle({
-  id,
-  onHome,
-  homeFull,
-  onError,
-}: {
-  id: string
-  onHome: boolean
-  homeFull: boolean
-  onError: (message: string | null) => void
-}) {
+/** Pick or unpick a photo for the homepage gallery. */
+export function useSetOnHome(
+  id: string,
+  onError: (message: string | null) => void,
+) {
   const t = useT()
   const number = useNumber()
   const queryClient = useQueryClient()
-  const toggle = useMutation({
+  return useMutation({
     mutationFn: (next: boolean) =>
       setImageOnHomeFn({ data: { id, onHome: next } }),
     onSuccess: async (result) => {
@@ -89,6 +79,26 @@ export function HomeToggle({
     },
     onError: () => onError(t('gal.homeError')),
   })
+}
+
+/**
+ * "Show on homepage" checkbox, in the activity editor. `homeFull`: six are
+ * already picked, so an unpicked photo cannot be added (the server refuses a
+ * seventh as well).
+ */
+export function HomeToggle({
+  id,
+  onHome,
+  homeFull,
+  onError,
+}: {
+  id: string
+  onHome: boolean
+  homeFull: boolean
+  onError: (message: string | null) => void
+}) {
+  const t = useT()
+  const toggle = useSetOnHome(id, onError)
 
   return (
     <label className="flex min-h-9 items-center gap-2 px-2 pb-2 text-[13px]">
