@@ -108,12 +108,14 @@ export function MemberPhotoEditor({
   return (
     <section
       aria-labelledby="member-photo-title"
-      className="mt-5 flex max-w-2xl flex-wrap items-center gap-4 rounded-[10px] border border-border bg-card p-5"
+      // A row on a phone (photo beside the buttons), a column in the side
+      // panel on wide screens.
+      className="flex items-center gap-4 rounded-[10px] border border-border bg-card p-4 sm:p-5 lg:flex-col lg:items-stretch"
     >
       <MemberAvatar
         photoUrl={photoUrl}
         name={name}
-        className="size-24 text-3xl"
+        className="size-24 text-3xl lg:aspect-square lg:size-auto lg:w-full lg:text-6xl"
       />
       <div className="flex min-w-0 flex-col gap-2">
         <h2 id="member-photo-title" className="text-[15px] font-semibold">
@@ -135,6 +137,7 @@ export function MemberPhotoEditor({
           <Button
             type="button"
             variant="outline"
+            className="h-11 sm:h-9"
             disabled={busy}
             onClick={() => input.current?.click()}
           >
@@ -149,6 +152,7 @@ export function MemberPhotoEditor({
             <Button
               type="button"
               variant="ghost"
+              className="h-11 sm:h-9"
               disabled={busy}
               onClick={() => void remove()}
             >

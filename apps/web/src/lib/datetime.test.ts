@@ -7,6 +7,9 @@ import {
   formatMonthYear,
   formatTime,
   formatYear,
+  ageOn,
+  daysBetween,
+  todayInDhaka,
 } from './datetime.ts'
 
 describe('formatDate', () => {
@@ -57,5 +60,24 @@ describe('formatEventWhen', () => {
   it('shows a visible placeholder when there is no date', () => {
     expect(formatEventWhen(null, null, 'bn')).toBe('[তারিখ]')
     expect(formatEventWhen(null, null, 'en')).toBe('[date]')
+  })
+})
+
+describe('todayInDhaka', () => {
+  it('uses the Dhaka calendar day, not UTC', () => {
+    // 20:00 UTC is already 02:00 the next day in Dhaka (UTC+6).
+    expect(todayInDhaka(new Date('2026-11-22T20:00:00Z'))).toBe('2026-11-23')
+  })
+})
+
+describe('daysBetween and ageOn', () => {
+  it('counts whole days, across months', () => {
+    expect(daysBetween('2026-10-31', '2026-11-22')).toBe(22)
+    expect(daysBetween('2026-11-22', '2026-11-22')).toBe(0)
+  })
+  it('gives the age, counting the birthday itself', () => {
+    expect(ageOn('1996-11-22', '2026-11-22')).toBe(30)
+    expect(ageOn('1996-11-23', '2026-11-22')).toBe(29)
+    expect(ageOn('2000-02-29', '2026-03-01')).toBe(26)
   })
 })

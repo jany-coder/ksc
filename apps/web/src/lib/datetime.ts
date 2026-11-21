@@ -59,3 +59,26 @@ export function formatEventWhen(
     ? `${formatDate(date, lang)}, ${formatTime(time, lang)}`
     : formatDate(date, lang)
 }
+
+/** Today in Dhaka as "YYYY-MM-DD" (the club's calendar day, wherever the device is). */
+export function todayInDhaka(now = new Date()): string {
+  return now.toLocaleDateString('en-CA', { timeZone: 'Asia/Dhaka' })
+}
+
+const dayNumber = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number)
+  return Date.UTC(y!, m! - 1, d) / 86_400_000
+}
+
+/** Whole days from one "YYYY-MM-DD" to another (negative if `to` is earlier). */
+export function daysBetween(from: string, to: string): number {
+  return Math.round(dayNumber(to) - dayNumber(from))
+}
+
+/** Age in whole years on a given day, from a "YYYY-MM-DD" birth date. */
+export function ageOn(birth: string, on: string): number {
+  const [by, bm, bd] = birth.split('-').map(Number)
+  const [y, m, d] = on.split('-').map(Number)
+  const hadBirthday = m! > bm! || (m === bm && d! >= bd!)
+  return y! - by! - (hadBirthday ? 0 : 1)
+}

@@ -158,8 +158,37 @@ export const adminMessages = {
     en: 'This member could not be found.',
   },
   'drawer.mobile': { bn: 'মোবাইল', en: 'Mobile' },
+  'memberEdit.statusHint': {
+    bn: 'অবস্থা বদলাতে বা পাসওয়ার্ড রিসেট করতে সদস্য তালিকা থেকে বিস্তারিত খুলুন।',
+    en: "To change the status or reset a password, open the member's details from the list.",
+  },
+  'drawer.call': { bn: 'কল করুন', en: 'Call' },
+  'drawer.copy': { bn: 'কপি', en: 'Copy' },
+  'drawer.copied': { bn: 'কপি হয়েছে', en: 'Copied' },
+  'drawer.editShort': { bn: 'এডিট', en: 'Edit' },
+  'drawer.pendingNote': {
+    bn: 'এই আবেদনটি অনুমোদনের অপেক্ষায় আছে।',
+    en: 'This application is waiting for approval.',
+  },
+  'drawer.approve': { bn: 'অনুমোদন দিন', en: 'Approve' },
+  'drawer.sectionBlood': { bn: 'রক্তদান', en: 'Blood donation' },
+  'drawer.sectionContact': { bn: 'যোগাযোগ', en: 'Contact' },
+  'drawer.sectionMembership': { bn: 'সদস্যপদ', en: 'Membership' },
+  'drawer.sectionManage': { bn: 'পরিচালনা', en: 'Manage' },
+  'drawer.login': { bn: 'লগইন অ্যাকাউন্ট', en: 'Login account' },
+  'drawer.never': { bn: 'এখনো দেননি', en: 'Not yet' },
+  'drawer.daysAgo': { bn: '{n} দিন আগে', en: '{n} days ago' },
+  'drawer.age': { bn: '{n} বছর', en: '{n} years' },
+  'drawer.personalEmpty': {
+    bn: 'কোনো ব্যক্তিগত তথ্য যোগ করা হয়নি।',
+    en: 'No personal details added yet.',
+  },
+  'drawer.personalMissing': {
+    bn: 'আরো {n}টি ঘর ফাঁকা।',
+    en: '{n} more fields are empty.',
+  },
+  'drawer.fillIn': { bn: 'পূরণ করুন', en: 'Fill in' },
   'drawer.email': { bn: 'ইমেইল', en: 'Email' },
-  'drawer.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
   'drawer.willing': { bn: 'রক্তদানে আগ্রহী', en: 'Willing to donate' },
   'drawer.lastDonation': { bn: 'সর্বশেষ রক্তদান', en: 'Last donation' },
   'drawer.joined': { bn: 'যোগদানের তারিখ', en: 'Date joined' },
@@ -358,7 +387,6 @@ export const adminMessages = {
     bn: 'তালিকা আনা যায়নি। পেজ রিফ্রেশ করুন।',
     en: 'Could not load the list. Refresh the page.',
   },
-  'drawer.edit': { bn: 'তথ্য সম্পাদনা', en: 'Edit details' },
 
   // --- activities ---
   'act.pageTitle': {

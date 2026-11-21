@@ -40,7 +40,7 @@ export function ChangePhoneForm({
   return (
     <form
       onSubmit={(event) => void submit(event)}
-      className="mt-5 max-w-2xl space-y-3 rounded-[10px] border border-border bg-card p-5"
+      className="space-y-3 rounded-[10px] border border-border bg-card p-4 sm:p-5"
     >
       <h2 className="text-[15px] font-semibold">
         {t('memberEdit.phoneChangeTitle')}

@@ -7,6 +7,7 @@ import { useT } from '../../lib/i18n/index.tsx'
 import { BLOOD_GROUPS, bloodLabel } from '../../lib/member-options.ts'
 import { memberEditSchema } from '../../lib/member-form.ts'
 import type { MemberEditInput } from '../../lib/member-form.ts'
+import { cn } from '../../lib/utils.ts'
 import { Button, buttonVariants } from '../ui/button.tsx'
 import { CheckboxField } from '../ui/checkbox-field.tsx'
 import { FieldError } from '../ui/field-error.tsx'
@@ -65,7 +66,7 @@ export function MemberEditForm({
     <form
       onSubmit={handleSubmit(submit)}
       noValidate
-      className="mt-5 max-w-2xl space-y-5 rounded-[10px] border border-border bg-card p-5"
+      className="space-y-6 rounded-[10px] border border-border bg-card p-4 sm:p-5"
     >
       <FormSection title="profile.personal" variant="admin">
         <div className="grid gap-4 md:grid-cols-2">
@@ -131,30 +132,32 @@ export function MemberEditForm({
         <AddressFields register={register} errors={errors} variant="admin" />
       </FormSection>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="lastDonationDate">
-            {t('memberEdit.lastDonation')}
-          </Label>
-          <Input
-            id="lastDonationDate"
-            type="date"
-            aria-invalid={invalid('lastDonationDate')}
-            aria-describedby={describedBy('lastDonationDate')}
-            {...register('lastDonationDate')}
-          />
-          <FieldError
-            id="lastDonationDate-error"
-            message={errors.lastDonationDate?.message}
-          />
+      <FormSection title="drawer.sectionBlood" variant="admin">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="lastDonationDate">
+              {t('memberEdit.lastDonation')}
+            </Label>
+            <Input
+              id="lastDonationDate"
+              type="date"
+              aria-invalid={invalid('lastDonationDate')}
+              aria-describedby={describedBy('lastDonationDate')}
+              {...register('lastDonationDate')}
+            />
+            <FieldError
+              id="lastDonationDate-error"
+              message={errors.lastDonationDate?.message}
+            />
+          </div>
+          <div className="flex items-end pb-1.5">
+            <CheckboxField
+              label={t('memberNew.willing')}
+              {...register('willingToDonate')}
+            />
+          </div>
         </div>
-        <div className="flex items-end pb-1.5">
-          <CheckboxField
-            label={t('memberNew.willing')}
-            {...register('willingToDonate')}
-          />
-        </div>
-      </div>
+      </FormSection>
 
       {formError && (
         <p
@@ -165,13 +168,22 @@ export function MemberEditForm({
         </p>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        <Button type="submit" disabled={isSubmitting}>
+      {/* Stays at the bottom of the screen while the long form scrolls, so
+          Save is always one tap away (on a phone especially). */}
+      <div className="sticky bottom-0 -mx-4 -mb-4 flex gap-2 rounded-b-[10px] border-t border-border bg-card/95 px-4 py-3 backdrop-blur sm:-mx-5 sm:-mb-5 sm:px-5">
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-11 grow sm:h-9 sm:grow-0"
+        >
           {isSubmitting ? t('a.wait') : t('a.save')}
         </Button>
         <Link
           to="/admin/members"
-          className={buttonVariants({ variant: 'outline' })}
+          className={cn(
+            buttonVariants({ variant: 'outline' }),
+            'h-11 grow sm:h-9 sm:grow-0',
+          )}
         >
           {t('a.cancel')}
         </Link>
