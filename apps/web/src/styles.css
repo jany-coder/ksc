@@ -364,6 +364,10 @@
   .hero-frame[data-paused] .hero-slide {
     animation-play-state: paused;
   }
+  /* Its caption fades in with each new photo. */
+  .hero-caption {
+    animation: fade 0.9s ease both;
+  }
 
   /* Every later section eases in as it scrolls into view (CSS only, no JS). */
   @supports (animation-timeline: view()) {

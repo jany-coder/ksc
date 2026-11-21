@@ -1,8 +1,9 @@
-import { Pause, Play } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { ArrowRight, Images, Pause, Play } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { imageUrl } from '../../../lib/image-limits.ts'
-import { useT } from '../../../lib/i18n/index.tsx'
+import { useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
 import { cn } from '../../../lib/utils.ts'
 
 export type HeroSlide = {
@@ -29,6 +30,7 @@ const SLIDE_MS = 6000
  */
 export function HeroFrame({ slides }: { slides: HeroSlide[] }) {
   const t = useT()
+  const localeParams = useLocaleParams()
   const count = slides.length
   const [index, setIndex] = useState(0)
   // The photo fading out, which keeps its zoom while it goes.
@@ -55,6 +57,7 @@ export function HeroFrame({ slides }: { slides: HeroSlide[] }) {
   const next = (index + 1) % count
   const moving = count > 1 && !still
   const running = moving && !paused && !held
+  const caption = slides[index]?.caption?.trim()
 
   // Ask for the next photo, but only once the page itself has finished.
   useEffect(() => {
@@ -121,6 +124,32 @@ export function HeroFrame({ slides }: { slides: HeroSlide[] }) {
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-[linear-gradient(to_top,rgba(9,38,27,0.6),transparent)]"
       />
+
+      {/* Top: the photo's caption, if it has one, and the way to the full
+          gallery. The caption is the photo's alt text already, so screen
+          readers skip this copy of it. */}
+      <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
+        {caption ? (
+          <p
+            key={index}
+            aria-hidden="true"
+            className="hero-caption m-0 min-w-0 truncate rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-[13px] leading-snug font-medium text-white backdrop-blur-md md:text-sm"
+          >
+            {caption}
+          </p>
+        ) : (
+          <span />
+        )}
+        <Link
+          to="/{-$locale}/gallery"
+          params={localeParams}
+          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-white/25 bg-black/40 px-3 text-[13px] font-semibold text-white backdrop-blur-md hover:bg-black/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:text-sm"
+        >
+          <Images aria-hidden="true" className="size-4" />
+          {t('gallery.title')}
+          <ArrowRight aria-hidden="true" className="size-3.5 rtl:rotate-180" />
+        </Link>
+      </div>
 
       {moving && (
         <div className="absolute end-3 bottom-3 flex items-center gap-2.5">
