@@ -131,7 +131,15 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
             'hero-fade min-w-0 rounded-[26px] bg-[rgba(9,38,27,0.5)] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.35)]',
           )}
         >
-          {slides.length > 0 ? <HeroFrame slides={slides} /> : <WorkAreas />}
+          {slides.length > 0 ? (
+            // A new set of photos starts the frame afresh, from the first.
+            <HeroFrame
+              key={slides.map((slide) => slide.id).join()}
+              slides={slides}
+            />
+          ) : (
+            <WorkAreas />
+          )}
           <div
             className={cn(
               'flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 pt-3 pb-1.5',
