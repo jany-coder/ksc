@@ -82,3 +82,13 @@ export function ageOn(birth: string, on: string): number {
   const hadBirthday = m! > bm! || (m === bm && d! >= bd!)
   return y! - by! - (hadBirthday ? 0 : 1)
 }
+
+const shortMonth = {
+  bn: new Intl.DateTimeFormat('bn-BD', { month: 'short', timeZone: 'UTC' }),
+  en: new Intl.DateTimeFormat('en-GB', { month: 'short', timeZone: 'UTC' }),
+}
+
+/** 3 -> "Mar" / "মার্চ", for chart axes. Month is 1-12. */
+export function formatMonthShort(month: number, lang: Lang): string {
+  return shortMonth[lang].format(new Date(Date.UTC(2000, month - 1, 1)))
+}

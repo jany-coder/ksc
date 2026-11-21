@@ -89,28 +89,109 @@ export const adminMessages = {
     en: 'Admin panel — Kalma Social Club',
   },
   'dash.title': { bn: 'ড্যাশবোর্ড', en: 'Dashboard' },
+  'dash.eyebrow': { bn: 'ড্যাশবোর্ড', en: 'Dashboard' },
+  'dash.hello': { bn: 'স্বাগতম, {name}', en: 'Welcome, {name}' },
   'dash.lead': {
-    bn: 'ক্লাবের এক নজরে অবস্থা। এখানে শুধু সংখ্যা দেখানো হয়।',
-    en: 'The club at a glance. Only counts are shown here.',
+    bn: 'পুরো ক্লাব আর ওয়েবসাইটের এক নজরে অবস্থা। এখানে শুধু সংখ্যা দেখানো হয়, কারো ব্যক্তিগত তথ্য নয়।',
+    en: 'The whole club and website at a glance. Only counts are shown here, never anyone’s details.',
+  },
+  'dash.quick': { bn: 'দ্রুত কাজ', en: 'Quick actions' },
+  'dash.addMember': { bn: 'নতুন সদস্য', en: 'New member' },
+  'dash.addActivity': { bn: 'নতুন কার্যক্রম', en: 'New activity' },
+  'dash.addNotice': { bn: 'নতুন নোটিশ', en: 'New notice' },
+  'dash.addPhotos': { bn: 'ছবি যোগ করুন', en: 'Add photos' },
+  'dash.tileMembers': { bn: 'মোট সদস্য', en: 'Members' },
+  'dash.tileMembersSub': {
+    bn: '{active} জন সক্রিয় · এ মাসে নতুন {n} জন',
+    en: '{active} active · {n} new this month',
+  },
+  'dash.tileActivities': { bn: 'মোট কার্যক্রম', en: 'Activities' },
+  'dash.tileActivitiesSub': {
+    bn: '{upcoming}টি আসন্ন · {draft}টি খসড়া',
+    en: '{upcoming} upcoming · {draft} drafts',
+  },
+  'dash.tileDonors': { bn: 'রক্তদাতা', en: 'Blood donors' },
+  'dash.tileDonorsSub': {
+    bn: 'সক্রিয় ও রক্ত দিতে ইচ্ছুক সদস্য',
+    en: 'Active members willing to donate',
+  },
+  'dash.tilePhotos': { bn: 'গ্যালারির ছবি', en: 'Gallery photos' },
+  'dash.tilePhotosSub': {
+    bn: '{used} জায়গা ব্যবহার হয়েছে',
+    en: '{used} of storage used',
+  },
+  'dash.attention': { bn: 'নজর দেওয়া দরকার', en: 'Needs attention' },
+  'dash.allGood': {
+    bn: 'সব ঠিক আছে। এখন কোনো বাকি কাজ নেই।',
+    en: 'All clear. Nothing is waiting right now.',
+  },
+  'dash.attPending': {
+    bn: '{n}টি সদস্য আবেদন অনুমোদনের অপেক্ষায়',
+    en: '{n} membership applications waiting',
+  },
+  'dash.attUnfiled': {
+    bn: '{n}টি ছবি কোনো কার্যক্রমে যুক্ত নয়',
+    en: '{n} photos not in any activity',
+  },
+  'dash.attDrafts': {
+    bn: '{n}টি কার্যক্রম এখনো খসড়া',
+    en: '{n} activities still in draft',
+  },
+  'dash.attNoPhotos': {
+    bn: '{n}টি প্রকাশিত কার্যক্রমে এখনো ছবি নেই',
+    en: '{n} published activities have no photos yet',
+  },
+  'dash.attNoticeDrafts': {
+    bn: '{n}টি নোটিশ এখনো খসড়া',
+    en: '{n} notices still in draft',
+  },
+  'dash.attStorageWarn': {
+    bn: 'ছবির জায়গা প্রায় ভরে এসেছে',
+    en: 'Photo storage is nearly full',
+  },
+  'dash.attStorageFull': {
+    bn: 'ছবির জায়গা ভরে গেছে, নতুন ছবি তোলা বন্ধ',
+    en: 'Photo storage is full; uploads are stopped',
+  },
+  'dash.statusTitle': { bn: 'সদস্যদের অবস্থা', en: 'Member status' },
+  'dash.statusTotal': { bn: 'মোট {n} জন', en: '{n} in all' },
+  'dash.donorsTitle': {
+    bn: 'রক্তের গ্রুপ অনুযায়ী রক্তদাতা',
+    en: 'Donors by blood group',
+  },
+  'dash.donorsNote': {
+    bn: 'সক্রিয় ও রক্ত দিতে ইচ্ছুক সদস্য। গ্রুপে চাপলে সেই গ্রুপের সদস্যদের তালিকা খুলবে।',
+    en: 'Active members willing to donate. Tap a group to list its members.',
+  },
+  'dash.donorRow': { bn: '{group}: {n} জন', en: '{group}: {n}' },
+  'dash.nextTitle': { bn: 'আসন্ন কার্যক্রম', en: 'Coming up' },
+  'dash.nextNone': {
+    bn: 'কোনো আসন্ন কার্যক্রম নেই।',
+    en: 'Nothing is coming up.',
+  },
+  'dash.seeAll': { bn: 'সব দেখুন', en: 'See all' },
+  'dash.noticesTitle': { bn: 'নোটিশ', en: 'Notices' },
+  'dash.noticesLine': {
+    bn: '{published}টি প্রকাশিত · {draft}টি খসড়া',
+    en: '{published} published · {draft} drafts',
+  },
+  'dash.urgentOn': {
+    bn: '{n}টি জরুরি নোটিশ এখন সাইটে দেখাচ্ছে',
+    en: '{n} urgent notices are showing on the site',
+  },
+  'dash.storageTitle': { bn: 'ছবির জায়গা', en: 'Photo storage' },
+  'dash.storageUsed': {
+    bn: '{free}-এর মধ্যে {used} ব্যবহার হয়েছে',
+    en: '{used} of {free} used',
+  },
+  'dash.storageNote': {
+    bn: '{stop} হলে নতুন ছবি তোলা বন্ধ হবে, যাতে বিনামূল্যের সীমা পার না হয়।',
+    en: 'Uploads stop at {stop}, so the free allowance is never passed.',
   },
   'dash.loadError': {
     bn: 'তথ্য আনা যায়নি। পেজ রিফ্রেশ করে দেখুন।',
     en: 'Could not load the figures. Refresh the page.',
   },
-  'dash.members': { bn: 'সদস্য', en: 'Members' },
-  'dash.membersTotal': { bn: 'মোট সদস্য', en: 'Total members' },
-  'dash.pendingHint': {
-    bn: 'অনুমোদনের অপেক্ষায় — দেখুন',
-    en: 'Waiting for approval — review',
-  },
-  'dash.donors': {
-    bn: 'রক্তদাতা (সক্রিয় ও রক্তদানে ইচ্ছুক)',
-    en: 'Blood donors (active and willing)',
-  },
-  'dash.activities': { bn: 'কার্যক্রম', en: 'Activities' },
-  'dash.notices': { bn: 'নোটিশ', en: 'Notices' },
-  'dash.published': { bn: 'প্রকাশিত', en: 'Published' },
-  'dash.draft': { bn: 'খসড়া', en: 'Draft' },
 
   // --- members list ---
   'members.pageTitle': {
@@ -827,15 +908,6 @@ export const adminMessages = {
   },
   'gal.unfiledShow': { bn: 'ছবিগুলো দেখুন', en: 'Show them' },
   'gal.openActivity': { bn: 'কার্যক্রম খুলুন →', en: 'Open activity →' },
-  'dash.unfiledTitle': { bn: 'সাজানো বাকি ছবি', en: 'Photos to sort' },
-  'dash.unfiled': {
-    bn: '{n}টি ছবি এখনো কোনো কার্যক্রমে যুক্ত নয়।',
-    en: '{n} photos are not in any activity yet.',
-  },
-  'dash.unfiledLink': {
-    bn: 'গ্যালারিতে সাজান',
-    en: 'Sort them in the gallery',
-  },
   'memberPhoto.title': { bn: 'ছবি', en: 'Photo' },
   'memberPhoto.note': {
     bn: 'শুধু অ্যাডমিনরা দেখতে পান। ছবি সঙ্গে সঙ্গে সংরক্ষণ হয়।',

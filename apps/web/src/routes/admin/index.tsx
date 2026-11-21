@@ -1,17 +1,35 @@
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import {
+  Bell,
+  CalendarDays,
+  Droplet,
+  Image,
+  ImagePlus,
+  Plus,
+  UserPlus,
+  Users,
+} from 'lucide-react'
 
+import {
+  Attention,
+  ContentCard,
+  DonorBars,
+  NextActivities,
+  StatTile,
+  StatusBreakdown,
+  rowLink,
+} from '../../components/admin/dashboard.tsx'
+import type { AttentionItem } from '../../components/admin/dashboard.tsx'
+import { buttonVariants } from '../../components/ui/button.tsx'
 import { getDashboardFn } from '../../lib/dashboard.functions.ts'
-import { useNumber, useT } from '../../lib/i18n/index.tsx'
+import { formatDate, todayInDhaka } from '../../lib/datetime.ts'
+import { formatBytes } from '../../lib/image-limits.ts'
+import { useLang, useNumber, useT } from '../../lib/i18n/index.tsx'
 import { langOfMatches } from '../../lib/i18n/core.ts'
 import type { HeadArgs } from '../../lib/i18n/core.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
-import {
-  BLOOD_GROUPS,
-  MEMBER_STATUSES,
-  STATUS_LABEL_KEY,
-  bloodLabel,
-} from '../../lib/member-options.ts'
+import { BLOOD_GROUPS } from '../../lib/member-options.ts'
 import { can } from '../../lib/permissions.ts'
 
 const dashboardQuery = () =>
@@ -44,149 +62,223 @@ function DashboardError() {
   )
 }
 
-const card = 'rounded-[10px] border border-border bg-card p-5'
+/** The first word of a name, for the greeting. */
+const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name
 
 function AdminHome() {
   const t = useT()
+  const lang = useLang()
   const { member } = Route.useRouteContext()
   return (
-    <main className="px-4 py-6 md:p-6">
-      <h1 className="text-2xl font-semibold">{t('dash.title')}</h1>
-      <p className="mt-0.5 text-sm text-muted-foreground">{t('dash.lead')}</p>
+    <main className="flex flex-col gap-5 px-4 py-6 md:p-6">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-[13px] font-medium text-muted-foreground">
+            {t('dash.eyebrow')} · {formatDate(todayInDhaka(), lang)}
+          </p>
+          <h1 className="mt-0.5 text-2xl font-semibold sm:text-[28px]">
+            {t('dash.hello', { name: firstName(member.name) })}
+          </h1>
+          <p className="mt-1 max-w-[620px] text-sm text-muted-foreground">
+            {t('dash.lead')}
+          </p>
+        </div>
+        <QuickActions canAddMembers={can(member.role, 'members.write')} />
+      </header>
       {can(member.role, 'members.read') && <Figures />}
     </main>
   )
 }
 
-function Figures() {
+function QuickActions({ canAddMembers }: { canAddMembers: boolean }) {
   const t = useT()
-  const number = useNumber()
-  const { data } = useSuspenseQuery(dashboardQuery())
-
+  const outline = buttonVariants({ variant: 'outline' })
   return (
-    <div className="mt-5 grid gap-4 md:grid-cols-2">
-      <section className={card} aria-labelledby="dash-members">
-        <h2 id="dash-members" className="text-[15px] font-semibold">
-          {t('dash.members')}
-        </h2>
-        <p className="mt-2 text-3xl font-semibold tabular-nums">
-          {data.members.all}
-          <span className="ml-2 text-sm font-normal text-muted-foreground">
-            {t('dash.membersTotal')}
-          </span>
-        </p>
-        <ul className="mt-3 space-y-1 text-sm">
-          {MEMBER_STATUSES.map((status) => (
-            <li key={status} className="flex justify-between">
-              <Link
-                to="/admin/members"
-                search={{ status }}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                {t(STATUS_LABEL_KEY[status])}
-              </Link>
-              <span className="tabular-nums">{data.members[status]}</span>
-            </li>
-          ))}
-        </ul>
-        {data.members.pending > 0 && (
-          <Link
-            to="/admin/members"
-            search={{ status: 'pending' }}
-            className="mt-3 inline-block text-sm text-primary hover:underline"
-          >
-            {t('dash.pendingHint')}
-          </Link>
-        )}
-      </section>
-
-      <section className={card} aria-labelledby="dash-donors">
-        <h2 id="dash-donors" className="text-[15px] font-semibold">
-          {t('dash.donors')}
-        </h2>
-        <ul className="mt-3 grid grid-cols-4 gap-2">
-          {BLOOD_GROUPS.map((group) => (
-            <li
-              key={group}
-              className="rounded-lg border border-border px-2 py-2 text-center"
-            >
-              <div className="text-xs text-muted-foreground">
-                {bloodLabel(group)}
-              </div>
-              <div className="text-lg font-semibold tabular-nums">
-                {data.donors[group]}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <PublishCard
-        title={t('dash.activities')}
-        to="/admin/activities"
-        counts={data.activities}
-      />
-      <PublishCard
-        title={t('dash.notices')}
-        to="/admin/notices"
-        counts={data.notices}
-      />
-
-      {/* Only when there is sorting to do; nothing to show otherwise. */}
-      {data.unfiledPhotos > 0 && (
-        <section className={card} aria-labelledby="dash-unfiled">
-          <h2 id="dash-unfiled" className="text-[15px] font-semibold">
-            {t('dash.unfiledTitle')}
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t('dash.unfiled', { n: number(data.unfiledPhotos) })}
-          </p>
-          <Link
-            to="/admin/gallery"
-            search={{ activity: 'none' }}
-            className="mt-3 inline-block text-sm text-primary hover:underline"
-          >
-            {t('dash.unfiledLink')}
-          </Link>
-        </section>
+    <nav aria-label={t('dash.quick')} className="flex flex-wrap gap-2">
+      {canAddMembers && (
+        <Link to="/admin/members/new" className={outline}>
+          <UserPlus aria-hidden="true" />
+          {t('dash.addMember')}
+        </Link>
       )}
-    </div>
+      <Link to="/admin/notices/new" className={outline}>
+        <Bell aria-hidden="true" />
+        {t('dash.addNotice')}
+      </Link>
+      <Link to="/admin/gallery" className={outline}>
+        <ImagePlus aria-hidden="true" />
+        {t('dash.addPhotos')}
+      </Link>
+      <Link to="/admin/activities/new" className={buttonVariants()}>
+        <Plus aria-hidden="true" />
+        {t('dash.addActivity')}
+      </Link>
+    </nav>
   )
 }
 
-function PublishCard({
-  title,
-  to,
-  counts,
-}: {
-  title: string
-  to: '/admin/activities' | '/admin/notices'
-  counts: { published: number; draft: number }
-}) {
+function Figures() {
   const t = useT()
-  return (
-    <section className={card}>
-      <h2 className="text-[15px] font-semibold">
-        <Link to={to} className="hover:underline">
-          {title}
+  const lang = useLang()
+  const number = useNumber()
+  const { data } = useSuspenseQuery(dashboardQuery())
+  const donorTotal = BLOOD_GROUPS.reduce((sum, g) => sum + data.donors[g], 0)
+  const activityTotal = data.activities.published + data.activities.draft
+
+  // Only what is actually waiting; an empty list shows "All clear".
+  const attention: AttentionItem[] = []
+  const add = (item: AttentionItem | false) => item && attention.push(item)
+  add(
+    data.members.pending > 0 && {
+      key: 'pending',
+      tone: 'warn',
+      text: t('dash.attPending', { n: number(data.members.pending) }),
+      link: (
+        <Link
+          to="/admin/members"
+          search={{ status: 'pending' }}
+          className={rowLink}
+        >
+          {t('dash.seeAll')}
         </Link>
-      </h2>
-      <dl className="mt-3 flex gap-8">
-        <div>
-          <dd className="text-2xl font-semibold tabular-nums">
-            {counts.published}
-          </dd>
-          <dt className="text-sm text-muted-foreground">
-            {t('dash.published')}
-          </dt>
+      ),
+    },
+  )
+  add(
+    data.photos.state !== 'ok' && {
+      key: 'storage',
+      tone: 'warn',
+      text:
+        data.photos.state === 'full'
+          ? t('dash.attStorageFull')
+          : t('dash.attStorageWarn'),
+      link: (
+        <Link to="/admin/gallery" className={rowLink}>
+          {t('dash.seeAll')}
+        </Link>
+      ),
+    },
+  )
+  add(
+    data.photos.unfiled > 0 && {
+      key: 'unfiled',
+      tone: 'info',
+      text: t('dash.attUnfiled', { n: number(data.photos.unfiled) }),
+      link: (
+        <Link
+          to="/admin/gallery"
+          search={{ activity: 'none' }}
+          className={rowLink}
+        >
+          {t('dash.seeAll')}
+        </Link>
+      ),
+    },
+  )
+  add(
+    data.activities.withoutPhotos > 0 && {
+      key: 'no-photos',
+      tone: 'info',
+      text: t('dash.attNoPhotos', { n: number(data.activities.withoutPhotos) }),
+      link: (
+        <Link
+          to="/admin/activities"
+          search={{ status: 'published' }}
+          className={rowLink}
+        >
+          {t('dash.seeAll')}
+        </Link>
+      ),
+    },
+  )
+  add(
+    data.activities.draft > 0 && {
+      key: 'drafts',
+      tone: 'info',
+      text: t('dash.attDrafts', { n: number(data.activities.draft) }),
+      link: (
+        <Link
+          to="/admin/activities"
+          search={{ status: 'draft' }}
+          className={rowLink}
+        >
+          {t('dash.seeAll')}
+        </Link>
+      ),
+    },
+  )
+  add(
+    data.notices.draft > 0 && {
+      key: 'notice-drafts',
+      tone: 'info',
+      text: t('dash.attNoticeDrafts', { n: number(data.notices.draft) }),
+      link: (
+        <Link to="/admin/notices" className={rowLink}>
+          {t('dash.seeAll')}
+        </Link>
+      ),
+    },
+  )
+
+  return (
+    <>
+      {/* The four headline numbers. */}
+      <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 xl:grid-cols-4">
+        <StatTile
+          to="/admin/members"
+          icon={Users}
+          tone="green"
+          label={t('dash.tileMembers')}
+          value={number(data.members.all)}
+          detail={t('dash.tileMembersSub', {
+            active: number(data.members.active),
+            n: number(data.newThisMonth),
+          })}
+        />
+        <StatTile
+          to="/admin/activities"
+          icon={CalendarDays}
+          tone="blue"
+          label={t('dash.tileActivities')}
+          value={number(activityTotal)}
+          detail={t('dash.tileActivitiesSub', {
+            upcoming: number(data.activities.upcoming),
+            draft: number(data.activities.draft),
+          })}
+        />
+        <StatTile
+          to="/admin/members"
+          icon={Droplet}
+          tone="red"
+          label={t('dash.tileDonors')}
+          value={number(donorTotal)}
+          detail={t('dash.tileDonorsSub')}
+        />
+        <StatTile
+          to="/admin/gallery"
+          icon={Image}
+          tone="violet"
+          label={t('dash.tilePhotos')}
+          value={number(data.photos.total)}
+          detail={t('dash.tilePhotosSub', {
+            used: formatBytes(data.photos.usedBytes, lang),
+          })}
+        />
+      </div>
+
+      {/* Wide screens: three columns. A phone: one, in reading order. */}
+      <div className="grid items-start gap-4 lg:grid-cols-3">
+        <Attention items={attention} />
+        <NextActivities items={data.nextActivities} />
+        <StatusBreakdown counts={data.members} />
+      </div>
+
+      <div className="grid items-start gap-4 lg:grid-cols-3">
+        <div className="min-w-0 lg:col-span-2">
+          <DonorBars donors={data.donors} />
         </div>
-        <div>
-          <dd className="text-2xl font-semibold tabular-nums">
-            {counts.draft}
-          </dd>
-          <dt className="text-sm text-muted-foreground">{t('dash.draft')}</dt>
-        </div>
-      </dl>
-    </section>
+        <ContentCard notices={data.notices} photos={data.photos} />
+      </div>
+    </>
   )
 }
