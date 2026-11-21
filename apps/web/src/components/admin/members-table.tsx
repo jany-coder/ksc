@@ -72,6 +72,7 @@ function makeColumns(t: ReturnType<typeof useT>) {
           {/* A real link: opens the detail drawer (?member=<id>), so it works with
             middle-click and "copy link address" too. */}
           <Link
+            from="/admin/members/"
             to="/admin/members"
             search={(prev) => ({ ...prev, member: row.original.id })}
             resetScroll={false}

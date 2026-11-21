@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router'
 
 import { ActivityForm } from '../../../components/admin/activity-form.tsx'
+import { categoriesQuery } from '../../../components/admin/category-dialog.tsx'
 import { createActivityFn } from '../../../lib/activities.functions.ts'
 import type { ActivityFormInput } from '../../../lib/activity-form.ts'
 import { useT } from '../../../lib/i18n/index.tsx'
@@ -24,13 +25,16 @@ export const Route = createFileRoute('/admin/activities/new')({
     if (!can(context.member.role, 'content.write'))
       throw redirect({ to: '/admin' })
   },
+  // The kinds for the form's "Type" list.
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(categoriesQuery()),
   component: NewActivityPage,
 })
 
 const EMPTY: ActivityFormInput = {
   title: '',
   description: '',
-  category: '',
+  categoryId: '',
   eventDate: '',
   eventTime: '',
   location: '',
@@ -42,6 +46,7 @@ function NewActivityPage() {
   const t = useT()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { member } = Route.useRouteContext()
 
   return (
     <main className="px-4 py-6 md:p-6">
@@ -62,6 +67,7 @@ function NewActivityPage() {
       <ActivityForm
         initial={EMPTY}
         photoCount={null}
+        canManageKinds={can(member.role, 'categories.manage')}
         onSubmit={async (values) => {
           const result = await createActivityFn({ data: values })
           if (!result.ok) return { ok: false, message: t('a.invalidForm') }

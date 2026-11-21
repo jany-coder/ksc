@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { Lightbox } from '../../../components/public/lightbox.tsx'
 import { getPublicActivityFn } from '../../../lib/activities.functions.ts'
+import { categoryName } from '../../../lib/activity-category.ts'
 import { formatEventWhen } from '../../../lib/datetime.ts'
 import { imageUrl } from '../../../lib/image-limits.ts'
 import { alternateLinks } from '../../../lib/i18n/hreflang.ts'
@@ -134,7 +135,7 @@ function ActivityPage() {
         <div className="max-w-[760px]">
           {activity.category && (
             <p className="mb-2 text-[15px] font-semibold text-primary">
-              {activity.category}
+              {categoryName(activity.category, lang)}
             </p>
           )}
           <h1 className="mb-3 text-[28px] leading-tight font-bold text-brand-deep md:text-[40px]">

@@ -21,6 +21,7 @@ import { Route as Char123LocaleChar125GalleryRouteImport } from './routes/{-$loc
 import { Route as Char123LocaleChar125JoinRouteImport } from './routes/{-$locale}/join'
 import { Route as AdminActivitiesIndexRouteImport } from './routes/admin/activities/index'
 import { Route as AdminActivitiesIdRouteImport } from './routes/admin/activities/$id'
+import { Route as AdminActivitiesCategoriesRouteImport } from './routes/admin/activities/categories'
 import { Route as AdminActivitiesNewRouteImport } from './routes/admin/activities/new'
 import { Route as AdminGalleryIndexRouteImport } from './routes/admin/gallery/index'
 import { Route as AdminMembersIndexRouteImport } from './routes/admin/members/index'
@@ -101,6 +102,12 @@ const AdminActivitiesIdRoute = AdminActivitiesIdRouteImport.update({
   path: '/activities/$id',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AdminActivitiesCategoriesRoute =
+  AdminActivitiesCategoriesRouteImport.update({
+    id: '/activities/categories',
+    path: '/activities/categories',
+    getParentRoute: () => AdminRouteRoute,
+  } as any)
 const AdminActivitiesNewRoute = AdminActivitiesNewRouteImport.update({
   id: '/activities/new',
   path: '/activities/new',
@@ -191,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
+  '/admin/activities/categories': typeof AdminActivitiesCategoriesRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
@@ -218,6 +226,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
+  '/admin/activities/categories': typeof AdminActivitiesCategoriesRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
@@ -248,6 +257,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/admin/activities/$id': typeof AdminActivitiesIdRoute
+  '/admin/activities/categories': typeof AdminActivitiesCategoriesRoute
   '/admin/activities/new': typeof AdminActivitiesNewRoute
   '/admin/members/archived': typeof AdminMembersArchivedRoute
   '/admin/members/new': typeof AdminMembersNewRoute
@@ -279,6 +289,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/{-$locale}/'
     | '/admin/activities/$id'
+    | '/admin/activities/categories'
     | '/admin/activities/new'
     | '/admin/members/archived'
     | '/admin/members/new'
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/{-$locale}'
     | '/admin/activities/$id'
+    | '/admin/activities/categories'
     | '/admin/activities/new'
     | '/admin/members/archived'
     | '/admin/members/new'
@@ -335,6 +347,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/{-$locale}/'
     | '/admin/activities/$id'
+    | '/admin/activities/categories'
     | '/admin/activities/new'
     | '/admin/members/archived'
     | '/admin/members/new'
@@ -451,6 +464,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminActivitiesIdRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/admin/activities/categories': {
+      id: '/admin/activities/categories'
+      path: '/activities/categories'
+      fullPath: '/admin/activities/categories'
+      preLoaderRoute: typeof AdminActivitiesCategoriesRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
     '/admin/activities/new': {
       id: '/admin/activities/new'
       path: '/activities/new'
@@ -562,6 +582,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminActivitiesIdRoute: typeof AdminActivitiesIdRoute
+  AdminActivitiesCategoriesRoute: typeof AdminActivitiesCategoriesRoute
   AdminActivitiesNewRoute: typeof AdminActivitiesNewRoute
   AdminMembersArchivedRoute: typeof AdminMembersArchivedRoute
   AdminMembersNewRoute: typeof AdminMembersNewRoute
@@ -578,6 +599,7 @@ interface AdminRouteRouteChildren {
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminActivitiesIdRoute: AdminActivitiesIdRoute,
+  AdminActivitiesCategoriesRoute: AdminActivitiesCategoriesRoute,
   AdminActivitiesNewRoute: AdminActivitiesNewRoute,
   AdminMembersArchivedRoute: AdminMembersArchivedRoute,
   AdminMembersNewRoute: AdminMembersNewRoute,

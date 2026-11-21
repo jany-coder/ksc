@@ -126,6 +126,7 @@ role: 'super_admin' | 'admin' | 'member'
 | Delete a member | **yes** | no | no |
 | Export CSV | **yes** | no | no |
 | Create or remove admins | **yes** | no | no |
+| Add, rename, hide activity types | yes | no | no |
 
 The three bold rows are the dangerous ones. Everything else is shared.
 
@@ -228,6 +229,10 @@ admin activity composer.
   keeps its filters and scroll). A full page only where there is more to
   read or do: members have a profile page (`/admin/members/<id>`), linked
   from the drawer as "View full profile".
+- List pages (members, activities) share one layout: status tabs with
+  counts, a search box and filters, the table, then a footer with the count
+  and previous / next. Filters and the page live in the URL. On a phone the
+  table becomes one card per row.
 - Edit and add forms: details on the left, a sticky side column for status,
   settings and Save on wide screens; one column with Save stuck to the
   bottom on a phone.

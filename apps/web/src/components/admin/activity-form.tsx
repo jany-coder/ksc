@@ -1,18 +1,22 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useSuspenseQuery } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 
 import {
-  ACTIVITY_CATEGORIES,
-  ACTIVITY_CATEGORY_KEY,
+  categoryName,
+  selectableCategories,
+} from '../../lib/activity-category.ts'
+import {
   ACTIVITY_STATUSES,
   ACTIVITY_STATUS_LABEL_KEY,
   activityFormSchema,
 } from '../../lib/activity-form.ts'
 import type { ActivityFormInput } from '../../lib/activity-form.ts'
-import { useT } from '../../lib/i18n/index.tsx'
+import { useLang, useT } from '../../lib/i18n/index.tsx'
 import { Button, buttonVariants } from '../ui/button.tsx'
 import { CheckboxField } from '../ui/checkbox-field.tsx'
 import { FieldError } from '../ui/field-error.tsx'
@@ -20,6 +24,7 @@ import { Input } from '../ui/input.tsx'
 import { Label } from '../ui/label.tsx'
 import { NativeSelect } from '../ui/native-select.tsx'
 import { Textarea } from '../ui/textarea.tsx'
+import { CategoryDialog, categoriesQuery } from './category-dialog.tsx'
 
 // The activity form, shared by "new" and "edit": same fields, same checks, only
 // the starting values and what happens on save differ.
@@ -33,6 +38,7 @@ export function ActivityForm({
   onSubmit,
   submitLabel,
   extra,
+  canManageKinds,
 }: {
   initial: ActivityFormInput
   // How many photos the activity has; null for a new one (photos are added
@@ -43,19 +49,36 @@ export function ActivityForm({
   submitLabel?: string
   // Extra cards for the side column, e.g. the delete button.
   extra?: ReactNode
+  // Super admin: may add a new kind from here.
+  canManageKinds: boolean
 }) {
   const t = useT()
+  const lang = useLang()
   const [formError, setFormError] = useState<string | null>(null)
+  const [addingKind, setAddingKind] = useState(false)
+  const [newKindId, setNewKindId] = useState<string | null>(null)
+  // Loaded by the page's loader, so this never waits.
+  const { data: kinds } = useSuspenseQuery(categoriesQuery())
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ActivityFormInput>({
     resolver: zodResolver(activityFormSchema),
     defaultValues: initial,
   })
   const publishing = watch('status') === 'published'
+
+  // Pick a just-added kind, once the reloaded list has drawn its <option>
+  // (a <select> cannot take a value it has no option for).
+  useEffect(() => {
+    if (newKindId && kinds.some((k) => k.id === newKindId)) {
+      setValue('categoryId', newKindId, { shouldDirty: true })
+      setNewKindId(null)
+    }
+  }, [newKindId, kinds, setValue])
 
   async function submit(values: ActivityFormInput) {
     setFormError(null)
@@ -190,15 +213,33 @@ export function ActivityForm({
             )}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="category">{t('act.fType')}</Label>
-            <NativeSelect id="category" {...register('category')}>
+            <Label htmlFor="categoryId">{t('act.fType')}</Label>
+            <NativeSelect id="categoryId" {...register('categoryId')}>
               <option value="">{t('act.fTypeNone')}</option>
-              {ACTIVITY_CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {t(ACTIVITY_CATEGORY_KEY[c])}
+              {selectableCategories(kinds, initial.categoryId).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {categoryName(c, lang)}
                 </option>
               ))}
             </NativeSelect>
+            {canManageKinds && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="-ms-2 text-primary"
+                onClick={() => setAddingKind(true)}
+              >
+                <Plus aria-hidden="true" />
+                {t('kind.add')}
+              </Button>
+            )}
+            {addingKind && (
+              <CategoryDialog
+                onClose={() => setAddingKind(false)}
+                onSaved={setNewKindId}
+              />
+            )}
           </div>
           <CheckboxField label={t('act.fFeatured')} {...register('featured')} />
         </section>

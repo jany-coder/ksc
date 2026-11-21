@@ -102,6 +102,7 @@ function MembersPage() {
       const q = text.trim()
       if (q === (search.q ?? '')) return
       void navigate({
+        from: '/admin/members/',
         to: '/admin/members',
         search: (prev) => next(prev, { q: q || undefined }),
         replace: true,
@@ -164,6 +165,7 @@ function MembersPage() {
           return (
             <Link
               key={status ?? 'all'}
+              from="/admin/members/"
               to="/admin/members"
               search={(prev) => next(prev, { status })}
               aria-current={active ? 'page' : undefined}
@@ -210,6 +212,7 @@ function MembersPage() {
           return (
             <Link
               key={group ?? 'all'}
+              from="/admin/members/"
               to="/admin/members"
               search={(prev) => next(prev, { blood: group })}
               aria-current={active ? 'true' : undefined}
@@ -260,6 +263,7 @@ function MembersPage() {
           actor={member}
           onClose={() =>
             void navigate({
+              from: '/admin/members/',
               to: '/admin/members',
               search: (prev) => ({ ...prev, member: undefined }),
               resetScroll: false,
@@ -285,6 +289,7 @@ function PageLink({
 }) {
   return enabled ? (
     <Link
+      from="/admin/members/"
       to="/admin/members"
       search={(prev) => next(prev, { page })}
       className={cn(pageClass, 'hover:bg-secondary')}

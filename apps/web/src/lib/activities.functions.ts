@@ -2,6 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { z } from 'zod'
 
+import { activitiesSearchSchema } from './activities-query.ts'
 import { activityFormSchema } from './activity-form.ts'
 import {
   createActivity,
@@ -44,12 +45,12 @@ export const deleteActivityFn = createServerFn({ method: 'POST' })
     return deleteActivity(data.id)
   })
 
-export const listActivitiesFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
+export const listActivitiesFn = createServerFn({ method: 'GET' })
+  .validator(activitiesSearchSchema)
+  .handler(async ({ data }) => {
     await requirePermission('content.write')
-    return listActivities()
-  },
-)
+    return listActivities(data)
+  })
 
 // Public: deliberately no permission check, because the home page is public.
 // Safe only because listUpcomingPublic returns published rows and public columns.

@@ -484,6 +484,97 @@ export const adminMessages = {
   },
   'act.caption': { bn: 'কার্যক্রমের তালিকা', en: 'List of activities' },
   'act.colType': { bn: 'ধরন', en: 'Type' },
+  'act.colPhotos': { bn: 'ছবি', en: 'Photos' },
+  'act.photos': { bn: '{n}টি ছবি', en: '{n} photos' },
+  'act.noPhotos': { bn: 'ছবি নেই', en: 'No photos' },
+  'act.noDate': { bn: 'তারিখ নেই', en: 'No date' },
+  'act.byStatus': { bn: 'অবস্থা অনুযায়ী', en: 'By status' },
+  'act.searchLabel': { bn: 'কার্যক্রম খুঁজুন', en: 'Search activities' },
+  'act.searchPlaceholder': {
+    bn: 'শিরোনামের কোনো শব্দ',
+    en: 'A word from the title',
+  },
+  'act.yearLabel': { bn: 'বছর', en: 'Year' },
+  'act.allYears': { bn: 'সব বছর', en: 'All years' },
+  'act.kindLabel': { bn: 'ধরন', en: 'Type' },
+  'act.allKinds': { bn: 'সব ধরন', en: 'All types' },
+  'act.noKind': { bn: 'ধরন দেওয়া নেই', en: 'No type given' },
+  'act.sortLabel': { bn: 'সাজানো', en: 'Order' },
+  'act.sortNewest': { bn: 'তারিখ: নতুন আগে', en: 'Date: newest first' },
+  'act.sortOldest': { bn: 'তারিখ: পুরোনো আগে', en: 'Date: oldest first' },
+  'act.sortByDate': {
+    bn: 'তারিখ অনুযায়ী উল্টো করে সাজান',
+    en: 'Reverse the date order',
+  },
+  'act.emptyFilter': {
+    bn: 'এই ফিল্টারে কোনো কার্যক্রম পাওয়া যায়নি।',
+    en: 'No activities match this filter.',
+  },
+  'act.clearFilters': { bn: 'সব ফিল্টার মুছুন', en: 'Clear all filters' },
+  'act.summary': {
+    bn: '{all}টির মধ্যে {total}টি মিলেছে',
+    en: '{total} of {all} activities match',
+  },
+  'act.range': {
+    bn: ' · {from}–{to} দেখানো হচ্ছে',
+    en: ' · showing {from}–{to}',
+  },
+  'act.manageKinds': { bn: 'ধরন সাজান', en: 'Manage types' },
+
+  // --- kinds of activity (super admin) ---
+  'kind.pageTitle': {
+    bn: 'কার্যক্রমের ধরন — কলমা সোশ্যাল ক্লাব',
+    en: 'Activity types — Kalma Social Club',
+  },
+  'kind.title': { bn: 'কার্যক্রমের ধরন', en: 'Activity types' },
+  'kind.lead': {
+    bn: 'কার্যক্রম লেখার সময় এই তালিকা থেকে ধরন বাছাই করা হয়। নাম বদলালে সেই ধরনের সব কার্যক্রমে নতুন নাম দেখাবে।',
+    en: 'Activities pick their type from this list. Renaming a type changes it on every activity of that type.',
+  },
+  'kind.add': { bn: 'নতুন ধরন', en: 'New type' },
+  'kind.addTitle': { bn: 'নতুন ধরন যোগ করুন', en: 'Add a type' },
+  'kind.editTitle': { bn: 'ধরন সম্পাদনা', en: 'Edit type' },
+  'kind.nameBn': { bn: 'বাংলা নাম *', en: 'Bengali name *' },
+  'kind.nameBnPh': { bn: 'যেমন: বৃক্ষরোপণ', en: 'Written in Bengali' },
+  'kind.nameEn': { bn: 'ইংরেজি নাম *', en: 'English name *' },
+  'kind.nameEnPh': { bn: 'যেমন: Tree planting', en: 'e.g. Tree planting' },
+  'kind.nameEnNote': {
+    bn: 'ওয়েবসাইটের ইংরেজি সংস্করণে আর নতুন কার্যক্রমের লিংকে এটা ব্যবহার হয়।',
+    en: 'Used on the English site and in the links of new activities.',
+  },
+  'kind.errTaken': {
+    bn: 'এই নামে আগেই একটি ধরন আছে।',
+    en: 'A type with this name already exists.',
+  },
+  'kind.errSave': {
+    bn: 'ধরন সংরক্ষণ করা গেল না। ইন্টারনেট দেখে আবার চেষ্টা করুন।',
+    en: 'Could not save the type. Check your internet and try again.',
+  },
+  'kind.used': { bn: '{n}টি কার্যক্রম', en: '{n} activities' },
+  'kind.unused': { bn: 'কোনো কার্যক্রম নেই', en: 'No activities' },
+  'kind.hidden': { bn: 'লুকানো', en: 'Hidden' },
+  'kind.hide': { bn: 'লুকান', en: 'Hide' },
+  'kind.show': { bn: 'আবার দেখান', en: 'Show again' },
+  'kind.hiddenNote': {
+    bn: 'লুকানো ধরন নতুন কার্যক্রমে বাছাই করা যায় না, তবে যেসব কার্যক্রমে আগে থেকে আছে সেগুলোতে থেকে যায়। যে ধরন কোনো কার্যক্রমে ব্যবহার হচ্ছে, সেটা মোছা যায় না, শুধু লুকানো যায়।',
+    en: 'A hidden type cannot be picked for new activities, but stays on the ones that already have it. A type in use cannot be deleted, only hidden.',
+  },
+  'kind.deleteConfirm': {
+    bn: '“{name}” ধরনটি মুছে ফেলবেন?',
+    en: 'Delete the type “{name}”?',
+  },
+  'kind.inUse': {
+    bn: 'এই ধরন কোনো কার্যক্রমে ব্যবহার হচ্ছে, তাই মোছা যাবে না। লুকিয়ে রাখতে পারেন।',
+    en: 'This type is used by an activity, so it cannot be deleted. You can hide it.',
+  },
+  'kind.empty': {
+    bn: 'এখনো কোনো ধরন যোগ হয়নি।',
+    en: 'No types have been added yet.',
+  },
+  'kind.loadError': {
+    bn: 'ধরনের তালিকা লোড করা গেল না।',
+    en: 'Could not load the types.',
+  },
   'act.colDate': { bn: 'তারিখ', en: 'Date' },
   'act.featured': { bn: 'হোমপেজের উপরে', en: 'Top of home page' },
   'act.newPageTitle': {
@@ -536,11 +627,6 @@ export const adminMessages = {
     bn: 'হোমপেজের উপরে দেখান',
     en: 'Show at the top of the home page',
   },
-  'cat.blood': { bn: 'রক্তদান', en: 'Blood donation' },
-  'cat.relief': { bn: 'ত্রাণ ও সহায়তা', en: 'Relief and support' },
-  'cat.education': { bn: 'শিক্ষা', en: 'Education' },
-  'cat.sports': { bn: 'খেলাধুলা', en: 'Sports' },
-  'cat.meeting': { bn: 'সভা', en: 'Meeting' },
 
   // --- notices ---
   'not.pageTitle': {

@@ -27,7 +27,7 @@ import {
 } from './image-limits.ts'
 import type { StorageState } from './image-limits.ts'
 import { imagesBucket } from './r2.server.ts'
-import { listActivities } from './activities.server.ts'
+import { activityChoices } from './activities.server.ts'
 import { dateRange } from './gallery-filter.ts'
 import type { GalleryFilter, PublicGalleryPhoto } from './gallery-filter.ts'
 
@@ -304,7 +304,7 @@ export async function galleryAdminData(
       listAdminImages(filter, ADMIN_GALLERY_PAGE + 1, offset),
       countAdminImages(filter),
       countAdminImages({ activity: 'none' }),
-      listActivities(),
+      activityChoices(),
       countHomeImages(),
       usedBytes(),
     ])
@@ -313,11 +313,7 @@ export async function galleryAdminData(
     hasMore: list.length > ADMIN_GALLERY_PAGE,
     total,
     unfiledCount,
-    activities: activityRows.map(({ id, title, eventDate }) => ({
-      id,
-      title,
-      eventDate,
-    })),
+    activities: activityRows,
     homeCount,
     usedBytes: used,
     state: storageState(used),

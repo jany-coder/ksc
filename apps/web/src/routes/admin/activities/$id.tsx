@@ -10,6 +10,7 @@ import { ExternalLink } from 'lucide-react'
 import { useState } from 'react'
 
 import { ActivityForm } from '../../../components/admin/activity-form.tsx'
+import { categoriesQuery } from '../../../components/admin/category-dialog.tsx'
 import {
   ActivityPhotos,
   activityPhotosQuery,
@@ -40,6 +41,8 @@ export const Route = createFileRoute('/admin/activities/$id')({
       getActivityFn({ data: { id: params.id } }),
       // The photos come through the query cache, so uploads refresh them.
       context.queryClient.ensureQueryData(activityPhotosQuery(params.id)),
+      // The kinds for the form's "Type" list.
+      context.queryClient.ensureQueryData(categoriesQuery()),
     ])
     if (!activity) throw notFound()
     return { activity }
@@ -64,6 +67,7 @@ function EditActivityPage() {
   const t = useT()
   const { activity } = Route.useLoaderData()
   const { id } = Route.useParams()
+  const { member } = Route.useRouteContext()
   const { data: photoData } = useSuspenseQuery(activityPhotosQuery(id))
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -120,6 +124,7 @@ function EditActivityPage() {
       <ActivityForm
         initial={activity}
         photoCount={photoData?.photos.length ?? 0}
+        canManageKinds={can(member.role, 'categories.manage')}
         submitLabel={t('a.save')}
         onSubmit={async (values) => {
           const result = await updateActivityFn({ data: { id, values } })
