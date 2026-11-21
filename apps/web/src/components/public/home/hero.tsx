@@ -26,28 +26,34 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
   return (
     <section className="relative isolate overflow-hidden bg-brand-deep text-white">
       {background && (
-        // Softly blurred, so it sets the mood without competing with the sharp
-        // photos in the frame. Blurred, the small copy looks the same as the
-        // large one on any screen, so the large one is never downloaded.
-        <img
-          src={imageUrl(background.id, 'thumb')}
-          alt=""
-          width={background.width}
-          height={background.height}
-          fetchPriority="high"
-          decoding="async"
-          className="absolute inset-0 -z-20 size-full scale-110 object-cover blur-[3px]"
-        />
+        // Shown clearly: the frame is small enough not to compete with it.
+        // A phone gets the small copy, wider screens the large one.
+        <picture>
+          <source
+            media="(min-width: 768px)"
+            srcSet={imageUrl(background.id, 'full')}
+          />
+          <img
+            src={imageUrl(background.id, 'thumb')}
+            alt=""
+            width={background.width}
+            height={background.height}
+            fetchPriority="high"
+            decoding="async"
+            className="absolute inset-0 -z-20 size-full object-cover"
+          />
+        </picture>
       )}
-      {/* A deep green layer over the photo: darkest behind the text, so it
-          always reads at full contrast, lighter to the right where the
-          photo shows through. */}
+      {/* A deep green layer over the photo, light enough for the photo to
+          show. On a wide screen it is darkest behind the text (still above
+          4.5:1 contrast there) and fades to the right; on a phone the text
+          runs the full width, so the layer is even. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-[linear-gradient(105deg,rgba(9,38,27,0.95)_0%,rgba(9,38,27,0.86)_45%,rgba(9,38,27,0.62)_100%)]"
+        className="absolute inset-0 -z-10 max-md:bg-[rgba(9,38,27,0.78)] md:bg-[linear-gradient(100deg,rgba(9,38,27,0.88)_0%,rgba(9,38,27,0.74)_55%,rgba(9,38,27,0.35)_75%,rgba(9,38,27,0.15)_100%)]"
       />
 
-      <div className="mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pt-10 pb-12 md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:gap-12 md:px-8 md:pt-24 md:pb-28">
+      <div className="mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pt-10 pb-12 md:grid-cols-[minmax(0,1fr)_minmax(0,360px)] md:gap-10 lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-14 md:px-8 md:pt-24 md:pb-28">
         <div className="hero-rise min-w-0">
           <p
             className={cn(
@@ -108,38 +114,26 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
           </div>
         </div>
 
-        {/* The photo frame, in a glass mount, with the founding year (a fact
-            the club gave us) on it. Member, donor and activity counts are
+        {/* The photo frame in a glass mount, and under it the founding year
+            (a fact the club gave us). Member, donor and activity counts are
             left out on purpose (CLAUDE.md sections 3 and 8). */}
         <div
           className={cn(
             glass,
-            'hero-fade min-w-0 rounded-[28px] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.35)] md:p-2.5',
+            'hero-fade min-w-0 rounded-[26px] bg-[rgba(9,38,27,0.5)] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.35)]',
           )}
         >
-          {slides.length > 0 ? (
-            <HeroFrame slides={slides}>
-              <FoundedBadge />
-            </HeroFrame>
-          ) : (
-            <div className="p-5">
-              <FoundedBadge />
-            </div>
-          )}
+          {slides.length > 0 && <HeroFrame slides={slides} />}
+          <dl className="m-0 flex items-baseline gap-3 px-3 pt-3 pb-1.5">
+            <dd className="m-0 font-heading text-[30px] leading-none font-bold md:text-[34px]">
+              {t('hero.statYearValue')}
+            </dd>
+            <dt className="text-[15px] text-mint-soft">
+              {t('hero.statYearLabel')}
+            </dt>
+          </dl>
         </div>
       </div>
     </section>
-  )
-}
-
-function FoundedBadge() {
-  const t = useT()
-  return (
-    <dl className="m-0 flex min-w-0 items-baseline gap-2.5 rounded-2xl border border-white/20 bg-black/30 px-4 py-2.5 backdrop-blur-md">
-      <dd className="m-0 font-heading text-[32px] leading-none font-bold md:text-[38px]">
-        {t('hero.statYearValue')}
-      </dd>
-      <dt className="text-sm text-mint-soft">{t('hero.statYearLabel')}</dt>
-    </dl>
   )
 }

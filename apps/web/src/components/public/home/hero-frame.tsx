@@ -1,6 +1,5 @@
 import { Pause, Play } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import type { ReactNode } from 'react'
 
 import { imageUrl } from '../../../lib/image-limits.ts'
 import { useT } from '../../../lib/i18n/index.tsx'
@@ -28,14 +27,7 @@ const SLIDE_MS = 6000
  * first photo, for anyone whose device asks for reduced motion or data saving,
  * and stops on hover, on keyboard focus, or with its pause button (WCAG 2.2.2).
  */
-export function HeroFrame({
-  slides,
-  children,
-}: {
-  slides: HeroSlide[]
-  /** Laid over the photos, at the bottom (the founding year). */
-  children?: ReactNode
-}) {
+export function HeroFrame({ slides }: { slides: HeroSlide[] }) {
   const t = useT()
   const count = slides.length
   const [index, setIndex] = useState(0)
@@ -94,14 +86,13 @@ export function HeroFrame({
       onMouseLeave={() => setHeld(false)}
       onFocus={() => setHeld(true)}
       onBlur={() => setHeld(false)}
-      className="hero-frame relative m-0 aspect-[4/3] overflow-hidden rounded-[22px] bg-brand-deep md:aspect-[5/6]"
+      className="hero-frame relative m-0 aspect-[4/3] overflow-hidden rounded-[20px] bg-brand-deep"
     >
       {slides.map((slide, i) =>
         wanted.has(i) ? (
-          // A wide screen gets the large copy: the frame is ~760 CSS pixels
-          // across a landscape photo, so the 800px copy would be stretched
-          // to twice its size on a sharp screen and look soft. A phone shows
-          // it at half that, so the small copy stays sharp and light there.
+          // A wide screen gets the large copy: on a sharp screen the frame's
+          // ~440 CSS pixels need about 900 real ones, more than the 800px
+          // copy has. On a phone the small copy is enough, and lighter.
           <picture key={slide.id}>
             <source
               media="(min-width: 768px)"
@@ -125,42 +116,39 @@ export function HeroFrame({
         ) : null,
       )}
 
-      {/* A soft dark edge at the bottom, so the badge and button always read. */}
+      {/* A soft dark edge behind the pause button, so it always shows. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-[linear-gradient(to_top,rgba(9,38,27,0.75),transparent)]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-[linear-gradient(to_top,rgba(9,38,27,0.6),transparent)]"
       />
 
-      <figcaption className="absolute inset-x-3 bottom-3 flex items-end justify-between gap-3 md:inset-x-4 md:bottom-4">
-        {children}
-        {moving && (
-          <div className="flex shrink-0 items-center gap-2.5">
-            <span aria-hidden="true" className="flex gap-1">
-              {slides.map((slide, i) => (
-                <span
-                  key={slide.id}
-                  className={cn(
-                    'h-1.5 rounded-full bg-white transition-all duration-500',
-                    i === index ? 'w-4' : 'w-1.5 opacity-50',
-                  )}
-                />
-              ))}
-            </span>
-            <button
-              type="button"
-              onClick={() => setPaused((p) => !p)}
-              aria-label={paused ? t('hero.play') : t('hero.pause')}
-              className="flex size-10 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur-md hover:bg-black/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              {paused ? (
-                <Play aria-hidden="true" className="size-4" />
-              ) : (
-                <Pause aria-hidden="true" className="size-4" />
-              )}
-            </button>
-          </div>
-        )}
-      </figcaption>
+      {moving && (
+        <div className="absolute end-3 bottom-3 flex items-center gap-2.5">
+          <span aria-hidden="true" className="flex gap-1">
+            {slides.map((slide, i) => (
+              <span
+                key={slide.id}
+                className={cn(
+                  'h-1.5 rounded-full bg-white transition-all duration-500',
+                  i === index ? 'w-4' : 'w-1.5 opacity-50',
+                )}
+              />
+            ))}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPaused((p) => !p)}
+            aria-label={paused ? t('hero.play') : t('hero.pause')}
+            className="flex size-10 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur-md hover:bg-black/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            {paused ? (
+              <Play aria-hidden="true" className="size-4" />
+            ) : (
+              <Pause aria-hidden="true" className="size-4" />
+            )}
+          </button>
+        </div>
+      )}
     </figure>
   )
 }
