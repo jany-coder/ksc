@@ -14,11 +14,10 @@ import {
 import {
   Attention,
   ContentCard,
-  DonorBars,
+  DonorTiles,
   NextActivities,
   StatTile,
   StatusBreakdown,
-  rowLink,
 } from '../../components/admin/dashboard.tsx'
 import type { AttentionItem } from '../../components/admin/dashboard.tsx'
 import { buttonVariants } from '../../components/ui/button.tsx'
@@ -70,7 +69,7 @@ function AdminHome() {
   const lang = useLang()
   const { member } = Route.useRouteContext()
   return (
-    <main className="flex flex-col gap-5 px-4 py-6 md:p-6">
+    <main className="flex flex-col gap-4 px-4 py-6 md:p-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-[13px] font-medium text-muted-foreground">
@@ -125,100 +124,60 @@ function Figures() {
   const donorTotal = BLOOD_GROUPS.reduce((sum, g) => sum + data.donors[g], 0)
   const activityTotal = data.activities.published + data.activities.draft
 
-  // Only what is actually waiting; an empty list shows "All clear".
-  const attention: AttentionItem[] = []
-  const add = (item: AttentionItem | false) => item && attention.push(item)
-  add(
+  // Only what is actually waiting, most urgent first; an empty list shows
+  // "All clear".
+  const candidates: (AttentionItem | false)[] = [
     data.members.pending > 0 && {
       key: 'pending',
       tone: 'warn',
-      text: t('dash.attPending', { n: number(data.members.pending) }),
-      link: (
-        <Link
-          to="/admin/members"
-          search={{ status: 'pending' }}
-          className={rowLink}
-        >
-          {t('dash.seeAll')}
-        </Link>
-      ),
+      count: data.members.pending,
+      label: t('dash.attPending'),
+      to: '/admin/members',
+      search: { status: 'pending' },
     },
-  )
-  add(
     data.photos.state !== 'ok' && {
       key: 'storage',
       tone: 'warn',
-      text:
+      count: null,
+      label:
         data.photos.state === 'full'
           ? t('dash.attStorageFull')
           : t('dash.attStorageWarn'),
-      link: (
-        <Link to="/admin/gallery" className={rowLink}>
-          {t('dash.seeAll')}
-        </Link>
-      ),
+      to: '/admin/gallery',
     },
-  )
-  add(
     data.photos.unfiled > 0 && {
       key: 'unfiled',
       tone: 'info',
-      text: t('dash.attUnfiled', { n: number(data.photos.unfiled) }),
-      link: (
-        <Link
-          to="/admin/gallery"
-          search={{ activity: 'none' }}
-          className={rowLink}
-        >
-          {t('dash.seeAll')}
-        </Link>
-      ),
+      count: data.photos.unfiled,
+      label: t('dash.attUnfiled'),
+      to: '/admin/gallery',
+      search: { activity: 'none' },
     },
-  )
-  add(
     data.activities.withoutPhotos > 0 && {
       key: 'no-photos',
       tone: 'info',
-      text: t('dash.attNoPhotos', { n: number(data.activities.withoutPhotos) }),
-      link: (
-        <Link
-          to="/admin/activities"
-          search={{ status: 'published' }}
-          className={rowLink}
-        >
-          {t('dash.seeAll')}
-        </Link>
-      ),
+      count: data.activities.withoutPhotos,
+      label: t('dash.attNoPhotos'),
+      to: '/admin/activities',
+      search: { status: 'published' },
     },
-  )
-  add(
     data.activities.draft > 0 && {
       key: 'drafts',
       tone: 'info',
-      text: t('dash.attDrafts', { n: number(data.activities.draft) }),
-      link: (
-        <Link
-          to="/admin/activities"
-          search={{ status: 'draft' }}
-          className={rowLink}
-        >
-          {t('dash.seeAll')}
-        </Link>
-      ),
+      count: data.activities.draft,
+      label: t('dash.attDrafts'),
+      to: '/admin/activities',
+      search: { status: 'draft' },
     },
-  )
-  add(
     data.notices.draft > 0 && {
       key: 'notice-drafts',
       tone: 'info',
-      text: t('dash.attNoticeDrafts', { n: number(data.notices.draft) }),
-      link: (
-        <Link to="/admin/notices" className={rowLink}>
-          {t('dash.seeAll')}
-        </Link>
-      ),
+      count: data.notices.draft,
+      label: t('dash.attNoticeDrafts'),
+      to: '/admin/notices',
     },
-  )
+  ]
+  const attention = candidates.filter((item) => item !== false)
 
   return (
     <>
@@ -267,15 +226,15 @@ function Figures() {
       </div>
 
       {/* Wide screens: three columns. A phone: one, in reading order. */}
-      <div className="grid items-start gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         <Attention items={attention} />
         <NextActivities items={data.nextActivities} />
         <StatusBreakdown counts={data.members} />
       </div>
 
-      <div className="grid items-start gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
         <div className="min-w-0 lg:col-span-2">
-          <DonorBars donors={data.donors} />
+          <DonorTiles donors={data.donors} />
         </div>
         <ContentCard notices={data.notices} photos={data.photos} />
       </div>

@@ -102,13 +102,13 @@ export const adminMessages = {
   'dash.addPhotos': { bn: 'ছবি যোগ করুন', en: 'Add photos' },
   'dash.tileMembers': { bn: 'মোট সদস্য', en: 'Members' },
   'dash.tileMembersSub': {
-    bn: '{active} জন সক্রিয় · এ মাসে নতুন {n} জন',
-    en: '{active} active · {n} new this month',
+    bn: 'সক্রিয় {active} জন · এ মাসে নতুন {n} জন',
+    en: 'Active: {active} · New this month: {n}',
   },
   'dash.tileActivities': { bn: 'মোট কার্যক্রম', en: 'Activities' },
   'dash.tileActivitiesSub': {
-    bn: '{upcoming}টি আসন্ন · {draft}টি খসড়া',
-    en: '{upcoming} upcoming · {draft} drafts',
+    bn: 'আসন্ন {upcoming}টি · খসড়া {draft}টি',
+    en: 'Upcoming: {upcoming} · Drafts: {draft}',
   },
   'dash.tileDonors': { bn: 'রক্তদাতা', en: 'Blood donors' },
   'dash.tileDonorsSub': {
@@ -126,24 +126,24 @@ export const adminMessages = {
     en: 'All clear. Nothing is waiting right now.',
   },
   'dash.attPending': {
-    bn: '{n}টি সদস্য আবেদন অনুমোদনের অপেক্ষায়',
-    en: '{n} membership applications waiting',
+    bn: 'অনুমোদনের অপেক্ষায় থাকা আবেদন',
+    en: 'Applications waiting for approval',
   },
   'dash.attUnfiled': {
-    bn: '{n}টি ছবি কোনো কার্যক্রমে যুক্ত নয়',
-    en: '{n} photos not in any activity',
+    bn: 'কোনো কার্যক্রমে যুক্ত নয় এমন ছবি',
+    en: 'Photos not in any activity',
   },
   'dash.attDrafts': {
-    bn: '{n}টি কার্যক্রম এখনো খসড়া',
-    en: '{n} activities still in draft',
+    bn: 'খসড়া অবস্থায় থাকা কার্যক্রম',
+    en: 'Activities still in draft',
   },
   'dash.attNoPhotos': {
-    bn: '{n}টি প্রকাশিত কার্যক্রমে এখনো ছবি নেই',
-    en: '{n} published activities have no photos yet',
+    bn: 'ছবি ছাড়া প্রকাশিত কার্যক্রম',
+    en: 'Published activities without photos',
   },
   'dash.attNoticeDrafts': {
-    bn: '{n}টি নোটিশ এখনো খসড়া',
-    en: '{n} notices still in draft',
+    bn: 'খসড়া অবস্থায় থাকা নোটিশ',
+    en: 'Notices still in draft',
   },
   'dash.attStorageWarn': {
     bn: 'ছবির জায়গা প্রায় ভরে এসেছে',
@@ -160,9 +160,10 @@ export const adminMessages = {
     en: 'Donors by blood group',
   },
   'dash.donorsNote': {
-    bn: 'সক্রিয় ও রক্ত দিতে ইচ্ছুক সদস্য। গ্রুপে চাপলে সেই গ্রুপের সদস্যদের তালিকা খুলবে।',
-    en: 'Active members willing to donate. Tap a group to list its members.',
+    bn: 'সক্রিয় ও রক্ত দিতে ইচ্ছুক সদস্য। গ্রুপে চাপলে সেই গ্রুপের সদস্যরা দেখাবে।',
+    en: 'Active members willing to donate. Tap a group to see its members.',
   },
+  'dash.donorsTotal': { bn: 'মোট {n} জন', en: '{n} in all' },
   'dash.donorRow': { bn: '{group}: {n} জন', en: '{group}: {n}' },
   'dash.nextTitle': { bn: 'আসন্ন কার্যক্রম', en: 'Coming up' },
   'dash.nextNone': {
@@ -172,12 +173,12 @@ export const adminMessages = {
   'dash.seeAll': { bn: 'সব দেখুন', en: 'See all' },
   'dash.noticesTitle': { bn: 'নোটিশ', en: 'Notices' },
   'dash.noticesLine': {
-    bn: '{published}টি প্রকাশিত · {draft}টি খসড়া',
-    en: '{published} published · {draft} drafts',
+    bn: 'প্রকাশিত {published}টি · খসড়া {draft}টি',
+    en: 'Published: {published} · Drafts: {draft}',
   },
   'dash.urgentOn': {
-    bn: '{n}টি জরুরি নোটিশ এখন সাইটে দেখাচ্ছে',
-    en: '{n} urgent notices are showing on the site',
+    bn: 'সাইটে এখন জরুরি নোটিশ: {n}টি',
+    en: 'Urgent notices on the site: {n}',
   },
   'dash.storageTitle': { bn: 'ছবির জায়গা', en: 'Photo storage' },
   'dash.storageUsed': {

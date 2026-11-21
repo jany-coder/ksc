@@ -26,15 +26,16 @@ import {
 } from '../../lib/member-options.ts'
 import type { MemberStatus } from '../../lib/member-options.ts'
 import { cn } from '../../lib/utils.ts'
-import { BloodChip, bloodColor } from './blood-chip.tsx'
+import { bloodColor, bloodTint } from './blood-chip.tsx'
 
 // The pieces of the admin dashboard. Each chart is plain HTML and CSS (no
 // chart library): bars are <div>s sized in %, so they fit any screen, follow
 // the light / dark theme through the colour tokens, and every number is also
 // available as text (labels, tooltips, or a table for screen readers).
 
+// h-full: the cards in one row are all as tall as the tallest.
 export const card =
-  'rounded-[12px] border border-border bg-card p-4 sm:p-5 min-w-0'
+  'h-full min-w-0 rounded-[12px] border border-border bg-card p-4'
 
 /** A card's heading, with an optional "See all" link on the right. */
 export function CardHeader({
@@ -47,7 +48,7 @@ export function CardHeader({
   link?: ReactNode
 }) {
   return (
-    <div className="mb-4 flex items-baseline justify-between gap-3">
+    <div className="mb-3 flex items-baseline justify-between gap-3">
       <h2 id={id} className="text-[15px] font-semibold">
         {title}
       </h2>
@@ -140,44 +141,59 @@ export function StatTile({
 
 export type AttentionItem = {
   key: string
-  text: string
+  // How many; null for a state (storage nearly full).
+  count: number | null
+  label: string
   tone: 'warn' | 'info'
-  link: ReactNode
+  to:
+    '/admin/members' | '/admin/gallery' | '/admin/activities' | '/admin/notices'
+  search?: Record<string, string>
 }
 
+/**
+ * The jobs waiting, one compact row each: the count in a pill, what it is,
+ * and an arrow. The whole row is the link.
+ */
 export function Attention({ items }: { items: AttentionItem[] }) {
   const t = useT()
+  const number = useNumber()
   return (
     <section className={card} aria-labelledby="dash-attention">
       <CardHeader id="dash-attention" title={t('dash.attention')} />
       {items.length === 0 ? (
-        <p className="flex items-center gap-2.5 rounded-lg bg-green-50 px-3 py-3 text-sm text-green-800">
-          <CheckCircle2 aria-hidden="true" className="size-5 shrink-0" />
+        <p className="flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2.5 text-sm text-green-800">
+          <CheckCircle2 aria-hidden="true" className="size-4 shrink-0" />
           {t('dash.allGood')}
         </p>
       ) : (
-        <ul className="flex flex-col gap-2">
+        <ul className="-mx-1 flex flex-col">
           {items.map((item) => (
-            <li
-              key={item.key}
-              className={cn(
-                'relative flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm',
-                item.tone === 'warn'
-                  ? 'border-yellow-200 bg-yellow-50 text-yellow-900'
-                  : 'border-border bg-background text-foreground',
-              )}
-            >
-              <AlertTriangle
-                aria-hidden="true"
-                className={cn(
-                  'size-4 shrink-0',
-                  item.tone === 'warn'
-                    ? 'text-yellow-700'
-                    : 'text-muted-foreground',
-                )}
-              />
-              <span className="min-w-0 grow">{item.text}</span>
-              {item.link}
+            <li key={item.key}>
+              <Link
+                to={item.to}
+                search={item.search as never}
+                className="flex min-h-10 items-center gap-2.5 rounded-md px-1 text-sm hover:bg-secondary"
+              >
+                <span
+                  className={cn(
+                    'inline-flex h-6 min-w-8 shrink-0 items-center justify-center rounded-full px-2 text-xs font-semibold',
+                    item.tone === 'warn'
+                      ? 'bg-yellow-100 text-yellow-900'
+                      : 'bg-secondary text-foreground',
+                  )}
+                >
+                  {item.count === null ? (
+                    <AlertTriangle aria-hidden="true" className="size-3.5" />
+                  ) : (
+                    number(item.count)
+                  )}
+                </span>
+                <span className="min-w-0 grow">{item.label}</span>
+                <ChevronRight
+                  aria-hidden="true"
+                  className="size-4 shrink-0 text-muted-foreground rtl:rotate-180"
+                />
+              </Link>
             </li>
           ))}
         </ul>
@@ -186,17 +202,16 @@ export function Attention({ items }: { items: AttentionItem[] }) {
   )
 }
 
-/** The stretched link of an attention row: the whole row is the target. */
-export const rowLink =
-  'shrink-0 text-[13px] font-medium text-primary after:absolute after:inset-0 hover:underline'
+// --- donors per blood group: eight small tiles ---
 
-// --- donors per blood group: a meter list ---
-
-export function DonorBars({ donors }: { donors: DashboardData['donors'] }) {
+/**
+ * One tile per blood group, in its own light colour, with the count. Two rows
+ * of four, so all eight are seen at once without scrolling.
+ */
+export function DonorTiles({ donors }: { donors: DashboardData['donors'] }) {
   const t = useT()
   const number = useNumber()
   const total = BLOOD_GROUPS.reduce((sum, g) => sum + donors[g], 0)
-  const max = Math.max(1, ...BLOOD_GROUPS.map((g) => donors[g]))
 
   return (
     <section className={card} aria-labelledby="dash-donors">
@@ -204,17 +219,13 @@ export function DonorBars({ donors }: { donors: DashboardData['donors'] }) {
         id="dash-donors"
         title={t('dash.donorsTitle')}
         link={
-          <span className="flex items-center gap-1.5 text-[13px] font-semibold">
-            <Droplet aria-hidden="true" className="size-3.5 text-red-600" />
-            {number(total)}
+          <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">
+            <Droplet aria-hidden="true" className="size-3" />
+            {t('dash.donorsTotal', { n: number(total) })}
           </span>
         }
       />
-      <p className="-mt-2 mb-3 text-[13px] text-muted-foreground">
-        {t('dash.donorsNote')}
-      </p>
-      {/* The blood groups in their usual order, each in its own colour. */}
-      <ul className="flex flex-col">
+      <ul className="grid grid-cols-4 gap-2">
         {BLOOD_GROUPS.map((group) => {
           const n = donors[group]
           return (
@@ -226,30 +237,22 @@ export function DonorBars({ donors }: { donors: DashboardData['donors'] }) {
                   group: bloodLabel(group),
                   n: number(n),
                 })}
-                className="flex min-h-10 items-center gap-3 rounded-md px-1 hover:bg-secondary"
+                style={bloodTint(group)}
+                className="flex min-w-0 flex-col items-center gap-1 rounded-lg border px-1.5 py-2 transition-[filter] hover:brightness-95 sm:flex-row sm:justify-between sm:px-2.5 dark:hover:brightness-125"
               >
-                <BloodChip group={group} className="w-[52px]" />
-                <span
-                  aria-hidden="true"
-                  className="h-2 grow overflow-hidden rounded-full"
-                  // The track: a light step of the group's own colour.
-                  style={{
-                    backgroundColor: `color-mix(in oklab, ${bloodColor(group)} 14%, var(--card))`,
-                  }}
-                >
-                  {n > 0 && (
-                    <span
-                      className="block h-full rounded-full"
-                      style={{
-                        width: `${(n / max) * 100}%`,
-                        backgroundColor: bloodColor(group),
-                      }}
-                    />
-                  )}
+                <span className="flex items-center gap-1.5 text-[13px] font-semibold">
+                  <span
+                    aria-hidden="true"
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: bloodColor(group) }}
+                  />
+                  {bloodLabel(group)}
                 </span>
                 <span
-                  aria-hidden="true"
-                  className="w-7 shrink-0 text-end text-sm font-semibold tabular-nums"
+                  className={cn(
+                    'text-lg leading-none font-semibold',
+                    n === 0 && 'text-muted-foreground',
+                  )}
                 >
                   {number(n)}
                 </span>
@@ -258,6 +261,9 @@ export function DonorBars({ donors }: { donors: DashboardData['donors'] }) {
           )
         })}
       </ul>
+      <p className="mt-2.5 text-xs text-muted-foreground">
+        {t('dash.donorsNote')}
+      </p>
     </section>
   )
 }
@@ -309,7 +315,7 @@ export function StatusBreakdown({
             <Link
               to="/admin/members"
               search={{ status }}
-              className="flex min-h-9 items-center gap-2.5 rounded-md px-1 text-sm hover:bg-secondary"
+              className="flex min-h-8 items-center gap-2.5 rounded-md px-1 text-sm hover:bg-secondary"
             >
               <span
                 aria-hidden="true"
@@ -423,7 +429,7 @@ export function ContentCard({
         </p>
       )}
 
-      <div className="mt-4 border-t border-border pt-4">
+      <div className="mt-3 border-t border-border pt-3">
         <h3 className="mb-2 flex items-center gap-1.5 text-sm font-semibold">
           <Image aria-hidden="true" className="size-4 text-muted-foreground" />
           {t('dash.storageTitle')}
