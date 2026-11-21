@@ -8,6 +8,7 @@ import {
 import { Download, Plus, Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+import { bloodColor, bloodTint } from '../../../components/admin/blood-chip.tsx'
 import { MemberDrawer } from '../../../components/admin/member-drawer.tsx'
 import { useNumber, useT } from '../../../lib/i18n/index.tsx'
 import { langOfMatches } from '../../../lib/i18n/core.ts'
@@ -216,13 +217,25 @@ function MembersPage() {
               to="/admin/members"
               search={(prev) => next(prev, { blood: group })}
               aria-current={active ? 'true' : undefined}
+              // A group chip, when picked, takes its group's tint and colour.
+              {...(group && active ? { style: bloodTint(group) } : {})}
               className={cn(
                 chipClass,
+                'gap-1.5',
                 active
-                  ? 'border-foreground bg-foreground text-background'
+                  ? group
+                    ? 'border-2 text-foreground'
+                    : 'border-foreground bg-foreground text-background'
                   : 'border-border bg-card text-zinc-700 hover:bg-secondary',
               )}
             >
+              {group && (
+                <span
+                  aria-hidden="true"
+                  className="size-2 rounded-full"
+                  style={{ backgroundColor: bloodColor(group) }}
+                />
+              )}
               {group ? bloodLabel(group) : t('a.all')}
             </Link>
           )

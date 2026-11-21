@@ -51,6 +51,7 @@ import { resetMemberPasswordFn } from '../../lib/password.functions.ts'
 import { can, canManageMember } from '../../lib/permissions.ts'
 import type { Role } from '../../lib/permissions.ts'
 import { cn } from '../../lib/utils.ts'
+import { bloodTint } from './blood-chip.tsx'
 import { Button, buttonVariants } from '../ui/button.tsx'
 
 // One member's details and the admin actions on them, shared by the quick-look
@@ -172,7 +173,12 @@ export function BloodSection({ member }: { member: MemberDetail }) {
         {t('drawer.sectionBlood')}
       </h3>
       <div className="flex items-center gap-4 rounded-lg border border-border bg-card p-3">
-        <div className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-secondary text-xl font-bold tabular-nums">
+        <div
+          {...(member.bloodGroup
+            ? { style: bloodTint(member.bloodGroup) }
+            : {})}
+          className="flex size-14 shrink-0 items-center justify-center rounded-lg border border-transparent bg-secondary text-xl font-bold tabular-nums"
+        >
           {member.bloodGroup ? bloodLabel(member.bloodGroup) : '?'}
         </div>
         <dl className="m-0 grid min-w-0 grow gap-1.5 text-sm">

@@ -77,6 +77,21 @@
   color-scheme: light;
 
   /*
+   * One colour per blood group (admin panel), so a group is recognised at a
+   * glance. The validated 8-hue categorical palette, in this fixed order, so
+   * neighbours stay apart for colour-blind readers too. Chips use a very light
+   * tint of it; the group's name is always written, never colour alone.
+   */
+  --blood-a-pos: #2a78d6;
+  --blood-a-neg: #eb6834;
+  --blood-b-pos: #1baf7a;
+  --blood-b-neg: #eda100;
+  --blood-ab-pos: #e87ba4;
+  --blood-ab-neg: #008300;
+  --blood-o-pos: #6250d6;
+  --blood-o-neg: #e34948;
+
+  /*
    * Admin dark theme: the same tokens, darker. Borders still do the
    * separating; the green turns lighter so it keeps its contrast.
    */
@@ -109,6 +124,16 @@
     --sidebar-accent-foreground: #f4f4f5;
     --sidebar-border: #2a2a2e;
     --sidebar-ring: #4ade80;
+
+    /* The same eight hues, stepped for the dark surface. */
+    --blood-a-pos: #3987e5;
+    --blood-a-neg: #d95926;
+    --blood-b-pos: #199e70;
+    --blood-b-neg: #c98500;
+    --blood-ab-pos: #d55181;
+    --blood-ab-neg: #0ca30c;
+    --blood-o-pos: #9085e9;
+    --blood-o-neg: #e66767;
 
     /*
      * The admin pages also use a few fixed Tailwind shades (grey text, the

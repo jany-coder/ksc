@@ -7,9 +7,10 @@ import {
 import { useMemo } from 'react'
 
 import { useT } from '../../lib/i18n/index.tsx'
+import { BloodChip } from './blood-chip.tsx'
 import type { MessageKey } from '../../lib/i18n/messages.ts'
 import type { MemberRow } from '../../lib/members.server.ts'
-import { STATUS_LABEL_KEY, bloodLabel } from '../../lib/member-options.ts'
+import { STATUS_LABEL_KEY } from '../../lib/member-options.ts'
 import type { MemberStatus } from '../../lib/member-options.ts'
 import { cn } from '../../lib/utils.ts'
 
@@ -86,14 +87,6 @@ function RoleTag({ role }: { role: MemberRow['role'] }) {
   )
 }
 
-function BloodTag({ group }: { group: NonNullable<MemberRow['bloodGroup']> }) {
-  return (
-    <span className="inline-flex min-w-[38px] justify-center rounded-[5px] border border-red-200 bg-red-50 px-[7px] py-0.5 text-xs font-semibold text-red-800">
-      {bloodLabel(group)}
-    </span>
-  )
-}
-
 function StatusText({ status }: { status: MemberStatus }) {
   const t = useT()
   return (
@@ -141,7 +134,7 @@ function makeColumns(t: ReturnType<typeof useT>) {
       header: t('members.colBlood'),
       cell: ({ getValue }) => {
         const group = getValue()
-        return group ? <BloodTag group={group} /> : dash
+        return group ? <BloodChip group={group} /> : dash
       },
     }),
     helper.accessor('houseVillage', {
@@ -242,7 +235,7 @@ export function MembersTable({ rows }: { rows: MemberRow[] }) {
               </span>
               <StatusText status={row.status} />
             </div>
-            {row.bloodGroup && <BloodTag group={row.bloodGroup} />}
+            {row.bloodGroup && <BloodChip group={row.bloodGroup} />}
           </li>
         ))}
       </ul>

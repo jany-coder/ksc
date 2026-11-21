@@ -22,6 +22,7 @@ import {
   useMemberActions,
 } from '../../../../components/admin/member-details.tsx'
 import { memberDetailQuery } from '../../../../components/admin/member-drawer.tsx'
+import { BloodChip } from '../../../../components/admin/blood-chip.tsx'
 import { MemberAvatar } from '../../../../components/admin/member-photo.tsx'
 import {
   RoleBadge,
@@ -31,7 +32,6 @@ import { langOfMatches } from '../../../../lib/i18n/core.ts'
 import type { HeadArgs } from '../../../../lib/i18n/core.ts'
 import { useT } from '../../../../lib/i18n/index.tsx'
 import { tFor } from '../../../../lib/i18n/messages.ts'
-import { bloodLabel } from '../../../../lib/member-options.ts'
 import { can } from '../../../../lib/permissions.ts'
 
 // One member's full profile: everything in one place, photo included. The
@@ -114,9 +114,7 @@ function ProfilePage() {
               <StatusBadge status={member.status} />
               <RoleBadge role={member.role} />
               {member.bloodGroup && (
-                <span className="rounded-full border border-border bg-secondary px-2 py-0.5 text-xs font-bold tabular-nums">
-                  {bloodLabel(member.bloodGroup)}
-                </span>
+                <BloodChip group={member.bloodGroup} size="md" />
               )}
               <span className="text-sm text-muted-foreground tabular-nums">
                 {member.phone}
