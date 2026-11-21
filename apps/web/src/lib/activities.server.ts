@@ -62,7 +62,6 @@ export async function createActivity(
           location: blankToNull(v.location),
           status: v.status,
           featured: v.featured,
-          coverImageId: blankToNull(v.coverImageId),
           createdBy: actorId,
           // Set by the database clock the moment it goes public.
           publishedAt: v.status === 'published' ? sql`now()` : null,
@@ -98,7 +97,6 @@ export async function getActivity(
     location: row.location ?? '',
     status: row.status,
     featured: row.featured,
-    coverImageId: row.coverImageId ?? '',
   }
 }
 
@@ -128,7 +126,6 @@ export async function updateActivity(
         location: blankToNull(v.location),
         status: v.status,
         featured: v.featured,
-        coverImageId: blankToNull(v.coverImageId),
         // First publication stamps the time; later edits and a switch back to
         // draft keep it as it was.
         ...(v.status === 'published'

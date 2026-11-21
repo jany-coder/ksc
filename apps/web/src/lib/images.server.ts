@@ -1,6 +1,17 @@
 import '@tanstack/react-start/server-only'
 
-import { and, desc, eq, gte, inArray, isNull, lt, ne, sql } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gte,
+  inArray,
+  isNull,
+  lt,
+  ne,
+  sql,
+} from 'drizzle-orm'
 import type { SQL } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
@@ -99,6 +110,19 @@ export async function saveImage(
     await imagesBucket.delete([r2Key, thumbR2Key])
     throw error
   }
+  // The first photo of an activity with no cover becomes its cover, so nobody
+  // has to remember to pick one. "is null" in the WHERE makes this a no-op
+  // once a cover exists, even when two uploads finish at the same moment.
+  if (input.activityId !== null)
+    await db
+      .update(activities)
+      .set({ coverImageId: id })
+      .where(
+        and(
+          eq(activities.id, input.activityId),
+          isNull(activities.coverImageId),
+        ),
+      )
   return { ok: true, id }
 }
 
@@ -315,10 +339,32 @@ export async function deleteImage(id: string): Promise<DeleteImageResult> {
     .where(eq(images.id, id))
     .limit(1)
   if (!row) return { ok: false, code: 'NOT_FOUND' }
+  // Activities using this photo as their cover, to give them another one.
+  const coverOf = await db
+    .select({ id: activities.id })
+    .from(activities)
+    .where(eq(activities.coverImageId, id))
   // Files first: if this fails the row stays and the delete can be retried. The
   // other way round would leave files that nothing points to and nothing removes.
   await imagesBucket.delete([row.r2Key, row.thumbR2Key])
+  // The database clears the cover itself (on delete set null).
   await db.delete(images).where(eq(images.id, id))
+  // The activity's oldest remaining photo becomes the cover, if it has one.
+  for (const activity of coverOf) {
+    const [next] = await db
+      .select({ id: images.id })
+      .from(images)
+      .where(eq(images.activityId, activity.id))
+      .orderBy(asc(images.uploadedAt), asc(images.id))
+      .limit(1)
+    if (next)
+      await db
+        .update(activities)
+        .set({ coverImageId: next.id })
+        .where(
+          and(eq(activities.id, activity.id), isNull(activities.coverImageId)),
+        )
+  }
   return { ok: true }
 }
 
@@ -426,4 +472,76 @@ export async function publicGalleryYears(): Promise<number[]> {
     .innerJoin(activities, eq(images.activityId, activities.id))
     .where(and(isPublished, sql`${activities.eventDate} is not null`))
   return rows.map((r) => r.year).sort((a, b) => b - a)
+}
+
+// --- One activity's photos, for the admin activity editor ---
+
+export type ActivityPhotosData = {
+  photos: AdminGalleryImage[]
+  coverImageId: string | null
+  // For the "view page" link; the page exists only once published.
+  slug: string
+  published: boolean
+  homeCount: number
+  state: StorageState
+}
+
+/** The activity's photos in upload order, its cover and what the editor needs. Null if it is gone. */
+export async function activityPhotos(
+  activityId: string,
+): Promise<ActivityPhotosData | null> {
+  const [activity] = await db
+    .select({
+      coverImageId: activities.coverImageId,
+      slug: activities.slug,
+      status: activities.status,
+    })
+    .from(activities)
+    .where(eq(activities.id, activityId))
+    .limit(1)
+  if (!activity) return null
+  const [photos, homeCount, used] = await Promise.all([
+    db
+      .select({
+        id: images.id,
+        width: images.width,
+        height: images.height,
+        caption: images.caption,
+        onHome: images.onHome,
+        activityId: images.activityId,
+      })
+      .from(images)
+      .where(eq(images.activityId, activityId))
+      .orderBy(asc(images.uploadedAt), asc(images.id)),
+    countHomeImages(),
+    usedBytes(),
+  ])
+  return {
+    photos,
+    coverImageId: activity.coverImageId,
+    slug: activity.slug,
+    published: activity.status === 'published',
+    homeCount,
+    state: storageState(used),
+  }
+}
+
+export type SetCoverResult = { ok: true } | { ok: false; code: 'NOT_FOUND' }
+
+/** Make one of the activity's own photos its cover. */
+export async function setActivityCover(
+  activityId: string,
+  imageId: string,
+): Promise<SetCoverResult> {
+  const [own] = await db
+    .select({ id: images.id })
+    .from(images)
+    .where(and(eq(images.id, imageId), eq(images.activityId, activityId)))
+    .limit(1)
+  if (!own) return { ok: false, code: 'NOT_FOUND' }
+  await db
+    .update(activities)
+    .set({ coverImageId: imageId })
+    .where(eq(activities.id, activityId))
+  return { ok: true }
 }

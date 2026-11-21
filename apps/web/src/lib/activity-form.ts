@@ -72,8 +72,8 @@ export const activityFormSchema = z.object({
   location: z.string().trim().max(200, 'val.locationTooLong'),
   status: z.enum(ACTIVITY_STATUSES),
   featured: z.boolean(),
-  // A gallery photo shown on the activity's card; '' means none.
-  coverImageId: z.union([z.uuid(), z.literal('')]),
+  // No cover here: it is set from the activity's photos (the star button),
+  // so saving the form can never undo a cover chosen in the meantime.
 })
 
 export type ActivityFormInput = z.infer<typeof activityFormSchema>

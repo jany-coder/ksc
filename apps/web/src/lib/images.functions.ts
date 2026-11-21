@@ -12,6 +12,8 @@ import {
   setImageCaption,
   setImageOnHome,
   setImagesActivity,
+  activityPhotos,
+  setActivityCover,
 } from './images.server.ts'
 import {
   galleryFilterSchema,
@@ -47,6 +49,20 @@ export const setImageOnHomeFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     await requirePermission('content.write')
     return setImageOnHome(data.id, data.onHome)
+  })
+
+export const activityPhotosFn = createServerFn({ method: 'GET' })
+  .validator(z.object({ activityId: z.uuid() }))
+  .handler(async ({ data }) => {
+    await requirePermission('content.write')
+    return activityPhotos(data.activityId)
+  })
+
+export const setActivityCoverFn = createServerFn({ method: 'POST' })
+  .validator(z.object({ activityId: z.uuid(), imageId: z.uuid() }))
+  .handler(async ({ data }) => {
+    await requirePermission('content.write')
+    return setActivityCover(data.activityId, data.imageId)
   })
 
 // Several ids at once, so admins can move a whole selection in one go.

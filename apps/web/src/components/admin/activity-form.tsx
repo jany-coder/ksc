@@ -12,8 +12,7 @@ import {
   activityFormSchema,
 } from '../../lib/activity-form.ts'
 import type { ActivityFormInput } from '../../lib/activity-form.ts'
-import { useNumber, useT } from '../../lib/i18n/index.tsx'
-import { imageUrl } from '../../lib/image-limits.ts'
+import { useT } from '../../lib/i18n/index.tsx'
 import { Button, buttonVariants } from '../ui/button.tsx'
 import { CheckboxField } from '../ui/checkbox-field.tsx'
 import { FieldError } from '../ui/field-error.tsx'
@@ -30,14 +29,11 @@ const card = 'rounded-[10px] border border-border bg-card p-5'
 
 export function ActivityForm({
   initial,
-  photos,
   onSubmit,
   submitLabel,
   extra,
 }: {
   initial: ActivityFormInput
-  // Gallery photos the activity's cover can be picked from.
-  photos: { id: string; width: number; height: number }[]
   onSubmit: (values: ActivityFormInput) => Promise<ActivityFormResult>
   // Overrides the "draft / publish" button text (used by the edit page).
   submitLabel?: string
@@ -45,7 +41,6 @@ export function ActivityForm({
   extra?: ReactNode
 }) {
   const t = useT()
-  const number = useNumber()
   const [formError, setFormError] = useState<string | null>(null)
   const {
     register,
@@ -156,63 +151,6 @@ export function ActivityForm({
             />
           </div>
         </section>
-
-        {/* Cover photo: pick one of the gallery photos. Each choice is a real
-            radio button inside a <label>, so it works with keyboard and screen
-            readers; the photo is just its picture. */}
-        <fieldset className={card}>
-          <legend className="px-1 text-[15px] font-semibold">
-            {t('act.fCover')}
-          </legend>
-          {photos.length > 0 ? (
-            <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-2">
-              <label className="flex aspect-square cursor-pointer items-center justify-center rounded-lg border border-border p-1 text-center text-xs text-muted-foreground has-[:checked]:border-primary has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:focus-visible]:outline-2">
-                <input
-                  type="radio"
-                  value=""
-                  className="sr-only"
-                  {...register('coverImageId')}
-                />
-                {t('act.fCoverNone')}
-              </label>
-              {photos.map((photo, index) => (
-                <label
-                  key={photo.id}
-                  className="block cursor-pointer overflow-hidden rounded-lg border border-border has-[:checked]:border-primary has-[:checked]:ring-2 has-[:checked]:ring-primary has-[:focus-visible]:outline-2"
-                >
-                  <input
-                    type="radio"
-                    value={photo.id}
-                    aria-label={t('act.fCoverN', { n: number(index + 1) })}
-                    className="sr-only"
-                    {...register('coverImageId')}
-                  />
-                  <img
-                    src={imageUrl(photo.id, 'thumb')}
-                    alt=""
-                    loading="lazy"
-                    className="aspect-square w-full object-cover"
-                  />
-                </label>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t('act.fCoverEmpty')}{' '}
-              <Link
-                to="/admin/gallery"
-                className="font-medium text-primary hover:underline"
-              >
-                {t('act.fCoverAdd')}
-              </Link>
-              ।
-            </p>
-          )}
-          <FieldError
-            id="coverImageId-error"
-            message={errors.coverImageId?.message}
-          />
-        </fieldset>
       </div>
 
       <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-4">

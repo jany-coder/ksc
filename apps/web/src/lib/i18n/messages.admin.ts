@@ -433,14 +433,6 @@ export const adminMessages = {
     bn: 'কার্যক্রমটি কী নিয়ে, কারা অংশ নিতে পারবেন, কী আনতে হবে — সংক্ষেপে লিখুন।',
     en: 'What the activity is about, who can take part, what to bring: in a few words.',
   },
-  'act.fCover': { bn: 'কভার ছবি', en: 'Cover photo' },
-  'act.fCoverNone': { bn: 'ছবি ছাড়া', en: 'No photo' },
-  'act.fCoverN': { bn: 'ছবি {n}', en: 'Photo {n}' },
-  'act.fCoverEmpty': {
-    bn: 'গ্যালারিতে এখনো কোনো ছবি নেই।',
-    en: 'The gallery has no photos yet.',
-  },
-  'act.fCoverAdd': { bn: 'আগে ছবি যোগ করুন', en: 'Add photos first' },
   'act.fType': { bn: 'ধরন', en: 'Type' },
   'act.fTypeNone': { bn: 'বেছে নেওয়া হয়নি', en: 'Not chosen' },
   'act.fFeatured': {
@@ -595,6 +587,34 @@ export const adminMessages = {
   'gal.bulkMove': { bn: 'সরান', en: 'Move' },
   'gal.showMore': { bn: 'আরো দেখুন', en: 'Show more' },
   'gal.loadingMore': { bn: 'আনা হচ্ছে…', en: 'Loading…' },
+  'gal.waiting': { bn: 'অপেক্ষায়', en: 'Waiting' },
+  'gal.retry': { bn: 'আবার চেষ্টা', en: 'Try again' },
+  'gal.dropHint': {
+    bn: 'ছবিগুলো এখানে টেনে এনে ছেড়ে দিন, অথবা বোতাম চেপে বেছে নিন। একসাথে অনেকগুলো দেওয়া যায়।',
+    en: 'Drag photos here, or use the button to choose them. You can add many at once.',
+  },
+  'gal.leaveWhileUploading': {
+    bn: 'ছবি আপলোড এখনো চলছে। এখন বের হলে বাকি ছবিগুলো আপলোড হবে না। তবুও বের হবেন?',
+    en: 'Photos are still uploading. If you leave now, the rest will not be uploaded. Leave anyway?',
+  },
+  'actPhotos.title': { bn: 'ছবি ({n}টি)', en: 'Photos ({n})' },
+  'actPhotos.lead': {
+    bn: 'এখানে দেওয়া ছবি এই কার্যক্রমের পেজে আর গ্যালারিতে দেখা যায়। ছবির সব পরিবর্তন সঙ্গে সঙ্গে সংরক্ষণ হয়, উপরের "সংরক্ষণ" চাপতে হয় না। তারকা চিহ্ন দিয়ে কভার ছবি বদলান।',
+    en: "Photos added here appear on this activity's page and in the gallery. Photo changes save at once; there is no need to press Save above. Use the star to change the cover.",
+  },
+  'actPhotos.empty': {
+    bn: 'এখনো কোনো ছবি নেই। প্রথম যে ছবিটি দেবেন, সেটিই কভার হবে।',
+    en: 'No photos yet. The first photo you add becomes the cover.',
+  },
+  'actPhotos.cover': { bn: 'কভার', en: 'Cover' },
+  'actPhotos.isCover': { bn: 'এটি কভার ছবি', en: 'This is the cover' },
+  'actPhotos.makeCover': { bn: 'কভার করুন', en: 'Make cover' },
+  'actPhotos.coverError': {
+    bn: 'কভার বদলানো গেল না। আবার চেষ্টা করুন।',
+    en: 'Could not change the cover. Please try again.',
+  },
+  'act.viewPage': { bn: 'পেজটি দেখুন', en: 'View page' },
+  'act.opensNewTab': { bn: '(নতুন ট্যাবে খুলবে)', en: '(opens in a new tab)' },
   'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
   'gal.homeCount': {
     bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',
