@@ -6,7 +6,7 @@ import {
   redirect,
   useNavigate,
 } from '@tanstack/react-router'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Camera } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -98,7 +98,8 @@ function NewMemberPage() {
       // The list is cached for 30 s; without this the new member would be
       // missing from it until then.
       await queryClient.invalidateQueries({ queryKey: ['members'] })
-      await navigate({ to: '/admin/members' })
+      // Straight to the new member's profile, where the photo can be added.
+      await navigate({ to: '/admin/members/$id', params: { id: result.id } })
     } catch {
       setFormError(t('memberNew.errSave'))
     }
@@ -113,7 +114,7 @@ function NewMemberPage() {
     <main className="px-4 py-6 md:p-6">
       <Link
         to="/admin/members"
-        className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        className="mb-3 inline-flex min-h-8 items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         {t('memberNew.back')}
@@ -123,130 +124,164 @@ function NewMemberPage() {
         {t('memberNew.lead')}
       </p>
 
+      {/* Wide screens: the details left, and a sticky side column with the
+          membership settings, consent and Save. A phone: one column, Save
+          stuck to the bottom of the screen. */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="mt-5 max-w-2xl space-y-5 rounded-[10px] border border-border bg-card p-5"
+        className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]"
       >
-        <FormSection title="profile.personal" variant="admin">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="name">{t('memberNew.name')}</Label>
-              <Input
-                id="name"
-                autoComplete="off"
-                aria-invalid={invalid('name')}
-                aria-describedby={describedBy('name')}
-                {...register('name')}
-              />
-              <FieldError id="name-error" message={errors.name?.message} />
+        <div className="min-w-0 space-y-6 rounded-[10px] border border-border bg-card p-4 sm:p-5">
+          <FormSection title="profile.personal" variant="admin">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="name">{t('memberNew.name')}</Label>
+                <Input
+                  id="name"
+                  autoComplete="off"
+                  aria-invalid={invalid('name')}
+                  aria-describedby={describedBy('name')}
+                  {...register('name')}
+                />
+                <FieldError id="name-error" message={errors.name?.message} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="bloodGroup">{t('memberNew.blood')}</Label>
+                <NativeSelect
+                  id="bloodGroup"
+                  aria-invalid={invalid('bloodGroup')}
+                  {...register('bloodGroup')}
+                >
+                  <option value="">{t('memberNew.bloodUnknown')}</option>
+                  {BLOOD_GROUPS.map((g) => (
+                    <option key={g} value={g}>
+                      {bloodLabel(g)}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </div>
             </div>
+            <PersonalFields
+              register={register}
+              errors={errors}
+              variant="admin"
+            />
+          </FormSection>
+
+          <FormSection title="profile.contact" variant="admin">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="phone">{t('memberNew.phone')}</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="off"
+                  aria-invalid={invalid('phone')}
+                  aria-describedby={describedBy('phone')}
+                  {...register('phone')}
+                />
+                <FieldError id="phone-error" message={errors.phone?.message} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="email">{t('memberNew.email')}</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="off"
+                  aria-invalid={invalid('email')}
+                  aria-describedby={describedBy('email')}
+                  {...register('email')}
+                />
+                <FieldError id="email-error" message={errors.email?.message} />
+              </div>
+            </div>
+            <AddressFields
+              register={register}
+              errors={errors}
+              variant="admin"
+            />
+          </FormSection>
+        </div>
+
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-6">
+          <section
+            aria-labelledby="new-membership"
+            className="space-y-4 rounded-[10px] border border-border bg-card p-4 sm:p-5"
+          >
+            <h2 id="new-membership" className="text-[15px] font-semibold">
+              {t('drawer.sectionMembership')}
+            </h2>
             <div className="space-y-1.5">
-              <Label htmlFor="bloodGroup">{t('memberNew.blood')}</Label>
-              <NativeSelect
-                id="bloodGroup"
-                aria-invalid={invalid('bloodGroup')}
-                {...register('bloodGroup')}
-              >
-                <option value="">{t('memberNew.bloodUnknown')}</option>
-                {BLOOD_GROUPS.map((g) => (
-                  <option key={g} value={g}>
-                    {bloodLabel(g)}
+              <Label htmlFor="status">{t('a.status')}</Label>
+              <NativeSelect id="status" {...register('status')}>
+                {MEMBER_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {t(STATUS_LABEL_KEY[s])}
                   </option>
                 ))}
               </NativeSelect>
             </div>
-          </div>
-          <PersonalFields register={register} errors={errors} variant="admin" />
-        </FormSection>
-
-        <FormSection title="profile.contact" variant="admin">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="phone">{t('memberNew.phone')}</Label>
-              <Input
-                id="phone"
-                type="tel"
-                inputMode="tel"
-                autoComplete="off"
-                aria-invalid={invalid('phone')}
-                aria-describedby={describedBy('phone')}
-                {...register('phone')}
-              />
-              <FieldError id="phone-error" message={errors.phone?.message} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="email">{t('memberNew.email')}</Label>
-              <Input
-                id="email"
-                type="email"
-                inputMode="email"
-                autoComplete="off"
-                aria-invalid={invalid('email')}
-                aria-describedby={describedBy('email')}
-                {...register('email')}
-              />
-              <FieldError id="email-error" message={errors.email?.message} />
-            </div>
-          </div>
-          <AddressFields register={register} errors={errors} variant="admin" />
-        </FormSection>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="status">{t('a.status')}</Label>
-            <NativeSelect id="status" {...register('status')}>
-              {MEMBER_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {t(STATUS_LABEL_KEY[s])}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-          <div className="flex items-end pb-1.5">
             <CheckboxField
               label={t('memberNew.willing')}
               {...register('willingToDonate')}
             />
+          </section>
+
+          {/* A photo needs the member to exist first; the profile opens next. */}
+          <section className="flex items-center gap-3 rounded-[10px] border border-dashed border-border bg-card p-4 text-sm text-muted-foreground sm:p-5">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-secondary">
+              <Camera aria-hidden="true" className="size-5" />
+            </span>
+            {t('memberNew.photoLater')}
+          </section>
+
+          <div
+            className={cn(
+              'rounded-lg border bg-background p-3.5',
+              errors.consent ? 'border-red-300' : 'border-border',
+            )}
+          >
+            <CheckboxField
+              label={t('memberNew.consent')}
+              description={t('memberNew.consentNote')}
+              aria-invalid={invalid('consent')}
+              aria-describedby={describedBy('consent')}
+              {...register('consent')}
+            />
+            <FieldError id="consent-error" message={errors.consent?.message} />
           </div>
-        </div>
 
-        <div
-          className={cn(
-            'rounded-lg border bg-background p-3.5',
-            errors.consent ? 'border-red-300' : 'border-border',
+          {formError && (
+            <p
+              role="alert"
+              className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+            >
+              {formError}
+            </p>
           )}
-        >
-          <CheckboxField
-            label={t('memberNew.consent')}
-            description={t('memberNew.consentNote')}
-            aria-invalid={invalid('consent')}
-            aria-describedby={describedBy('consent')}
-            {...register('consent')}
-          />
-          <FieldError id="consent-error" message={errors.consent?.message} />
-        </div>
 
-        {formError && (
-          <p
-            role="alert"
-            className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-          >
-            {formError}
-          </p>
-        )}
-
-        <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? t('a.wait') : t('memberNew.submit')}
-          </Button>
-          <Link
-            to="/admin/members"
-            className={buttonVariants({ variant: 'outline' })}
-          >
-            {t('a.cancel')}
-          </Link>
-        </div>
+          <div className="sticky bottom-0 -mx-4 flex gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur md:-mx-6 md:px-6 lg:static lg:mx-0 lg:flex-col lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-11 grow sm:h-9"
+            >
+              {isSubmitting ? t('a.wait') : t('memberNew.submit')}
+            </Button>
+            <Link
+              to="/admin/members"
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'h-11 grow sm:h-9',
+              )}
+            >
+              {t('a.cancel')}
+            </Link>
+          </div>
+        </aside>
       </form>
     </main>
   )

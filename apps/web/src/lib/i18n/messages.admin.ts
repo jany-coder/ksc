@@ -232,6 +232,10 @@ export const adminMessages = {
     bn: '{actor} একটি পরিবর্তন করেছেন',
     en: '{actor} made a change',
   },
+  'memberNew.photoLater': {
+    bn: 'সংরক্ষণের পর সদস্যের প্রোফাইল খুলবে, সেখান থেকে ছবি দিতে পারবেন।',
+    en: "After saving, the member's profile opens; add the photo there.",
+  },
   'drawer.call': { bn: 'কল করুন', en: 'Call' },
   'drawer.copy': { bn: 'কপি', en: 'Copy' },
   'drawer.copied': { bn: 'কপি হয়েছে', en: 'Copied' },
