@@ -93,8 +93,8 @@ function makeColumns(t: ReturnType<typeof useT>) {
         )
       },
     }),
-    helper.accessor('area', {
-      header: t('members.colArea'),
+    helper.accessor('houseVillage', {
+      header: t('members.colVillage'),
       cell: ({ getValue }) => (
         <span className="text-muted-foreground">{getValue() ?? dash}</span>
       ),

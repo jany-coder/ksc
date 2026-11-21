@@ -14,6 +14,11 @@ import { useLang, useT } from '../../lib/i18n/index.tsx'
 import type { MessageKey } from '../../lib/i18n/messages.ts'
 import { STATUS_LABEL_KEY, bloodLabel } from '../../lib/member-options.ts'
 import {
+  GENDER_LABEL_KEY,
+  MARITAL_LABEL_KEY,
+  formatAddress,
+} from '../../lib/member-profile.ts'
+import {
   archiveMemberFn,
   getMemberFn,
   setMemberStatusFn,
@@ -245,12 +250,34 @@ export function MemberDrawer({
                   ? formatDate(member.lastDonationDate, lang)
                   : dash}
               </Field>
-              <Field label={t('drawer.address')}>
-                {member.address ?? dash}
+              <Field label={t('profile.fatherName')}>
+                {member.fatherName ?? dash}
               </Field>
-              <Field label={t('drawer.area')}>{member.area ?? dash}</Field>
-              <Field label={t('drawer.occupation')}>
+              <Field label={t('profile.motherName')}>
+                {member.motherName ?? dash}
+              </Field>
+              <Field label={t('profile.dateOfBirth')}>
+                {member.dateOfBirth
+                  ? formatDate(member.dateOfBirth, lang)
+                  : dash}
+              </Field>
+              <Field label={t('profile.gender')}>
+                {member.gender ? t(GENDER_LABEL_KEY[member.gender]) : dash}
+              </Field>
+              <Field label={t('profile.maritalStatus')}>
+                {member.maritalStatus
+                  ? t(MARITAL_LABEL_KEY[member.maritalStatus])
+                  : dash}
+              </Field>
+              <Field label={t('profile.occupation')}>
                 {member.occupation ?? dash}
+              </Field>
+              <Field label={t('profile.organization')}>
+                {member.organization ?? dash}
+              </Field>
+              {/* One line, in the usual order: easy to read out on the phone. */}
+              <Field label={t('profile.address')}>
+                {formatAddress(member) || dash}
               </Field>
               <Field label={t('drawer.joined')}>
                 {formatDate(member.joinedDate, lang)}

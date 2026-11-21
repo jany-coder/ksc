@@ -231,6 +231,7 @@ export const publicMessages = {
     en: 'Fill in the form. Our committee will review it and contact you. Fields marked * are required.',
   },
   'apply.name': { bn: 'নাম *', en: 'Name *' },
+  'apply.email': { bn: 'ইমেইল (ঐচ্ছিক)', en: 'Email (optional)' },
   'apply.phone': { bn: 'মোবাইল নম্বর *', en: 'Mobile number *' },
   'apply.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
   'apply.bloodUnknown': {
@@ -241,9 +242,6 @@ export const publicMessages = {
     bn: 'প্রয়োজনে রক্ত দিতে আগ্রহী',
     en: 'Willing to donate blood when needed',
   },
-  'apply.address': { bn: 'ঠিকানা', en: 'Address' },
-  'apply.area': { bn: 'এলাকা', en: 'Area' },
-  'apply.occupation': { bn: 'পেশা', en: 'Occupation' },
   'apply.honeypot': {
     bn: 'ওয়েবসাইট (ফাঁকা রাখুন)',
     en: 'Website (leave empty)',

@@ -20,6 +20,12 @@ import { useLocaleParams, useT } from '../../lib/i18n/index.tsx'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
 import { BLOOD_GROUPS, bloodLabel } from '../../lib/member-options.ts'
+import { EMPTY_PROFILE } from '../../lib/member-profile.ts'
+import {
+  AddressFields,
+  FormSection,
+  PersonalFields,
+} from '../../components/member-profile-fields.tsx'
 
 export const Route = createFileRoute('/{-$locale}/join')({
   head: ({ params }) => {
@@ -57,10 +63,9 @@ function JoinPage() {
     defaultValues: {
       name: '',
       phone: '',
+      email: '',
       bloodGroup: '',
-      address: '',
-      area: '',
-      occupation: '',
+      ...EMPTY_PROFILE,
       willingToDonate: false,
       consent: false,
       website: '',
@@ -132,126 +137,98 @@ function JoinPage() {
         noValidate
         className="flex flex-col gap-5 rounded-[10px] border border-line bg-card p-5 md:p-[30px]"
       >
-        <div className="space-y-1.5">
-          <Label htmlFor="name" className={labelClass}>
-            {t('apply.name')}
-          </Label>
-          <Input
-            id="name"
-            autoComplete="name"
-            className={fieldClass}
-            aria-invalid={invalid('name')}
-            aria-describedby={describedBy('name')}
-            {...register('name')}
-          />
-          <FieldError
-            className="text-base text-red-700"
-            id="name-error"
-            message={errors.name?.message}
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="phone" className={labelClass}>
-            {t('apply.phone')}
-          </Label>
-          <Input
-            id="phone"
-            type="tel"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="01XXXXXXXXX"
-            className={fieldClass}
-            aria-invalid={invalid('phone')}
-            aria-describedby={describedBy('phone')}
-            {...register('phone')}
-          />
-          <FieldError
-            className="text-base text-red-700"
-            id="phone-error"
-            message={errors.phone?.message}
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="bloodGroup" className={labelClass}>
-            {t('apply.blood')}
-          </Label>
-          <NativeSelect
-            id="bloodGroup"
-            className={fieldClass}
-            {...register('bloodGroup')}
-          >
-            <option value="">{t('apply.bloodUnknown')}</option>
-            {BLOOD_GROUPS.map((g) => (
-              <option key={g} value={g}>
-                {bloodLabel(g)}
-              </option>
-            ))}
-          </NativeSelect>
-        </div>
-
-        <CheckboxField
-          label={t('apply.willing')}
-          className="text-[17px]"
-          {...register('willingToDonate')}
-        />
-
-        <div className="space-y-1.5">
-          <Label htmlFor="address" className={labelClass}>
-            {t('apply.address')}
-          </Label>
-          <Input
-            id="address"
-            autoComplete="street-address"
-            className={fieldClass}
-            aria-invalid={invalid('address')}
-            aria-describedby={describedBy('address')}
-            {...register('address')}
-          />
-          <FieldError
-            className="text-base text-red-700"
-            id="address-error"
-            message={errors.address?.message}
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-5">
-          <div className="min-w-0 flex-[1_1_220px] space-y-1.5">
-            <Label htmlFor="area" className={labelClass}>
-              {t('apply.area')}
+        <FormSection title="profile.personal" variant="public">
+          <div className="space-y-1.5">
+            <Label htmlFor="name" className={labelClass}>
+              {t('apply.name')}
             </Label>
             <Input
-              id="area"
+              id="name"
+              autoComplete="name"
               className={fieldClass}
-              aria-invalid={invalid('area')}
-              aria-describedby={describedBy('area')}
-              {...register('area')}
+              aria-invalid={invalid('name')}
+              aria-describedby={describedBy('name')}
+              {...register('name')}
             />
             <FieldError
               className="text-base text-red-700"
-              id="area-error"
-              message={errors.area?.message}
+              id="name-error"
+              message={errors.name?.message}
             />
           </div>
-          <div className="min-w-0 flex-[1_1_220px] space-y-1.5">
-            <Label htmlFor="occupation" className={labelClass}>
-              {t('apply.occupation')}
+          <div className="space-y-1.5">
+            <Label htmlFor="bloodGroup" className={labelClass}>
+              {t('apply.blood')}
+            </Label>
+            <NativeSelect
+              id="bloodGroup"
+              className={fieldClass}
+              {...register('bloodGroup')}
+            >
+              <option value="">{t('apply.bloodUnknown')}</option>
+              {BLOOD_GROUPS.map((g) => (
+                <option key={g} value={g}>
+                  {bloodLabel(g)}
+                </option>
+              ))}
+            </NativeSelect>
+          </div>
+          <CheckboxField
+            label={t('apply.willing')}
+            className="text-[17px]"
+            {...register('willingToDonate')}
+          />
+          <PersonalFields
+            register={register}
+            errors={errors}
+            variant="public"
+          />
+        </FormSection>
+
+        <FormSection title="profile.contact" variant="public">
+          <div className="space-y-1.5">
+            <Label htmlFor="phone" className={labelClass}>
+              {t('apply.phone')}
             </Label>
             <Input
-              id="occupation"
+              id="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="01XXXXXXXXX"
               className={fieldClass}
-              aria-invalid={invalid('occupation')}
-              aria-describedby={describedBy('occupation')}
-              {...register('occupation')}
+              aria-invalid={invalid('phone')}
+              aria-describedby={describedBy('phone')}
+              {...register('phone')}
             />
             <FieldError
               className="text-base text-red-700"
-              id="occupation-error"
-              message={errors.occupation?.message}
+              id="phone-error"
+              message={errors.phone?.message}
             />
           </div>
-        </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email" className={labelClass}>
+              {t('apply.email')}
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              className={fieldClass}
+              aria-invalid={invalid('email')}
+              aria-describedby={describedBy('email')}
+              {...register('email')}
+            />
+            <FieldError
+              className="text-base text-red-700"
+              id="email-error"
+              message={errors.email?.message}
+            />
+          </div>
+          <AddressFields register={register} errors={errors} variant="public" />
+        </FormSection>
 
         {/* Honeypot: pushed off-screen rather than display:none, which simple
             bots detect. Hidden from screen readers and the Tab key. */}

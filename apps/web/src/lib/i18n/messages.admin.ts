@@ -144,7 +144,7 @@ export const adminMessages = {
   'members.colMember': { bn: 'সদস্য', en: 'Member' },
   'members.colMobile': { bn: 'মোবাইল', en: 'Mobile' },
   'members.colBlood': { bn: 'রক্ত', en: 'Blood' },
-  'members.colArea': { bn: 'এলাকা', en: 'Area' },
+  'members.colVillage': { bn: 'বাসা / গ্রাম', en: 'House / village' },
   'members.colOccupation': { bn: 'পেশা', en: 'Occupation' },
 
   // --- member detail drawer ---
@@ -162,9 +162,6 @@ export const adminMessages = {
   'drawer.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
   'drawer.willing': { bn: 'রক্তদানে আগ্রহী', en: 'Willing to donate' },
   'drawer.lastDonation': { bn: 'সর্বশেষ রক্তদান', en: 'Last donation' },
-  'drawer.address': { bn: 'ঠিকানা', en: 'Address' },
-  'drawer.area': { bn: 'এলাকা', en: 'Area' },
-  'drawer.occupation': { bn: 'পেশা', en: 'Occupation' },
   'drawer.joined': { bn: 'যোগদানের তারিখ', en: 'Date joined' },
   'drawer.consent': {
     bn: 'তথ্য ব্যবহারে সম্মতি দিয়েছেন',
@@ -273,9 +270,6 @@ export const adminMessages = {
   'memberNew.email': { bn: 'ইমেইল (ঐচ্ছিক)', en: 'Email (optional)' },
   'memberNew.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
   'memberNew.bloodUnknown': { bn: 'জানা নেই', en: 'Not known' },
-  'memberNew.address': { bn: 'ঠিকানা (ঐচ্ছিক)', en: 'Address (optional)' },
-  'memberNew.area': { bn: 'এলাকা (ঐচ্ছিক)', en: 'Area (optional)' },
-  'memberNew.occupation': { bn: 'পেশা (ঐচ্ছিক)', en: 'Occupation (optional)' },
   'memberNew.willing': {
     bn: 'রক্ত দিতে রাজি',
     en: 'Willing to donate blood',
@@ -699,9 +693,6 @@ export const adminMessages = {
   'csv.mobile': { bn: 'মোবাইল', en: 'Mobile' },
   'csv.email': { bn: 'ইমেইল', en: 'Email' },
   'csv.blood': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
-  'csv.address': { bn: 'ঠিকানা', en: 'Address' },
-  'csv.area': { bn: 'এলাকা', en: 'Area' },
-  'csv.occupation': { bn: 'পেশা', en: 'Occupation' },
   'csv.status': { bn: 'অবস্থা', en: 'Status' },
   'csv.willing': { bn: 'রক্তদানে আগ্রহী', en: 'Willing to donate' },
   'csv.lastDonation': { bn: 'সর্বশেষ রক্তদান', en: 'Last donation' },

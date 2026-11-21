@@ -60,4 +60,12 @@ export const validationMessages = {
     bn: 'দুটি পাসওয়ার্ড মিলছে না',
     en: 'The two passwords do not match',
   },
+  'val.birthDateInvalid': {
+    bn: 'সঠিক জন্ম তারিখ দিন (আজকের পরের তারিখ হবে না)',
+    en: 'Enter a valid date of birth (not in the future)',
+  },
+  'val.postCodeInvalid': {
+    bn: 'পোস্ট কোড ৪ অঙ্কের হয়, যেমন ১৩৪০',
+    en: 'A post code has 4 digits, e.g. 1340',
+  },
 } satisfies Record<string, Entry>

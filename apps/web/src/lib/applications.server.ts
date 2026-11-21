@@ -5,6 +5,7 @@ import { and, eq, gt, sql } from 'drizzle-orm'
 import { db } from '../db/index.ts'
 import { auditLog, members } from '../db/schema/index.ts'
 import { applicationFormSchema } from './application-form.ts'
+import { profileToRow } from './member-profile.ts'
 import { normalizePhone } from './phone.ts'
 import { verifyTurnstile } from './turnstile.server.ts'
 
@@ -68,9 +69,8 @@ export async function submitApplication(
         name: v.name,
         phone,
         bloodGroup: v.bloodGroup === '' ? null : v.bloodGroup,
-        address: blankToNull(v.address),
-        area: blankToNull(v.area),
-        occupation: blankToNull(v.occupation),
+        email: blankToNull(v.email.toLowerCase()),
+        ...profileToRow(v),
         role: 'member', // never taken from the form
         status: 'pending', // an admin approves it
         willingToDonate: v.willingToDonate,

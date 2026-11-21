@@ -43,6 +43,13 @@
       "when": 1795283374093,
       "tag": "0005_images_on_home",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795287613846,
+      "tag": "0006_member_profile",
+      "breakpoints": true
     }
   ]
 }

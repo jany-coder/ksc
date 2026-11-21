@@ -23,6 +23,12 @@ import {
   bloodLabel,
 } from '../../../lib/member-options.ts'
 import { memberFormSchema } from '../../../lib/member-form.ts'
+import { EMPTY_PROFILE } from '../../../lib/member-profile.ts'
+import {
+  AddressFields,
+  FormSection,
+  PersonalFields,
+} from '../../../components/member-profile-fields.tsx'
 import type { MemberFormInput } from '../../../lib/member-form.ts'
 import { createMemberFn } from '../../../lib/members.functions.ts'
 import { useT } from '../../../lib/i18n/index.tsx'
@@ -67,9 +73,7 @@ function NewMemberPage() {
       phone: '',
       email: '',
       bloodGroup: '',
-      address: '',
-      area: '',
-      occupation: '',
+      ...EMPTY_PROFILE,
       status: 'active',
       willingToDonate: false,
       consent: false,
@@ -124,102 +128,71 @@ function NewMemberPage() {
         noValidate
         className="mt-5 max-w-2xl space-y-5 rounded-[10px] border border-border bg-card p-5"
       >
+        <FormSection title="profile.personal" variant="admin">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="name">{t('memberNew.name')}</Label>
+              <Input
+                id="name"
+                autoComplete="off"
+                aria-invalid={invalid('name')}
+                aria-describedby={describedBy('name')}
+                {...register('name')}
+              />
+              <FieldError id="name-error" message={errors.name?.message} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="bloodGroup">{t('memberNew.blood')}</Label>
+              <NativeSelect
+                id="bloodGroup"
+                aria-invalid={invalid('bloodGroup')}
+                {...register('bloodGroup')}
+              >
+                <option value="">{t('memberNew.bloodUnknown')}</option>
+                {BLOOD_GROUPS.map((g) => (
+                  <option key={g} value={g}>
+                    {bloodLabel(g)}
+                  </option>
+                ))}
+              </NativeSelect>
+            </div>
+          </div>
+          <PersonalFields register={register} errors={errors} variant="admin" />
+        </FormSection>
+
+        <FormSection title="profile.contact" variant="admin">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="phone">{t('memberNew.phone')}</Label>
+              <Input
+                id="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="off"
+                aria-invalid={invalid('phone')}
+                aria-describedby={describedBy('phone')}
+                {...register('phone')}
+              />
+              <FieldError id="phone-error" message={errors.phone?.message} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="email">{t('memberNew.email')}</Label>
+              <Input
+                id="email"
+                type="email"
+                inputMode="email"
+                autoComplete="off"
+                aria-invalid={invalid('email')}
+                aria-describedby={describedBy('email')}
+                {...register('email')}
+              />
+              <FieldError id="email-error" message={errors.email?.message} />
+            </div>
+          </div>
+          <AddressFields register={register} errors={errors} variant="admin" />
+        </FormSection>
+
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="name">{t('memberNew.name')}</Label>
-            <Input
-              id="name"
-              autoComplete="off"
-              aria-invalid={invalid('name')}
-              aria-describedby={describedBy('name')}
-              {...register('name')}
-            />
-            <FieldError id="name-error" message={errors.name?.message} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="phone">{t('memberNew.phone')}</Label>
-            <Input
-              id="phone"
-              type="tel"
-              inputMode="tel"
-              autoComplete="off"
-              aria-invalid={invalid('phone')}
-              aria-describedby={describedBy('phone')}
-              {...register('phone')}
-            />
-            <FieldError id="phone-error" message={errors.phone?.message} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="email">{t('memberNew.email')}</Label>
-            <Input
-              id="email"
-              type="email"
-              inputMode="email"
-              autoComplete="off"
-              aria-invalid={invalid('email')}
-              aria-describedby={describedBy('email')}
-              {...register('email')}
-            />
-            <FieldError id="email-error" message={errors.email?.message} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="bloodGroup">{t('memberNew.blood')}</Label>
-            <NativeSelect
-              id="bloodGroup"
-              aria-invalid={invalid('bloodGroup')}
-              {...register('bloodGroup')}
-            >
-              <option value="">{t('memberNew.bloodUnknown')}</option>
-              {BLOOD_GROUPS.map((g) => (
-                <option key={g} value={g}>
-                  {bloodLabel(g)}
-                </option>
-              ))}
-            </NativeSelect>
-          </div>
-
-          <div className="space-y-1.5 md:col-span-2">
-            <Label htmlFor="address">{t('memberNew.address')}</Label>
-            <Input
-              id="address"
-              autoComplete="off"
-              aria-invalid={invalid('address')}
-              aria-describedby={describedBy('address')}
-              {...register('address')}
-            />
-            <FieldError id="address-error" message={errors.address?.message} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="area">{t('memberNew.area')}</Label>
-            <Input
-              id="area"
-              autoComplete="off"
-              aria-invalid={invalid('area')}
-              aria-describedby={describedBy('area')}
-              {...register('area')}
-            />
-            <FieldError id="area-error" message={errors.area?.message} />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="occupation">{t('memberNew.occupation')}</Label>
-            <Input
-              id="occupation"
-              autoComplete="off"
-              aria-invalid={invalid('occupation')}
-              aria-describedby={describedBy('occupation')}
-              {...register('occupation')}
-            />
-            <FieldError
-              id="occupation-error"
-              message={errors.occupation?.message}
-            />
-          </div>
-
           <div className="space-y-1.5">
             <Label htmlFor="status">{t('a.status')}</Label>
             <NativeSelect id="status" {...register('status')}>
@@ -230,7 +203,6 @@ function NewMemberPage() {
               ))}
             </NativeSelect>
           </div>
-
           <div className="flex items-end pb-1.5">
             <CheckboxField
               label={t('memberNew.willing')}

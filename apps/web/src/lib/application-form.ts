@@ -1,12 +1,13 @@
 import { z } from 'zod'
 
 import { BLOOD_GROUPS } from './member-options.ts'
+import { profileShape } from './member-profile.ts'
 import { normalizePhone } from './phone.ts'
 
 // The PUBLIC membership application. Visitors fill it in, so it asks for less
-// than the admin form: no status, no email. Optional fields arrive as empty
-// strings and become NULL when saved.
-const optionalText = z.string().trim().max(200, 'val.tooLong')
+// than the admin form: no status. Optional fields arrive as empty strings and
+// become NULL when saved. The personal and address fields are shared with the
+// admin forms (lib/member-profile.ts).
 
 export const applicationFormSchema = z.object({
   name: z
@@ -18,10 +19,16 @@ export const applicationFormSchema = z.object({
     .string()
     .trim()
     .refine((v) => normalizePhone(v) !== null, 'val.phoneInvalid'),
+  email: z
+    .string()
+    .trim()
+    .max(254)
+    .refine(
+      (v) => v === '' || z.email().safeParse(v).success,
+      'val.emailInvalid',
+    ),
   bloodGroup: z.union([z.enum(BLOOD_GROUPS), z.literal('')]),
-  address: optionalText,
-  area: optionalText,
-  occupation: optionalText,
+  ...profileShape,
   willingToDonate: z.boolean(),
   // Required: no application is saved without recorded consent
   // (Personal Data Protection Act, 2026; CLAUDE.md section 3).

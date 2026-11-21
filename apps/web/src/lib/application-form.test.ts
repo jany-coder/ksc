@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
 import { applicationFormSchema } from './application-form.ts'
+import { EMPTY_PROFILE } from './member-profile.ts'
 
 const valid = {
   name: 'রহিম উদ্দিন',
   phone: '017-1234-5678',
+  email: '',
   bloodGroup: 'O+' as const,
-  address: '',
-  area: '',
-  occupation: '',
+  ...EMPTY_PROFILE,
   willingToDonate: true,
   consent: true,
   website: '',

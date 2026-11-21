@@ -5,15 +5,14 @@ import {
   memberFormSchema,
   memberToEditValues,
 } from './member-form.ts'
+import { EMPTY_PROFILE, profileToRow } from './member-profile.ts'
 
 const valid = {
   name: 'নমুনা',
   phone: '017-1234-5678',
   email: '',
   bloodGroup: 'O+',
-  address: '',
-  area: '',
-  occupation: '',
+  ...EMPTY_PROFILE,
   status: 'active',
   willingToDonate: true,
   consent: true,
@@ -77,9 +76,7 @@ describe('memberEditSchema', () => {
     name: 'নমুনা',
     email: '',
     bloodGroup: 'O+',
-    address: '',
-    area: '',
-    occupation: '',
+    ...EMPTY_PROFILE,
     willingToDonate: true,
     lastDonationDate: '',
   }
@@ -124,9 +121,7 @@ describe('memberToEditValues', () => {
         name: 'নমুনা',
         email: null,
         bloodGroup: null,
-        address: null,
-        area: null,
-        occupation: null,
+        ...profileToRow(EMPTY_PROFILE),
         willingToDonate: false,
         lastDonationDate: null,
       }),
@@ -134,9 +129,7 @@ describe('memberToEditValues', () => {
       name: 'নমুনা',
       email: '',
       bloodGroup: '',
-      address: '',
-      area: '',
-      occupation: '',
+      ...EMPTY_PROFILE,
       willingToDonate: false,
       lastDonationDate: '',
     })
