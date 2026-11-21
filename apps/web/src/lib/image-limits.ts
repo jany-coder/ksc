@@ -11,6 +11,9 @@ export const STORAGE_STOP_BYTES = 8 * GB
 
 // Per-file ceilings. A 1600px WebP is about 250 KB and a 400px one about 30 KB,
 // so these leave room but still refuse anything that skipped the resizing.
+// How many photos the homepage shows, and so how many an admin can pick.
+export const HOME_PHOTO_COUNT = 6
+
 export const MAX_FULL_BYTES = 1_000_000
 export const MAX_THUMB_BYTES = 200_000
 export const MAX_DIMENSION = 8000

@@ -1,10 +1,11 @@
 import '@tanstack/react-start/server-only'
 
-import { desc, eq, sql } from 'drizzle-orm'
+import { and, desc, eq, ne, sql } from 'drizzle-orm'
 
 import { db } from '../db/index.ts'
 import { images } from '../db/schema/index.ts'
 import {
+  HOME_PHOTO_COUNT,
   MAX_FULL_BYTES,
   MAX_THUMB_BYTES,
   STORAGE_STOP_BYTES,
@@ -97,7 +98,9 @@ export type GalleryImage = {
   width: number
   height: number
   caption: string | null
+  onHome: boolean
 }
+
 export type GalleryAdminData = {
   images: GalleryImage[]
   usedBytes: number
@@ -111,10 +114,53 @@ export async function listImages(limit = 200): Promise<GalleryImage[]> {
       width: images.width,
       height: images.height,
       caption: images.caption,
+      onHome: images.onHome,
     })
     .from(images)
     .orderBy(desc(images.uploadedAt))
     .limit(limit)
+}
+
+/**
+ * The homepage photos: the ones an admin picked first, then the newest to fill
+ * any empty slots. One query: sorting on_home (true before false) does both.
+ */
+export async function listHomeImages(): Promise<GalleryImage[]> {
+  return db
+    .select({
+      id: images.id,
+      width: images.width,
+      height: images.height,
+      caption: images.caption,
+      onHome: images.onHome,
+    })
+    .from(images)
+    .orderBy(desc(images.onHome), desc(images.uploadedAt))
+    .limit(HOME_PHOTO_COUNT)
+}
+
+export type OnHomeResult =
+  { ok: true } | { ok: false; code: 'NOT_FOUND' | 'HOME_FULL' }
+
+/** Pick or unpick a photo for the homepage. Refuses a seventh pick. */
+export async function setImageOnHome(
+  id: string,
+  onHome: boolean,
+): Promise<OnHomeResult> {
+  if (onHome) {
+    const [row] = await db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(images)
+      .where(and(eq(images.onHome, true), ne(images.id, id)))
+    if ((row?.n ?? 0) >= HOME_PHOTO_COUNT)
+      return { ok: false, code: 'HOME_FULL' }
+  }
+  const updated = await db
+    .update(images)
+    .set({ onHome })
+    .where(eq(images.id, id))
+    .returning({ id: images.id })
+  return updated.length > 0 ? { ok: true } : { ok: false, code: 'NOT_FOUND' }
 }
 
 export async function galleryAdminData(): Promise<GalleryAdminData> {

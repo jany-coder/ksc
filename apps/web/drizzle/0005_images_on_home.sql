@@ -1,0 +1,1 @@
+ALTER TABLE "images" ADD COLUMN "on_home" boolean DEFAULT false NOT NULL;

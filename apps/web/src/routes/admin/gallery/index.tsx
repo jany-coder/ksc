@@ -13,9 +13,11 @@ import { Input } from '../../../components/ui/input.tsx'
 import {
   deleteImageFn,
   setImageCaptionFn,
+  setImageOnHomeFn,
   galleryAdminDataFn,
 } from '../../../lib/images.functions.ts'
 import {
+  HOME_PHOTO_COUNT,
   STORAGE_FREE_BYTES,
   STORAGE_STOP_BYTES,
   STORAGE_WARN_BYTES,
@@ -29,7 +31,7 @@ import {
 } from '../../../lib/image-resize.ts'
 import { langOfMatches } from '../../../lib/i18n/core.ts'
 import type { HeadArgs } from '../../../lib/i18n/core.ts'
-import { useLang, useT } from '../../../lib/i18n/index.tsx'
+import { useLang, useNumber, useT } from '../../../lib/i18n/index.tsx'
 import { tFor } from '../../../lib/i18n/messages.ts'
 import type { MessageKey } from '../../../lib/i18n/messages.ts'
 import { can } from '../../../lib/permissions.ts'
@@ -97,6 +99,7 @@ type UploadItem = {
 function GalleryPage() {
   const t = useT()
   const lang = useLang()
+  const number = useNumber()
   const { data } = useSuspenseQuery(galleryQuery())
   const queryClient = useQueryClient()
   const input = useRef<HTMLInputElement>(null)
@@ -105,6 +108,8 @@ function GalleryPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const full = data.state === 'full'
+  const homeCount = data.images.filter((image) => image.onHome).length
+  const homeFull = homeCount >= HOME_PHOTO_COUNT
   const percent = Math.min(100, (data.usedBytes / STORAGE_FREE_BYTES) * 100)
 
   const update = (key: number, patch: Partial<UploadItem>) =>
@@ -161,6 +166,22 @@ function GalleryPage() {
       await queryClient.invalidateQueries({ queryKey: ['images'] })
     },
     onError: () => setDeleteError(t('gal.deleteError')),
+  })
+
+  const toggleHome = useMutation({
+    mutationFn: (choice: { id: string; onHome: boolean }) =>
+      setImageOnHomeFn({ data: choice }),
+    onSuccess: async (result) => {
+      setDeleteError(
+        result.ok
+          ? null
+          : result.code === 'HOME_FULL'
+            ? t('gal.homeFull', { max: number(HOME_PHOTO_COUNT) })
+            : t('gal.homeError'),
+      )
+      await queryClient.invalidateQueries({ queryKey: ['images'] })
+    },
+    onError: () => setDeleteError(t('gal.homeError')),
   })
 
   return (
@@ -268,6 +289,15 @@ function GalleryPage() {
         </p>
       )}
 
+      {data.images.length > 0 && (
+        <p role="status" className="text-sm text-muted-foreground">
+          {t('gal.homeCount', {
+            n: number(homeCount),
+            max: number(HOME_PHOTO_COUNT),
+          })}
+        </p>
+      )}
+
       {data.images.length > 0 ? (
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3 p-0">
           {data.images.map((image) => (
@@ -288,6 +318,22 @@ function GalleryPage() {
                 initial={image.caption ?? ''}
                 onError={() => setDeleteError(t('gal.captionError'))}
               />
+              <label className="flex min-h-9 items-center gap-2 px-2 pb-2 text-[13px]">
+                <input
+                  type="checkbox"
+                  checked={image.onHome}
+                  // A seventh pick is refused: unpick one first.
+                  disabled={toggleHome.isPending || (homeFull && !image.onHome)}
+                  onChange={(event) =>
+                    toggleHome.mutate({
+                      id: image.id,
+                      onHome: event.target.checked,
+                    })
+                  }
+                  className="size-4 accent-primary"
+                />
+                {t('gal.onHome')}
+              </label>
               <Button
                 type="button"
                 variant="destructive"

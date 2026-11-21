@@ -551,6 +551,19 @@ export const adminMessages = {
     bn: 'ক্যাপশন সংরক্ষণ করা গেল না।',
     en: 'Could not save the caption.',
   },
+  'gal.onHome': { bn: 'হোমপেজে দেখান', en: 'Show on homepage' },
+  'gal.homeCount': {
+    bn: 'হোমপেজের জন্য বাছাই: {n}/{max}। বাকি ঘরে সবচেয়ে নতুন ছবি দেখায়।',
+    en: 'Picked for the homepage: {n}/{max}. Empty slots show the newest photos.',
+  },
+  'gal.homeFull': {
+    bn: 'হোমপেজের জন্য {max}টা ছবি বাছাই হয়ে গেছে। আরেকটা দিতে আগে একটা বাদ দিন।',
+    en: '{max} photos are already picked for the homepage. Unpick one first.',
+  },
+  'gal.homeError': {
+    bn: 'হোমপেজের বাছাই সংরক্ষণ করা গেল না।',
+    en: 'Could not save the homepage choice.',
+  },
   'gal.deleteAria': { bn: 'ছবিটি মুছুন', en: 'Delete this photo' },
   'gal.deleteConfirm': {
     bn: 'ছবিটি স্থায়ীভাবে মুছে ফেলবেন?',
