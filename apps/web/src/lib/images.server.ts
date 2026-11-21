@@ -360,19 +360,11 @@ async function pickedHeroPhotos(): Promise<HeroPhotos> {
 }
 
 /**
- * The hero for the homepage. Until an admin picks, the homepage's own photos
- * stand in: the first goes behind the hero and all of them take turns in the
- * frame, so the hero is never empty while there are photos at all.
+ * The hero for the homepage: exactly what an admin picked, nothing filled in.
+ * With no background the hero is plain deep green; with no frame photos it
+ * shows the club's areas of work instead (see components/public/home/hero.tsx).
  */
-export async function heroPhotos(): Promise<HeroPhotos> {
-  const picked = await pickedHeroPhotos()
-  if (picked.background && picked.slides.length > 0) return picked
-  const home = await listHomeImages()
-  return {
-    background: picked.background ?? home[0] ?? null,
-    slides: picked.slides.length > 0 ? picked.slides : home,
-  }
-}
+export const heroPhotos = (): Promise<HeroPhotos> => pickedHeroPhotos()
 
 export type SetHeroResult =
   { ok: true } | { ok: false; code: 'INVALID_INPUT' | 'NOT_FOUND' }

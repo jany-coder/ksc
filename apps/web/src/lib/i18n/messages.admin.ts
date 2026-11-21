@@ -976,16 +976,16 @@ export const adminMessages = {
     en: 'Remove the background photo',
   },
   'heroPick.backgroundEmpty': {
-    bn: 'বাছাই করা হয়নি। এখন হোমপেজের গ্যালারির প্রথম ছবিটা দেখাচ্ছে।',
-    en: 'None picked. The first homepage gallery photo shows for now.',
+    bn: 'কোনো ছবি নেই। হিরোর পেছনটা গাঢ় সবুজ দেখাচ্ছে।',
+    en: 'No photo. The hero shows plain deep green behind it.',
   },
   'heroPick.slidesTitle': {
     bn: 'ফ্রেমে পালা করে দেখানো ছবি ({n}/{max})',
     en: 'Photos taking turns in the frame ({n}/{max})',
   },
   'heroPick.slidesEmpty': {
-    bn: 'বাছাই করা হয়নি। এখন হোমপেজের গ্যালারির ছবিগুলোই পালা করে দেখাচ্ছে।',
-    en: 'None picked. The homepage gallery photos take turns for now.',
+    bn: 'কোনো ছবি নেই। ফ্রেমের জায়গায় ক্লাবের কাজের ক্ষেত্রগুলো দেখাচ্ছে।',
+    en: "No photos. The club's areas of work show in place of the frame.",
   },
   'heroPick.slideAlt': { bn: 'ফ্রেমের {n} নম্বর ছবি', en: 'Frame photo {n}' },
   'heroPick.moveEarlier': { bn: 'আগে দেখান', en: 'Show earlier' },

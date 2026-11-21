@@ -16,8 +16,9 @@ import { SectionHeading } from '../section-heading.tsx'
 import { bloodTile, iconTile, liftCard } from '../styles.ts'
 
 // The six kinds of work the club names. Red is reserved for blood-related
-// items only (CLAUDE.md section 8), so only the last tile uses it.
-const ITEMS: {
+// items only (CLAUDE.md section 8), so only the last tile uses it. The hero
+// lists them too, when it has no photos to show.
+export const WORK_AREAS: {
   title: MessageKey
   text: MessageKey
   icon: LucideIcon
@@ -67,7 +68,7 @@ export function WhatWeDo() {
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
         <SectionHeading title={t('whatWeDo.title')} />
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-5 md:gap-6">
-          {ITEMS.map(({ title, text, icon: Icon, blood }) => (
+          {WORK_AREAS.map(({ title, text, icon: Icon, blood }) => (
             <article key={title} className={cn(liftCard, 'p-5 md:p-7')}>
               {/* Phone: the icon beside the title, so the six cards stay
                   short; wider screens: the icon above. */}

@@ -7,6 +7,7 @@ import { buttonVariants } from '../../ui/button.tsx'
 import { cn } from '../../../lib/utils.ts'
 
 import { HeroFrame } from './hero-frame.tsx'
+import { WORK_AREAS } from './what-we-do.tsx'
 import type { HeroSlide } from './hero-frame.tsx'
 
 /** The hero's photos, picked in the admin gallery (see heroPhotos()). */
@@ -44,14 +45,16 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
           />
         </picture>
       )}
-      {/* A deep green layer over the photo, light enough for the photo to
+      {/* With a photo only: a deep green layer over it, light enough for the photo to
           show. On a wide screen it is darkest behind the text (still above
           4.5:1 contrast there) and fades to the right; on a phone the text
           runs the full width, so the layer is even. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 max-md:bg-[rgba(9,38,27,0.78)] md:bg-[linear-gradient(100deg,rgba(9,38,27,0.88)_0%,rgba(9,38,27,0.74)_55%,rgba(9,38,27,0.35)_75%,rgba(9,38,27,0.15)_100%)]"
-      />
+      {background && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 max-md:bg-[rgba(9,38,27,0.78)] md:bg-[linear-gradient(100deg,rgba(9,38,27,0.88)_0%,rgba(9,38,27,0.74)_55%,rgba(9,38,27,0.35)_75%,rgba(9,38,27,0.15)_100%)]"
+        />
+      )}
 
       <div className="mx-auto grid w-full max-w-[1180px] items-center gap-8 px-5 pt-10 pb-12 md:grid-cols-[minmax(0,1fr)_minmax(0,360px)] md:gap-10 lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-14 md:px-8 md:pt-24 md:pb-28">
         <div className="hero-rise min-w-0">
@@ -114,17 +117,23 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
           </div>
         </div>
 
-        {/* The photo frame in a glass mount, and under it the founding year
-            (a fact the club gave us). Member, donor and activity counts are
-            left out on purpose (CLAUDE.md sections 3 and 8). */}
+        {/* The photo frame in a glass mount, or, with no photos picked, the
+            club's areas of work; under either, the founding year (a fact the
+            club gave us). Member, donor and activity counts are left out on
+            purpose (CLAUDE.md sections 3 and 8). */}
         <div
           className={cn(
             glass,
             'hero-fade min-w-0 rounded-[26px] bg-[rgba(9,38,27,0.5)] p-2 shadow-[0_24px_60px_rgba(0,0,0,0.35)]',
           )}
         >
-          {slides.length > 0 && <HeroFrame slides={slides} />}
-          <dl className="m-0 flex items-baseline gap-3 px-3 pt-3 pb-1.5">
+          {slides.length > 0 ? <HeroFrame slides={slides} /> : <WorkAreas />}
+          <dl
+            className={cn(
+              'm-0 flex items-baseline gap-3 px-3 pt-3 pb-1.5',
+              slides.length === 0 && 'mx-2 border-t border-white/15',
+            )}
+          >
             <dd className="m-0 font-heading text-[30px] leading-none font-bold md:text-[34px]">
               {t('hero.statYearValue')}
             </dd>
@@ -135,5 +144,46 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
         </div>
       </div>
     </section>
+  )
+}
+
+/** In place of the photo frame: the six kinds of work the club names. */
+function WorkAreas() {
+  const t = useT()
+  const localeParams = useLocaleParams()
+  return (
+    <div className="px-3 pt-3 pb-4 md:px-4">
+      <h2 className="mb-3 font-heading text-lg font-semibold text-mint md:text-xl">
+        {t('whatWeDo.title')}
+      </h2>
+      <ul className="m-0 grid list-none grid-cols-1 gap-2 p-0 min-[460px]:grid-cols-2 md:grid-cols-1">
+        {WORK_AREAS.map(({ title, icon: Icon, blood }) => (
+          <li
+            key={title}
+            className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.06] px-3 py-2 text-[15px] leading-snug text-white md:text-base"
+          >
+            <span
+              className={cn(
+                'flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10',
+                // Red only for blood, lightened to read on dark green.
+                blood ? 'text-[#ff9f98]' : 'text-mint',
+              )}
+            >
+              <Icon aria-hidden="true" className="size-[18px]" />
+            </span>
+            {t(title)}
+          </li>
+        ))}
+      </ul>
+      <Link
+        to="/{-$locale}"
+        params={localeParams}
+        hash="what-we-do"
+        className="mt-3 inline-flex min-h-10 items-center gap-1.5 text-[15px] font-semibold text-mint hover:text-white"
+      >
+        {t('hero.workMore')}
+        <ArrowRight aria-hidden="true" className="size-4 rtl:rotate-180" />
+      </Link>
+    </div>
   )
 }

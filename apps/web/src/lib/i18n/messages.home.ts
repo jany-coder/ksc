@@ -31,6 +31,7 @@ export const homeMessages = {
     bn: 'কলমা সোশ্যাল ক্লাবের একটি কার্যক্রম',
     en: "One of Kalma Social Club's activities",
   },
+  'hero.workMore': { bn: 'বিস্তারিত দেখুন', en: 'See more' },
   'hero.pause': { bn: 'ছবি বদলানো থামান', en: 'Pause the photos' },
   'hero.play': { bn: 'ছবি বদলানো চালু করুন', en: 'Play the photos' },
   'hero.ctaWork': { bn: 'আমাদের কার্যক্রম দেখুন', en: 'See our activities' },
