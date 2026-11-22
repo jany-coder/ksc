@@ -91,11 +91,19 @@ export function About() {
         <h3 className="mt-14 mb-6 text-2xl font-bold text-brand-deep md:mt-20 md:mb-8 md:text-[32px]">
           {t('about.principlesTitle')}
         </h3>
-        <ol className="m-0 grid list-none gap-5 p-0 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+        {/* Five principles with no empty slot: on wide screens three, then
+            two wider ones filling the second row; in two columns, the last
+            one spans both. */}
+        <ol className="m-0 grid list-none gap-5 p-0 md:grid-cols-2 md:gap-6 lg:grid-cols-6">
           {PRINCIPLES.map((p, i) => (
             <li
               key={p.title}
-              className={cn(liftCard, 'flex flex-col p-6 md:p-7')}
+              className={cn(
+                liftCard,
+                'flex flex-col p-6 md:p-7',
+                i < 3 ? 'lg:col-span-2' : 'lg:col-span-3',
+                i === PRINCIPLES.length - 1 && 'md:col-span-2',
+              )}
             >
               <div className="mb-4 flex items-center gap-3">
                 <span aria-hidden="true" className={numberTile}>
