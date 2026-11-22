@@ -16,8 +16,8 @@ import { cn } from '../../../lib/utils.ts'
 import { card } from '../styles.ts'
 import type { UpcomingActivity } from './upcoming-activities.tsx'
 
-// Straight under the hero, rising a little over its bottom edge: the next
-// activity with a countdown, only when one is coming.
+// Under the hero and its ribbon of key words: the next activity with a
+// countdown, only when one is coming.
 
 export function Highlights({ upcoming }: { upcoming: UpcomingActivity[] }) {
   // Nothing coming up: nothing to show here.
@@ -32,7 +32,7 @@ export function Highlights({ upcoming }: { upcoming: UpcomingActivity[] }) {
   if (!next) return null
 
   return (
-    <section className="relative z-10 pt-6 md:-mt-12 md:pt-0">
+    <section className="relative z-10 pt-6 md:pt-10">
       <div className="mx-auto w-full max-w-[1180px] px-5 md:px-8">
         <NextActivity item={next} />
       </div>
