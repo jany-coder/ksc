@@ -7,11 +7,22 @@
  *             Google for just those ten glyphs (about 2 KB), and the browser
  *             uses them for digits only, leaving every letter in Hind/Anek.
  *             Used in body text AND headings, on the site and in the admin.
- * To switch a font: change its URL here and its name in the --font-* lines
- * further down; every page, heading and button follows.
+ * Hind Siliguri and Anek Bangla are served from this site (the Fontsource
+ * packages: Google's own font files, on npm), bundled with this stylesheet:
+ * no separate connection to Google before text can show, which on a slow
+ * village connection was most of the wait. Each weight below is fetched
+ * only if a page uses it, and only the alphabets it uses (Bengali, Latin).
+ * The tiny digits font still comes from Google, linked in routes/__root.tsx.
+ * To switch a font: change the imports here and its name in the --font-*
+ * lines further down; every page, heading and button follows.
  */
-@import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400..700&text=%E0%A7%A6%E0%A7%A7%E0%A7%A8%E0%A7%A9%E0%A7%AA%E0%A7%AB%E0%A7%AC%E0%A7%AD%E0%A7%AE%E0%A7%AF&display=swap');
+@import '@fontsource/hind-siliguri/400.css';
+@import '@fontsource/hind-siliguri/500.css';
+@import '@fontsource/hind-siliguri/600.css';
+@import '@fontsource/hind-siliguri/700.css';
+@import '@fontsource/anek-bangla/500.css';
+@import '@fontsource/anek-bangla/600.css';
+@import '@fontsource/anek-bangla/700.css';
 @import 'tailwindcss';
 @import 'tw-animate-css';
 

@@ -15,9 +15,21 @@ import { tFor } from '../lib/i18n/messages.ts'
 import { getSavedLang } from '../lib/i18n/saved-lang.ts'
 import { getSiteOrigin } from '../lib/site-origin.ts'
 import appCss from '../styles.css?url'
+// The two font files the first screen needs, asked for straight away rather
+// than once the stylesheet has been read: body text and the big headings, in
+// their Bengali part.
+import bodyFont from '@fontsource/hind-siliguri/files/hind-siliguri-bengali-500-normal.woff2?url'
+import headingFont from '@fontsource/anek-bangla/files/anek-bangla-bengali-700-normal.woff2?url'
 
 // What every route's loader can reach through `context`.
 export type RouterContext = { queryClient: QueryClient }
+
+// Google Fonts, linked from the page head so the browser asks for it at once:
+// only the Bengali digits ০-৯ in Noto Sans Bengali, about 2 KB (why: see the
+// top of styles.css). The other fonts are served from this site.
+const FONT_SHEETS = [
+  'https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400..700&text=%E0%A7%A6%E0%A7%A7%E0%A7%A8%E0%A7%A9%E0%A7%AA%E0%A7%AB%E0%A7%AC%E0%A7%AD%E0%A7%AE%E0%A7%AF&display=swap',
+]
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   // The page's language, for <html lang> and for every text on it. Public pages
@@ -60,6 +72,16 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         href: 'https://fonts.gstatic.com',
         crossOrigin: 'anonymous',
       },
+      ...[bodyFont, headingFont].map((href) => ({
+        rel: 'preload',
+        href,
+        as: 'font',
+        type: 'font/woff2',
+        // Fonts are always fetched in CORS mode, so the preload must be too,
+        // or the browser fetches them twice.
+        crossOrigin: 'anonymous' as const,
+      })),
+      ...FONT_SHEETS.map((href) => ({ rel: 'stylesheet', href })),
       {
         rel: 'stylesheet',
         href: appCss,
