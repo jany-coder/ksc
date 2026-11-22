@@ -13,6 +13,7 @@ import { langOfMatches, resolveLang } from '../lib/i18n/core.ts'
 import type { HeadArgs } from '../lib/i18n/core.ts'
 import { tFor } from '../lib/i18n/messages.ts'
 import { getSavedLang } from '../lib/i18n/saved-lang.ts'
+import { getSiteOrigin } from '../lib/site-origin.ts'
 import appCss from '../styles.css?url'
 
 // What every route's loader can reach through `context`.
@@ -28,6 +29,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     const theme = getSavedTheme() ?? 'light'
     return {
       lang: resolveLang(location.pathname, getSavedLang()),
+      // For the absolute addresses in link previews (see lib/social.ts).
+      origin: getSiteOrigin(),
       adminTheme: theme,
       themeClass: themeClass(location.pathname, theme),
     }

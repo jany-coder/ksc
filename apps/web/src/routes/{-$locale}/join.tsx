@@ -19,6 +19,7 @@ import { submitApplicationFn } from '../../lib/applications.functions.ts'
 import { useLocaleParams, useT } from '../../lib/i18n/index.tsx'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
+import { originOfMatches, socialMeta } from '../../lib/social.ts'
 import { BLOOD_GROUPS, bloodLabel } from '../../lib/member-options.ts'
 import { EMPTY_PROFILE } from '../../lib/member-profile.ts'
 import {
@@ -28,13 +29,21 @@ import {
 } from '../../components/member-profile-fields.tsx'
 
 export const Route = createFileRoute('/{-$locale}/join')({
-  head: ({ params }) => {
-    const t = tFor(params.locale === 'en' ? 'en' : 'bn')
+  head: ({ params, matches }) => {
+    const lang = params.locale === 'en' ? 'en' : 'bn'
+    const t = tFor(lang)
     return {
       links: alternateLinks('/join'),
       meta: [
         { title: t('apply.pageTitle') },
         { name: 'description', content: t('apply.description') },
+        ...socialMeta({
+          origin: originOfMatches(matches),
+          lang,
+          path: '/join',
+          title: t('apply.pageTitle'),
+          description: t('apply.description'),
+        }),
       ],
     }
   },

@@ -19,6 +19,7 @@ import {
 } from '../../lib/i18n/index.tsx'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
+import { originOfMatches, socialMeta } from '../../lib/social.ts'
 import { publicData } from '../../lib/public-data.ts'
 
 export const Route = createFileRoute('/{-$locale}/gallery')({
@@ -31,13 +32,29 @@ export const Route = createFileRoute('/{-$locale}/gallery')({
     ),
   // After validateSearch and loader: TypeScript reads these options in order,
   // and an untyped head() before them would hide the search type.
-  head: ({ params }) => {
-    const t = tFor(params.locale === 'en' ? 'en' : 'bn')
+  head: ({ params, loaderData, matches }) => {
+    const lang = params.locale === 'en' ? 'en' : 'bn'
+    const t = tFor(lang)
+    const photo = loaderData?.photos[0]
     return {
       links: alternateLinks('/gallery'),
       meta: [
         { title: t('gallery.pageTitle') },
         { name: 'description', content: t('gallery.description') },
+        ...socialMeta({
+          origin: originOfMatches(matches),
+          lang,
+          path: '/gallery',
+          title: t('gallery.pageTitle'),
+          description: t('gallery.description'),
+          image: photo
+            ? {
+                path: imageUrl(photo.id, 'full'),
+                width: photo.width,
+                height: photo.height,
+              }
+            : null,
+        }),
       ],
     }
   },

@@ -6,6 +6,7 @@ import { listArchiveActivitiesFn } from '../../../lib/activities.functions.ts'
 import { alternateLinks } from '../../../lib/i18n/hreflang.ts'
 import { useLocaleParams, useNumber, useT } from '../../../lib/i18n/index.tsx'
 import { tFor } from '../../../lib/i18n/messages.ts'
+import { originOfMatches, socialMeta } from '../../../lib/social.ts'
 import { publicData } from '../../../lib/public-data.ts'
 
 // The archive: every published activity that has already happened, newest
@@ -13,13 +14,24 @@ import { publicData } from '../../../lib/public-data.ts'
 export const Route = createFileRoute('/{-$locale}/activities/')({
   loader: ({ context: { queryClient } }) =>
     publicData(queryClient, ['archive'], () => listArchiveActivitiesFn()),
-  head: ({ params }) => {
-    const t = tFor(params.locale === 'en' ? 'en' : 'bn')
+  head: ({ params, loaderData, matches }) => {
+    const lang = params.locale === 'en' ? 'en' : 'bn'
+    const t = tFor(lang)
+    // The newest activity that has a photo.
+    const photo = loaderData?.find((item) => item.fullUrl)?.fullUrl
     return {
       links: alternateLinks('/activities'),
       meta: [
         { title: t('archive.pageTitle') },
         { name: 'description', content: t('archive.description') },
+        ...socialMeta({
+          origin: originOfMatches(matches),
+          lang,
+          path: '/activities',
+          title: t('archive.pageTitle'),
+          description: t('archive.description'),
+          image: photo ? { path: photo } : null,
+        }),
       ],
     }
   },

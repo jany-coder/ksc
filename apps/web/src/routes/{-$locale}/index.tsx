@@ -8,6 +8,7 @@ import { heroPhotosFn, listHomeImagesFn } from '../../lib/images.functions.ts'
 import { imageSrcSet, imageUrl } from '../../lib/image-limits.ts'
 import { alternateLinks } from '../../lib/i18n/hreflang.ts'
 import { tFor } from '../../lib/i18n/messages.ts'
+import { originOfMatches, socialMeta } from '../../lib/social.ts'
 import { listPublicNoticesFn } from '../../lib/notices.functions.ts'
 import { publicData } from '../../lib/public-data.ts'
 import { Activities } from '../../components/public/home/activities.tsx'
@@ -36,13 +37,34 @@ export const Route = createFileRoute('/{-$locale}/')({
     ])
     return { recent, upcoming, notices, images, hero }
   },
-  head: ({ params }) => {
-    const t = tFor(params.locale === 'en' ? 'en' : 'bn')
+  head: ({ params, loaderData, matches }) => {
+    const lang = params.locale === 'en' ? 'en' : 'bn'
+    const t = tFor(lang)
+    // The preview photo: the one behind the hero, else the first in its
+    // frame, else the first homepage photo.
+    const photo =
+      loaderData?.hero.background ??
+      loaderData?.hero.slides[0] ??
+      loaderData?.images[0]
     return {
       links: alternateLinks(''),
       meta: [
         { title: t('home.title') },
         { name: 'description', content: t('home.description') },
+        ...socialMeta({
+          origin: originOfMatches(matches),
+          lang,
+          path: '',
+          title: t('home.title'),
+          description: t('home.description'),
+          image: photo
+            ? {
+                path: imageUrl(photo.id, 'full'),
+                width: photo.width,
+                height: photo.height,
+              }
+            : null,
+        }),
       ],
     }
   },
