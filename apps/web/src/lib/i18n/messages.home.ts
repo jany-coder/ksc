@@ -36,6 +36,12 @@ export const homeMessages = {
   'hero.play': { bn: 'ছবি বদলানো চালু করুন', en: 'Play the photos' },
   'hero.ctaWork': { bn: 'আমাদের কার্যক্রম দেখুন', en: 'See our activities' },
 
+  // --- under the hero: the next activity ---
+  'next.label': { bn: 'পরবর্তী কার্যক্রম', en: 'Next activity' },
+  'next.today': { bn: 'আজ', en: 'Today' },
+  'next.tomorrow': { bn: 'আগামীকাল', en: 'Tomorrow' },
+  'next.daysLeft': { bn: 'আর {n} দিন', en: 'In {n} days' },
+
   // --- what we work on ---
   'whatWeDo.title': { bn: 'আমরা যা নিয়ে কাজ করি', en: 'What we work on' },
   'whatWeDo.harmonyTitle': {

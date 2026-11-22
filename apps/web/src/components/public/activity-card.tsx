@@ -21,8 +21,17 @@ export type ActivityCardData = {
  * One activity: photo, date, title and the start of the description. Used on
  * the home page and in the archive, so both look the same. The whole card
  * opens the activity's own page, where the full text and photos are.
+ *
+ * `featured`: the home page's newest activity, shown large, magazine style.
+ * Its photo grows to fill the card, however tall the grid makes it.
  */
-export function ActivityCard({ item }: { item: ActivityCardData }) {
+export function ActivityCard({
+  item,
+  featured = false,
+}: {
+  item: ActivityCardData
+  featured?: boolean
+}) {
   const t = useT()
   const lang = useLang()
   const localeParams = useLocaleParams()
@@ -37,7 +46,12 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
       )}
     >
       {item.thumbUrl ? (
-        <div className="overflow-hidden">
+        <div
+          className={cn(
+            'overflow-hidden',
+            featured && 'relative min-h-[240px] grow md:min-h-[340px]',
+          )}
+        >
           <img
             src={item.thumbUrl}
             // The 1600px version for screens that need more than 400px.
@@ -46,15 +60,27 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
                 ? `${item.thumbUrl} 400w, ${item.fullUrl} 1600w`
                 : undefined
             }
-            sizes="(min-width: 768px) 380px, 100vw"
+            sizes={
+              featured
+                ? '(min-width: 1024px) 780px, 100vw'
+                : '(min-width: 768px) 380px, 100vw'
+            }
             alt={item.title}
             loading="lazy"
-            className="aspect-[4/3] w-full bg-panel object-cover"
+            className={cn(
+              'w-full bg-panel object-cover',
+              featured ? 'absolute inset-0 h-full' : 'aspect-[4/3]',
+            )}
           />
         </div>
       ) : (
         // No photo yet: a quiet panel with the club's logo, not an empty box.
-        <div className="flex aspect-[4/3] w-full items-center justify-center bg-accent">
+        <div
+          className={cn(
+            'flex w-full items-center justify-center bg-accent',
+            featured ? 'min-h-[240px] grow md:min-h-[340px]' : 'aspect-[4/3]',
+          )}
+        >
           <img
             src="/logo.png"
             alt=""
@@ -65,7 +91,12 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
         </div>
       )}
 
-      <div className="flex grow flex-col gap-3 px-6 pt-5 pb-6">
+      <div
+        className={cn(
+          'flex flex-col gap-3 px-6 pt-5 pb-6',
+          featured ? 'md:px-8 md:pt-6 md:pb-8' : 'grow',
+        )}
+      >
         {(item.eventDate || item.location) && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             {item.eventDate && (
@@ -82,7 +113,14 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
             )}
           </div>
         )}
-        <h3 className="text-[21px] leading-snug font-semibold text-ink md:text-[23px]">
+        <h3
+          className={cn(
+            'leading-snug font-semibold text-ink',
+            featured
+              ? 'text-[24px] md:text-[32px] md:leading-tight'
+              : 'text-[21px] md:text-[23px]',
+          )}
+        >
           {/* One link per card, so a screen reader hears each activity once.
               Its ::after covers the card, so a tap anywhere opens it. */}
           <Link
@@ -94,7 +132,12 @@ export function ActivityCard({ item }: { item: ActivityCardData }) {
           </Link>
         </h3>
         {item.description && (
-          <p className="line-clamp-4 text-base leading-[1.75] whitespace-pre-line text-copy">
+          <p
+            className={cn(
+              'text-base leading-[1.75] whitespace-pre-line text-copy',
+              featured ? 'line-clamp-3 md:text-[17px]' : 'line-clamp-4',
+            )}
+          >
             {item.description}
           </p>
         )}

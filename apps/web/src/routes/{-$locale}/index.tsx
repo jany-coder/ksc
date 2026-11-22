@@ -15,7 +15,7 @@ import { About } from '../../components/public/home/about.tsx'
 import { Future } from '../../components/public/home/future.tsx'
 import { GalleryTeaser } from '../../components/public/home/gallery-teaser.tsx'
 import { Hero } from '../../components/public/home/hero.tsx'
-import { QuickActions } from '../../components/public/home/quick-actions.tsx'
+import { Highlights } from '../../components/public/home/highlights.tsx'
 import { Join } from '../../components/public/home/join.tsx'
 import { NoticeBoard } from '../../components/public/home/notice-board.tsx'
 import { UpcomingActivities } from '../../components/public/home/upcoming-activities.tsx'
@@ -54,7 +54,9 @@ function Home() {
     <main>
       {/* Its own photos, picked in the admin gallery apart from these. */}
       <Hero photos={hero} />
-      <QuickActions />
+      {/* The next activity (when one is coming) and two shortcuts, rising
+          over the hero's edge. */}
+      <Highlights upcoming={upcoming} />
       <WhatWeDo />
       <About />
       <Activities items={recent} />
