@@ -37,25 +37,9 @@ export function Activities({ items }: { items: ActivityCardData[] }) {
           </p>
         ) : (
           <>
-            {/* Magazine style: the newest activity large (two columns wide
-                and, on wide screens, two cards tall), the rest beside and
-                below it in an even grid. */}
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3">
-              {items.map((item, i) => (
-                <div
-                  key={item.id}
-                  className={cn(
-                    'min-w-0',
-                    i === 0 &&
-                      items.length > 1 &&
-                      'md:col-span-2 lg:row-span-2',
-                  )}
-                >
-                  <ActivityCard
-                    item={item}
-                    featured={i === 0 && items.length > 1}
-                  />
-                </div>
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))] gap-5 md:gap-6">
+              {items.map((item) => (
+                <ActivityCard key={item.id} item={item} />
               ))}
             </div>
             <div className="mt-10 flex justify-center">
