@@ -364,24 +364,6 @@
   .hero-frame[data-paused] .hero-slide {
     animation-play-state: paused;
   }
-  /* The ribbon of key words under the hero: two copies of the list slide
-     left by one copy's width, then start over, so the loop has no seam. */
-  @keyframes marquee {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(-50%);
-    }
-  }
-  .marquee-track {
-    animation: marquee 70s linear infinite;
-  }
-  .marquee:hover .marquee-track,
-  .marquee[data-paused] .marquee-track {
-    animation-play-state: paused;
-  }
-
   /* Its caption fades in with each new photo. */
   .hero-caption {
     animation: fade 0.9s ease both;

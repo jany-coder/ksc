@@ -42,11 +42,6 @@ export const homeMessages = {
   'next.tomorrow': { bn: 'আগামীকাল', en: 'Tomorrow' },
   'next.daysLeft': { bn: 'আর {n} দিন', en: 'In {n} days' },
 
-  // --- the ribbon of key words under the hero ---
-  'marquee.label': { bn: 'ক্লাবের মূল কথা', en: 'The club in a few words' },
-  'marquee.pause': { bn: 'চলমান লেখা থামান', en: 'Pause the moving text' },
-  'marquee.play': { bn: 'চলমান লেখা চালু করুন', en: 'Play the moving text' },
-
   // --- what we work on ---
   'whatWeDo.title': { bn: 'আমরা যা নিয়ে কাজ করি', en: 'What we work on' },
   'whatWeDo.harmonyTitle': {
