@@ -72,6 +72,50 @@ export const adminMessages = {
   'role.member': { bn: 'সদস্য', en: 'Member' },
 
   // --- shell (sidebar) ---
+  'donors.pageTitle': {
+    bn: 'রক্তদাতা — কলমা সোশ্যাল ক্লাব',
+    en: 'Blood donors — Kalma Social Club',
+  },
+  'donors.title': { bn: 'রক্তদাতা খুঁজুন', en: 'Find a blood donor' },
+  'donors.lead': {
+    bn: 'রক্ত দিতে আগ্রহী সক্রিয় সদস্যরা। গ্রুপ বেছে নিন; যাঁরা এখন রক্ত দিতে পারবেন তাঁরা সবার উপরে থাকবেন। নম্বরে চাপলেই কল হবে।',
+    en: 'Active members willing to give blood. Pick a group; those who can give now come first. Tap a number to call.',
+  },
+  'donors.byGroup': { bn: 'রক্তের গ্রুপ', en: 'Blood group' },
+  'donors.count': { bn: '{n} জন', en: '{n}' },
+  'donors.allGroups': { bn: 'সব গ্রুপ', en: 'All groups' },
+  'donors.readyOnly': {
+    bn: 'শুধু যাঁরা এখন দিতে পারবেন',
+    en: 'Only those who can give now',
+  },
+  'donors.summary': {
+    bn: '{n} জন দাতা, এখন দিতে পারবেন {ready} জন',
+    en: '{n} donors, {ready} can give now',
+  },
+  'donors.colName': { bn: 'নাম', en: 'Name' },
+  'donors.colGroup': { bn: 'গ্রুপ', en: 'Group' },
+  'donors.colPhone': { bn: 'মোবাইল', en: 'Mobile' },
+  'donors.colArea': { bn: 'এলাকা', en: 'Area' },
+  'donors.colLast': { bn: 'শেষ রক্তদান', en: 'Last donation' },
+  'donors.colReady': { bn: 'এখন দিতে পারবেন?', en: 'Can give now?' },
+  'donors.readyNow': { bn: 'এখন দিতে পারবেন', en: 'Can give now' },
+  'donors.readyIn': { bn: 'আর {n} দিন পরে', en: 'In {n} days' },
+  'donors.emptyNone': {
+    bn: 'এই গ্রুপে কোনো রক্তদাতা নেই।',
+    en: 'No donors in this group.',
+  },
+  'donors.emptyReady': {
+    bn: 'এই মুহূর্তে কেউ রক্ত দিতে পারবেন না। সবাইকে দেখতে উপরের চিহ্নটা তুলে দিন।',
+    en: 'Nobody can give right now. Untick the filter above to see everyone.',
+  },
+  'donors.rule': {
+    bn: 'হিসাবের নিয়ম: পুরুষ শেষবারের {male} দিন পরে, নারী {female} দিন পরে আবার রক্ত দিতে পারেন। লিঙ্গ লেখা না থাকলে {female} দিন ধরা হয়।',
+    en: 'The rule used: men may give again {male} days after the last time, women after {female}. With no gender recorded, {female} days.',
+  },
+  'donors.loadError': {
+    bn: 'রক্তদাতার তালিকা আনা গেল না। পাতাটা আবার লোড করুন।',
+    en: 'Could not load the donor list. Please reload the page.',
+  },
   'shell.viewSite': { bn: 'ওয়েবসাইট দেখুন', en: 'View website' },
   'shell.viewSiteShort': { bn: 'ওয়েবসাইট', en: 'Website' },
   'shell.newTab': { bn: '(নতুন ট্যাবে খোলে)', en: '(opens in a new tab)' },

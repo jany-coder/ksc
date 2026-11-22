@@ -14,6 +14,7 @@ import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminDonorsRouteImport } from './routes/admin/donors'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiMembersExportRouteImport } from './routes/api/members-export'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
@@ -62,6 +63,11 @@ const Char123LocaleChar125RouteRoute =
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminDonorsRoute = AdminDonorsRouteImport.update({
+  id: '/donors',
+  path: '/donors',
   getParentRoute: () => AdminRouteRoute,
 } as any)
 const ApiImagesRoute = ApiImagesRouteImport.update({
@@ -191,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/admin/donors': typeof AdminDonorsRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/admin/donors': typeof AdminDonorsRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
@@ -250,6 +258,7 @@ export interface FileRoutesById {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/change-password': typeof ChangePasswordRoute
   '/login': typeof LoginRoute
+  '/admin/donors': typeof AdminDonorsRoute
   '/api/images': typeof ApiImagesRoute
   '/api/members-export': typeof ApiMembersExportRoute
   '/{-$locale}/gallery': typeof Char123LocaleChar125GalleryRoute
@@ -282,6 +291,7 @@ export interface FileRouteTypes {
     | '/{-$locale}'
     | '/change-password'
     | '/login'
+    | '/admin/donors'
     | '/api/images'
     | '/api/members-export'
     | '/{-$locale}/gallery'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
   to:
     | '/change-password'
     | '/login'
+    | '/admin/donors'
     | '/api/images'
     | '/api/members-export'
     | '/{-$locale}/gallery'
@@ -340,6 +351,7 @@ export interface FileRouteTypes {
     | '/{-$locale}'
     | '/change-password'
     | '/login'
+    | '/admin/donors'
     | '/api/images'
     | '/api/members-export'
     | '/{-$locale}/gallery'
@@ -413,6 +425,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/donors': {
+      id: '/admin/donors'
+      path: '/donors'
+      fullPath: '/admin/donors'
+      preLoaderRoute: typeof AdminDonorsRouteImport
       parentRoute: typeof AdminRouteRoute
     }
     '/api/images': {
@@ -580,6 +599,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteRouteChildren {
+  AdminDonorsRoute: typeof AdminDonorsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminActivitiesIdRoute: typeof AdminActivitiesIdRoute
   AdminActivitiesCategoriesRoute: typeof AdminActivitiesCategoriesRoute
@@ -597,6 +617,7 @@ interface AdminRouteRouteChildren {
 }
 
 const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminDonorsRoute: AdminDonorsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminActivitiesIdRoute: AdminActivitiesIdRoute,
   AdminActivitiesCategoriesRoute: AdminActivitiesCategoriesRoute,

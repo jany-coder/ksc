@@ -245,7 +245,7 @@ export type MemberDetail = ProfileRow & {
 }
 
 /** "/api/member-photo/<id>?v=<file name>", or null without a photo. */
-function photoUrlFor(
+export function photoUrlFor(
   id: string,
   key: string | null,
   size: 'full' | 'small' = 'full',

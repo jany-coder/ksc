@@ -46,11 +46,12 @@ const dash = <span className="text-muted-foreground">—</span>
  * The 128px copy of their photo, or the first letter, in a circle.
  * Decorative: the name is right beside it.
  */
-function SmallAvatar({
+/** A member's small photo, or their first letter in a circle. */
+export function SmallAvatar({
   row,
   className,
 }: {
-  row: MemberRow
+  row: Pick<MemberRow, 'name' | 'photoUrl'>
   className: string
 }) {
   return row.photoUrl ? (

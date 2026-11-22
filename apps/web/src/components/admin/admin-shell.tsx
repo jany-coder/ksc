@@ -35,6 +35,7 @@ type NavItem = {
   to?:
     | '/admin'
     | '/admin/members'
+    | '/admin/donors'
     | '/admin/activities'
     | '/admin/notices'
     | '/admin/gallery'
@@ -42,7 +43,7 @@ type NavItem = {
 const NAV: NavItem[] = [
   { label: 'shell.dashboard', icon: LayoutDashboard, to: '/admin' },
   { label: 'shell.members', icon: Users, to: '/admin/members' },
-  { label: 'shell.donors', icon: Droplet },
+  { label: 'shell.donors', icon: Droplet, to: '/admin/donors' },
   { label: 'shell.activities', icon: CalendarDays, to: '/admin/activities' },
   { label: 'shell.gallery', icon: Image, to: '/admin/gallery' },
   { label: 'shell.notices', icon: Bell, to: '/admin/notices' },
