@@ -53,9 +53,15 @@ export function Typewriter({ text }: { text: string }) {
       <span className="invisible">{text}</span>
       <span aria-hidden="true" className="absolute inset-0">
         {letters.slice(0, shown).join('')}
-        <span
-          className={`typewriter-cursor ms-0.5 inline-block h-[0.95em] w-[2px] translate-y-[0.12em] bg-current transition-opacity duration-500 ${cursor ? 'opacity-100' : 'opacity-0'}`}
-        />
+        {/* Zero width, so the cursor never pushes onto a new line: it hangs
+            just after the last letter typed. */}
+        {/* (The zero-width space gives it the line's height.) */}
+        <span className="relative inline-block w-0">
+          {'\u200b'}
+          <span
+            className={`typewriter-cursor absolute start-1 top-1/2 h-[0.95em] w-[2px] -translate-y-1/2 bg-current transition-opacity duration-500 ${cursor ? 'opacity-100' : 'opacity-0'}`}
+          />
+        </span>
       </span>
     </span>
   )
