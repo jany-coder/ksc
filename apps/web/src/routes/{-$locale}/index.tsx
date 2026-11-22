@@ -68,6 +68,7 @@ function Home() {
           id: image.id,
           thumbUrl: imageUrl(image.id, 'thumb'),
           srcSet: imageSrcSet(image.id, image.width),
+          caption: image.caption,
         }))}
       />
       <Future />
