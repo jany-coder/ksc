@@ -1,4 +1,4 @@
-import { Pause, Play, Sparkle } from 'lucide-react'
+import { Pause, Play } from 'lucide-react'
 import { useState } from 'react'
 
 import { useT } from '../../../lib/i18n/index.tsx'
@@ -50,11 +50,13 @@ export function Marquee() {
               {LINES.map((key) => (
                 <li
                   key={key}
-                  className="flex items-center gap-6 py-3.5 ps-6 font-heading text-[17px] font-semibold whitespace-nowrap text-brand-deep md:py-4 md:text-xl"
+                  className="flex items-center gap-8 py-3.5 ps-8 font-heading text-[17px] font-semibold whitespace-nowrap text-brand-deep md:py-4 md:text-xl"
                 >
-                  <Sparkle
+                  {/* A small, quiet dot keeps one phrase from running into
+                      the next. */}
+                  <span
                     aria-hidden="true"
-                    className="size-4 shrink-0 fill-current text-primary"
+                    className="size-1.5 shrink-0 rounded-full bg-primary/40"
                   />
                   {t(key)}
                 </li>
