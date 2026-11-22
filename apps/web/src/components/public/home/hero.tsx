@@ -7,6 +7,7 @@ import { useLocaleParams, useT } from '../../../lib/i18n/index.tsx'
 import { buttonVariants } from '../../ui/button.tsx'
 import { cn } from '../../../lib/utils.ts'
 
+import { Typewriter } from '../typewriter.tsx'
 import { HeroFrame } from './hero-frame.tsx'
 import { WORK_AREAS } from './what-we-do.tsx'
 import type { HeroSlide } from './hero-frame.tsx'
@@ -76,7 +77,7 @@ export function Hero({ photos }: { photos: HeroPhotos }) {
             {t('hero.title')}
           </h1>
           <p className="mb-4 font-heading text-xl font-semibold text-mint md:mb-6 md:text-[28px]">
-            {t('hero.tagline')}
+            <Typewriter text={t('hero.tagline')} />
           </p>
           <p className="mb-5 max-w-[52ch] text-[17px] leading-relaxed text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)] md:text-[21px] md:leading-[1.65]">
             {t('hero.leadShort')}

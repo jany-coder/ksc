@@ -49,6 +49,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
         title: tFor(langOfMatches(matches))('site.name'),
       },
     ],
+    // Marks the page as having JavaScript before anything is drawn, for
+    // effects that should wait for it (the hero's typing line).
+    scripts: [{ children: "document.documentElement.dataset.js=''" }],
     links: [
       { rel: 'icon', type: 'image/png', href: '/logo.png' },
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },

@@ -364,6 +364,28 @@
   .hero-frame[data-paused] .hero-slide {
     animation-play-state: paused;
   }
+  /* The typing line's cursor blinks. */
+  @keyframes blink {
+    50% {
+      background-color: transparent;
+    }
+  }
+  .typewriter-cursor {
+    animation: blink 1s step-end infinite;
+  }
+  /* With JavaScript on (html[data-js], set first thing in the page head),
+     the line waits hidden for the typing to begin. If the typing never
+     starts, it shows anyway after three seconds. */
+  @keyframes reveal {
+    to {
+      visibility: visible;
+    }
+  }
+  html[data-js] .typewriter-pending {
+    visibility: hidden;
+    animation: reveal 0s 3s forwards;
+  }
+
   /* Its caption fades in with each new photo. */
   .hero-caption {
     animation: fade 0.9s ease both;
